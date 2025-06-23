@@ -1,0 +1,14 @@
+#transactions tr td:first-child, #transaction tr td:last-child {
+    width: 5rem;
+}
+ul.pagination {
+  margin-block-end: 2px;
+}
+table tr th button {
+  border: none;
+  background-color: transparent;
+  font-weight: 700;
+}
+.hide {
+  display: none;
+}
