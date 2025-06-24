@@ -19,5 +19,6 @@ type handlersType = {
     save: (transaction: Transaction) => void 
     sort: (col: string) => void,
     search: (filter: TransactionSearchFilterType) => void,
-    setModal: (modal: ModalType) => void
+    setModal: (modal: ModalType) => void,
+    clearFilterColumns: (columns: string[]) => void
   }

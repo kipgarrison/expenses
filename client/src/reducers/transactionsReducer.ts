@@ -4,7 +4,7 @@ import { midnightToday } from "../helpers/midnightToday";
 import { API_DELETE_TRANSACTION_FAILURE_ALERT, API_DELETE_TRANSACTION_SUCESS_ALERT, API_LOAD_TRANSACTIONS_FAILURE_ALERT } from "../types/constants";
 import type { Indexable } from "../types/Indexable";
 import { newTransaction, type Transaction } from "../types/Transaction";
-import { maxFilter, type TransactionSearchFilterType } from "../types/TransactionSeachFilterType";
+import { emptyFilter, maxFilter, type TransactionSearchFilterType } from "../types/TransactionSeachFilterType";
 import type { AlertType, TranactionsSummaryType, TransactionsState } from "../types/TransactionsState";
 import type { ModalType } from "../types/unionTypes";
 
@@ -177,6 +177,32 @@ export const transactionsReducer = (state: TransactionsState, action: ActionWith
     case ActionTypes.LOAD_TRANSACTIONS_FAILURE: {
       const alert = API_LOAD_TRANSACTIONS_FAILURE_ALERT;
       return { ...newState, apiStatus: "NOT_RUNNING", alert };
+    }
+    case ActionTypes.REMOVE_COLUMN_FILTER: {
+      const payload = action.payload as string[];
+      
+      if (!payload || payload.length === 0) {
+        const localState = { ...state, filter: emptyFilter };
+        return { ...localState,  ...filterTransactions(localState) };
+      }
+        
+      const filter = state.filter as Indexable;
+      let newFilter: TransactionSearchFilterType = emptyFilter;
+      const keys = Object.keys(filter);
+
+      keys.forEach(k => {
+        //if (["merchants", "types"].includes(k)) newFilter = { ...newFilter, [k]: filter[k] };
+        if (!payload.includes(k)) {
+          newFilter = { ...newFilter, [k]: filter[k] }
+        }
+      })
+        // payload.forEach(f => {
+        //   if (["merchants", "types"].includes(f)) newFilter = { ...newFilter, [f]: [] };
+        //   else filter = { ...filter, [f]: undefined };
+        // })
+
+      const localState: TransactionsState = { ...state, filter: newFilter };
+      return { ...localState, ...filterTransactions(localState)};
     }
     default:
       return state;
