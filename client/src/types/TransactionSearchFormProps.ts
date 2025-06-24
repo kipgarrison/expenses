@@ -1,11 +1,11 @@
-import type { TransactionSearchFilter } from "./TransactionSeachFilter"
+import type { TransactionSearchFilterType } from "./TransactionSeachFilterType"
 
 export type TransactionSearchFormProps = {
   show: boolean, 
-  filter: TransactionSearchFilter, 
+  filter: TransactionSearchFilterType, 
   merchants: string[],
   types: string[]
   onClose: () => void, 
-  onSearch: (searchParams: TransactionSearchFilter) => void
+  onSearch: (searchParams: TransactionSearchFilterType) => void
 
 }

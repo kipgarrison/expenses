@@ -1,6 +1,6 @@
 import type { ActionWithPayload } from "../actions/ActionWithPayload";
 import type { Transaction } from "./Transaction";
-import type { TransactionSearchFilter } from "./TransactionSeachFilter";
+import type { TransactionSearchFilterType } from "./TransactionSeachFilterType";
 import type { ModalType } from "./unionTypes";
 
 export type TransactionsState = {
@@ -14,9 +14,11 @@ export type TransactionsState = {
   apiStatus?: "NOT_RUNNING" | "RUNNING" | "INITIAL",
   alert?: AlertType,
   sort: SortType,
-  filter: TransactionSearchFilter,
+  filter: TransactionSearchFilterType,
   modal: ModalType,
-  summary: TranactionsSummaryType
+  summary: TranactionsSummaryType,
+  merchants: string[],
+  transactionTypes: string[]
 }
 
 export type TranactionsSummaryType = {
@@ -34,7 +36,9 @@ export const transactionStateInitialValue: TransactionsState = {
   filter: { merchants: [], types: [] },
   modal: "None",
   apiStatus: "INITIAL",
-  summary: { numPages: 0, transactionsCount: 0, totalAmount: 0}
+  summary: { numPages: 0, transactionsCount: 0, totalAmount: 0},
+  merchants: [ "Wal-Mart", "Sam's Club", "Schnucks", "Target", "QT", "Dierbergs", "Aldis", "O'Fallon City", "McDonalds", "Menards", "Touchette", "Wal-Greens" ],
+  transactionTypes: [ "Credit Card Debit", "Bank Account Debit", "Credit Card Credit", "Bank Account Credit" ]
 }
 
 export type AlertType = { type: "success" | "failure" , message: string } 

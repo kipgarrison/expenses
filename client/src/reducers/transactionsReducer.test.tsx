@@ -3,7 +3,7 @@ import { midnightToday } from "../helpers/midnightToday";
 import { midnightTomorrow } from "../helpers/midnightTomorrow";
 import { API_DELETE_TRANSACTION_FAILURE_ALERT, API_DELETE_TRANSACTION_SUCESS_ALERT, API_LOAD_TRANSACTIONS_FAILURE_ALERT } from "../types/constants";
 import { newTransaction, type Transaction } from "../types/Transaction";
-import type { TransactionSearchFilter } from "../types/TransactionSeachFilter";
+import type { TransactionSearchFilterType } from "../types/TransactionSeachFilter";
 import { transactionStateInitialValue, type AlertType, type TransactionsState } from "../types/TransactionsState";
 import { transactionsReducer } from "./transactionsReducer"
 
@@ -438,7 +438,7 @@ describe("TransactionsReducer", () => {
 
   describe("SET_SEARCH_FILTER", () => {
     it("should set the page to just those transactions in the range if searching by date range", () => {
-      const filter: TransactionSearchFilter = { 
+      const filter: TransactionSearchFilterType = { 
           fromDate: new Date('1/1/2020'),
           toDate: new Date("1/1/2021"),
           merchants: [],
@@ -460,7 +460,7 @@ describe("TransactionsReducer", () => {
     });
 
     it("should set the page to just those transactions in the range if searching by amount range", () => {
-      const filter: TransactionSearchFilter = { 
+      const filter: TransactionSearchFilterType = { 
           fromAmount: 400,
           toAmount: 500,
           merchants: [],
@@ -482,7 +482,7 @@ describe("TransactionsReducer", () => {
     })
 
     it("should set the page to just those transactions in that contain the passed in text CI when searching by comment", () => {
-      const filter: TransactionSearchFilter = { 
+      const filter: TransactionSearchFilterType = { 
           comments: "testing",
           merchants: [],
           types: []
@@ -504,7 +504,7 @@ describe("TransactionsReducer", () => {
     })
 
     it("should set the page to just those transactions in that are for the merchants specifed in the action", () => {
-      const filter: TransactionSearchFilter = { 
+      const filter: TransactionSearchFilterType = { 
           merchants: ["Target", "Sears"],
           types: []
       };
@@ -524,7 +524,7 @@ describe("TransactionsReducer", () => {
     })
 
     it("should set the page to just those transactions in that are for the types specifed in the action", () => {
-      const filter: TransactionSearchFilter = { 
+      const filter: TransactionSearchFilterType = { 
           merchants: [],
           types: [ "Credit Card Debit", "Bank Account Debit" ]
       };
