@@ -18,6 +18,11 @@ export type TransactionSearchFilterType = {
 //   types: string[]
 // }
 
+export const emptyFilter: TransactionSearchFilterType = {
+  merchants: [],
+  types: []
+};
+
 export const maxFilter: TransactionSearchFilterType = {
   fromDate: "1/1/1970",
   toDate: "12/31/2050",

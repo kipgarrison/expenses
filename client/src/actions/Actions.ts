@@ -1,5 +1,5 @@
 import type { Transaction } from "../types/Transaction";
-import type { TransactionSearchFilterType } from "../types/TransactionSeachFilter";
+import type { TransactionSearchFilterType } from "../types/TransactionSeachFilterType"
 import type { AlertType } from "../types/TransactionsState";
 import type { ModalType } from "../types/unionTypes";
 import { ActionTypes } from "./Action_Types";
@@ -152,5 +152,11 @@ export class LoadTransactionsSuccessAction extends ActionWithPayload {
 export class LoadTransactionsFailureAction extends ActionWithPayload {
   constructor() {
     super(ActionTypes.LOAD_TRANSACTIONS_FAILURE);
+  }
+}
+
+export class RemoveColumnFilter extends ActionWithPayload {
+  constructor(payload: string[]) {
+    super(ActionTypes.REMOVE_COLUMN_FILTER, payload);
   }
 }

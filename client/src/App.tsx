@@ -1,4 +1,4 @@
-import { AddTransactionAction, ClearCurrentTransactionAction, UpdatePageNumberAction, UpdateTransactionAction, EditTransactionAction, DeleteTransactionInitAction, ShowAlertAction, HideAlertAction, SetSortAction, SetSearchFilterAction, CreateTransactionInitAction,  UpdateTransactionInitAction, SetModalAction, LoadTransactionsInitAction, SetCurrentTransactionAction } from './actions/Actions';
+import { AddTransactionAction, ClearCurrentTransactionAction, UpdatePageNumberAction, UpdateTransactionAction, EditTransactionAction, DeleteTransactionInitAction, ShowAlertAction, HideAlertAction, SetSortAction, SetSearchFilterAction, CreateTransactionInitAction,  UpdateTransactionInitAction, SetModalAction, LoadTransactionsInitAction, SetCurrentTransactionAction, RemoveColumnFilter } from './actions/Actions';
 import { transactionsReducer } from './reducers/transactionsReducer';
 import type { Transaction } from './types/Transaction';
 import { useReducer, useEffect } from 'react';
@@ -79,15 +79,16 @@ function App() {
           transDispatch(new SetSearchFilterAction(filter));
           transDispatch(new SetModalAction("None"));  
         },
-        setModal: (modal: ModalType) => transDispatch(new SetModalAction(modal))
+        setModal: (modal: ModalType) => transDispatch(new SetModalAction(modal)),
+        clearFilterColumns: (columns: string[]) => transDispatch(new RemoveColumnFilter(columns))
     }
   }  
 
   const setShowAlert = (show: boolean, alert?: AlertType) => {
-          if (show && !alert) throw new Error("Unable to show alert without a message");
-          if (!show) return transDispatch(new HideAlertAction());
-          transDispatch(new ShowAlertAction(alert as AlertType));
-        }
+    if (show && !alert) throw new Error("Unable to show alert without a message");
+    if (!show) return transDispatch(new HideAlertAction());
+    transDispatch(new ShowAlertAction(alert as AlertType));
+  }
   
   const apiSpinnerClass = transState.apiStatus === "RUNNING" ? "apiSpinner" : "hide";
 

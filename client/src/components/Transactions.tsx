@@ -6,10 +6,18 @@ import type { Transaction } from '../types/Transaction';
 import TransactionTable from './Transaction-Table';
 import TransactionSearchForm from './TransactionSearchForm';
 import TransactionForm from './Transaction-Form';
+import TransactionFilterSummary from './TransactionFilterSummary';
+import type { TransactionFilterSummaryProps } from '../types/TransactionFilterSummaryProps';
 
 export function Transactions(props: TransactionsProps) {
 const { state, handlers } = props;
   const spinnerClass = state.apiStatus === "INITIAL" ? "spinner" : "hide";
+
+  const filterSummaryProps: TransactionFilterSummaryProps = {
+    filter: state.filter,
+    clearColumns: (cols: string[]) => handlers.clearFilterColumns(cols),
+    clearAll: () => handlers.clearFilterColumns([])
+  };
 
   return (
       <>
@@ -42,10 +50,11 @@ const { state, handlers } = props;
             </Button>
           </div>
         </div>
-            
+          
         <div className={spinnerClass}><Spinner animation="border"/>
           <span className='mr-5'>Please be patient while we load your data...</span>
         </div>
+        <TransactionFilterSummary {...filterSummaryProps} />
         <TransactionTable 
           show={state.apiStatus !== "INITIAL"}
           transactions={state.transactionPage} 
