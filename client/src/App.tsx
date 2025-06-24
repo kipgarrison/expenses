@@ -89,12 +89,21 @@ function App() {
     if (!show) return transDispatch(new HideAlertAction());
     transDispatch(new ShowAlertAction(alert as AlertType));
   }
-  
+  const loading = transState.apiStatus === "INITIAL";
   const apiSpinnerClass = transState.apiStatus === "RUNNING" ? "apiSpinner" : "hide";
 
-return (
-
-    <div className='container'>
+return (  
+  <div className='container full-screen'>
+    {loading &&
+      <div className="row d-flex align-items-center full-screen">
+        <div className="col-12">
+          <Spinner animation="border" />
+          <span className='m-3'>Please be patient while we load your data...</span>
+        </div>
+      </div>
+    }
+    {!loading &&
+      <>
       <div className={apiSpinnerClass}>
         <Spinner animation="border"></Spinner>
       </div>
@@ -110,8 +119,9 @@ return (
         </div>
           
       </div>
-    </div>
-  )
-}
+    </>
+  }
+  </div>
+)}
 
 export default App
