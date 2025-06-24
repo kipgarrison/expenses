@@ -4,7 +4,7 @@ import type { FilterMessage } from '../helpers/filterToStrings';
 import { type TransactionFilterSummaryProps } from '../types/TransactionFilterSummaryProps';
 import Badge from 'react-bootstrap/Badge';
 
-export default function TransactionFilterSummary(props: TransactionFilterSummaryProps) {
+export default function TransactionSearchSummary(props: TransactionFilterSummaryProps) {
   const filterStrings = filterToStrings(props.filter);
   let badges: ReactNode;
 

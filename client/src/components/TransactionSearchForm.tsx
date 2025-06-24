@@ -4,10 +4,14 @@ import Form from 'react-bootstrap/Form';
 import Row from 'react-bootstrap/Row';
 import Modal from 'react-bootstrap/modal';
 import type { TransactionSearchFormProps } from '../types/TransactionSearchFormProps';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 
 export default function TransactionSearchForm({ show, filter, merchants, types, onClose, onSearch }: TransactionSearchFormProps) {
+  useEffect(() => {
+    updateFilter(filter);
+  }, [filter]);
+  
   const [ localFilter, updateFilter ] = useState(filter)
 
   const handleFieldChange = (fieldName: string, value: string) => {
@@ -83,6 +87,12 @@ export default function TransactionSearchForm({ show, filter, merchants, types, 
   function submitForm() {
     onSearch({ ...localFilter });
   }
+
+  function getDisplayValue(value: string | number | undefined): string {
+    console.log(value);
+    if (!value) return "";
+    return value.toString();
+  }
   return (
     
     <Form onSubmit={submitForm} name="searchForm" role="search-form">
@@ -95,7 +105,7 @@ export default function TransactionSearchForm({ show, filter, merchants, types, 
               <Form.Group as={Col} controlId="formGridEmail">
                 <Form.Label>From Date</Form.Label>
                 <Form.Control type="date" placeholder="Enter From Date" 
-                  value={localFilter.fromDate}
+                  value={getDisplayValue(localFilter.fromDate)}
                   // onBlur={(e) => handleFieldChange('fromDate', e.target.value)} />
                   onChange={(e) => handleFieldChange('fromDate', e.target.value)} />
               </Form.Group>
