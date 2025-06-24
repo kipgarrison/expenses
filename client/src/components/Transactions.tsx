@@ -1,6 +1,6 @@
 import Modal from 'react-bootstrap/modal';
 import Button from 'react-bootstrap/button';
-import { ModalBody, ModalHeader, Spinner } from 'react-bootstrap';
+import { ModalBody, ModalHeader } from 'react-bootstrap';
 import type { TransactionsProps } from '../types/TransactionsProps';
 import type { Transaction } from '../types/Transaction';
 import TransactionTable from './Transaction-Table';
@@ -11,7 +11,6 @@ import type { TransactionFilterSummaryProps } from '../types/TransactionFilterSu
 
 export function Transactions(props: TransactionsProps) {
 const { state, handlers } = props;
-  const spinnerClass = state.apiStatus === "INITIAL" ? "spinner" : "hide";
 
   const filterSummaryProps: TransactionFilterSummaryProps = {
     filter: state.filter,
@@ -51,9 +50,6 @@ const { state, handlers } = props;
           </div>
         </div>
           
-        <div className={spinnerClass}><Spinner animation="border"/>
-          <span className='mr-5'>Please be patient while we load your data...</span>
-        </div>
         <TransactionFilterSummary {...filterSummaryProps} />
         <TransactionTable 
           show={state.apiStatus !== "INITIAL"}
