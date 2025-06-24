@@ -6,8 +6,8 @@ import type { Transaction } from '../types/Transaction';
 import TransactionTable from './Transaction-Table';
 import TransactionSearchForm from './TransactionSearchForm';
 import TransactionForm from './Transaction-Form';
-import TransactionFilterSummary from './TransactionFilterSummary';
 import type { TransactionFilterSummaryProps } from '../types/TransactionFilterSummaryProps';
+import TransactionSearchSummary from './TransactionSummarySummary';
 
 export function Transactions(props: TransactionsProps) {
 const { state, handlers } = props;
@@ -50,7 +50,7 @@ const { state, handlers } = props;
           </div>
         </div>
           
-        <TransactionFilterSummary {...filterSummaryProps} />
+        <TransactionSearchSummary {...filterSummaryProps} />
         <TransactionTable 
           show={state.apiStatus !== "INITIAL"}
           transactions={state.transactionPage} 
