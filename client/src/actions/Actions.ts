@@ -1,5 +1,5 @@
 import type { Transaction } from "../types/Transaction";
-import type { TransactionSearchFilter } from "../types/TransactionSeachFilter";
+import type { TransactionSearchFilterType } from "../types/TransactionSeachFilter";
 import type { AlertType } from "../types/TransactionsState";
 import type { ModalType } from "../types/unionTypes";
 import { ActionTypes } from "./Action_Types";
@@ -132,7 +132,7 @@ export class SetModalAction extends ActionWithPayload {
 }
 
 export class SetSearchFilterAction extends ActionWithPayload {
-  constructor(payload: TransactionSearchFilter) {
+  constructor(payload: TransactionSearchFilterType) {
     super(ActionTypes.SET_SEARCH_FILTER, payload);
   }
 }

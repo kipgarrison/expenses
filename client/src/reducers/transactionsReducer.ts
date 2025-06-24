@@ -4,7 +4,7 @@ import { midnightToday } from "../helpers/midnightToday";
 import { API_DELETE_TRANSACTION_FAILURE_ALERT, API_DELETE_TRANSACTION_SUCESS_ALERT, API_LOAD_TRANSACTIONS_FAILURE_ALERT } from "../types/constants";
 import type { Indexable } from "../types/Indexable";
 import { newTransaction, type Transaction } from "../types/Transaction";
-import { maxFilter, type TransactionSearchFilter } from "../types/TransactionSeachFilter";
+import { maxFilter, type TransactionSearchFilterType } from "../types/TransactionSeachFilterType";
 import type { AlertType, TranactionsSummaryType, TransactionsState } from "../types/TransactionsState";
 import type { ModalType } from "../types/unionTypes";
 
@@ -19,11 +19,11 @@ function filterTransactions({ transactions, pageNumber, pageSize, sort, filter }
   let localTrans = [...transactions ].sort(sorter);
   const localFilter = { ...maxFilter, ...filter};
   localTrans = localTrans.filter(t => 
-      t.amount >= localFilter.fromAmount &&
-      t.amount <= localFilter.toAmount &&
-      t.date >= localFilter.fromDate &&
-      t.date <= localFilter.toDate &&
-      t.comments.toLowerCase().indexOf(localFilter.comments.toLowerCase()) > -1
+      t.amount >= (localFilter.fromAmount ?? 0) &&
+      t.amount <= (localFilter.toAmount ?? 0) &&
+      t.date >= new Date(localFilter.fromDate ?? "1/1/1970") &&
+      t.date <= new Date(localFilter.toDate ?? "1/1/2050" ) &&
+      t.comments.toLowerCase().indexOf(localFilter.comments?.toLowerCase() ?? "") > -1
     );
 
   if (localFilter.merchants.length > 0) {
@@ -58,7 +58,7 @@ export const transactionsReducer = (state: TransactionsState, action: ActionWith
     case ActionTypes.SET_PAGE_NUMBER: {
       const pageNumber = action.payload as number;
       const localState = { ...newState, pageNumber };
-      return { ...localState, ...filterTransactions(localState),  };
+      return { ...localState, ...filterTransactions(localState), };
     }
     case ActionTypes.ADD_TRANSACTION: { 
       const currentTransaction = { ...newTransaction, date: midnightToday() };
@@ -162,8 +162,8 @@ export const transactionsReducer = (state: TransactionsState, action: ActionWith
       return { ...newState, modal };
     }
     case ActionTypes.SET_SEARCH_FILTER: {
-      const filter = action.payload as TransactionSearchFilter;
-      const localState = { ...newState, filter }
+      const filter = action.payload as TransactionSearchFilterType;
+      const localState = { ...newState, filter, pageNumber: 1 }
       return { ...localState, ...filterTransactions(localState)};
     }
     case ActionTypes.LOAD_TRANSACTIONS_INIT: {

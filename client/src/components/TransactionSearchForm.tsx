@@ -4,31 +4,37 @@ import Form from 'react-bootstrap/Form';
 import Row from 'react-bootstrap/Row';
 import Modal from 'react-bootstrap/modal';
 import type { TransactionSearchFormProps } from '../types/TransactionSearchFormProps';
-
+import { useState } from 'react';
 
 
 export default function TransactionSearchForm({ show, filter, merchants, types, onClose, onSearch }: TransactionSearchFormProps) {
-  let localFilter = { ...filter };
+  const [ localFilter, updateFilter ] = useState(filter)
 
   const handleFieldChange = (fieldName: string, value: string) => {
     if ([ "toDate", "fromDate" ].includes(fieldName)) {
-      localFilter = {...localFilter, [fieldName]: new Date(value)};
-    } else if ( [ "toAmount", "fromAmount" ].includes(fieldName)) {
-      localFilter = { ...localFilter, [fieldName]: parseFloat(value)};
+      //const date = isNaN(new Date(value).getTime()) ?  undefined : new Date(value);
+      updateFilter({...localFilter, [fieldName]: value});
+    } else 
+    if ( [ "toAmount", "fromAmount" ].includes(fieldName)) {
+      updateFilter({ ...localFilter, [fieldName]: parseFloat(value)});
     } else if (fieldName==="merchants") {
+      let merchants = [];
       if (localFilter.merchants.includes(value)) {
-        localFilter.merchants = localFilter.merchants.filter(m => m !== value);
+        merchants = localFilter.merchants.filter(m => m !== value);
       } else {
-        localFilter.merchants = [ ...localFilter.merchants, value];
+        merchants = [ ...localFilter.merchants, value];
       }
+      updateFilter( { ...localFilter, merchants });
     } else if (fieldName==="types") {
-      if (localFilter.merchants.includes(value)) {
-        localFilter.types = localFilter.types.filter(m => m !== value);
+      let types = [];
+      if (localFilter.types.includes(value)) {
+        types = localFilter.types.filter(m => m !== value);
       } else {
-        localFilter.types = [ ...localFilter.types, value];
+        types = [ ...localFilter.types, value];
       }
+      updateFilter( { ...localFilter, types})
     } else if (fieldName==="comments") {
-      localFilter = { ...localFilter, comments: value };
+      updateFilter({ ...localFilter, comments: value });
     } else {
       throw new Error(`unknown field name ${fieldName}` )
     }
@@ -55,6 +61,7 @@ export default function TransactionSearchForm({ show, filter, merchants, types, 
           label = {merchant}
           type="checkbox"
           id={`merchants-${i}-${j}`}
+          checked={ localFilter.merchants.includes(merchant) }
           onChange={() => handleFieldChange('merchants', merchant)}
         />))}
       </Form.Group>
@@ -66,6 +73,7 @@ export default function TransactionSearchForm({ show, filter, merchants, types, 
          <Form.Check
           label = {type}
           type="checkbox"
+          checked={ localFilter.types.includes(type) }
           id= {`types-${index}`}
           onChange={() => handleFieldChange('types', type)}
         />))}
@@ -73,10 +81,10 @@ export default function TransactionSearchForm({ show, filter, merchants, types, 
   ));
   
   function submitForm() {
-    onSearch(localFilter);
+    onSearch({ ...localFilter });
   }
-
   return (
+    
     <Form onSubmit={submitForm} name="searchForm" role="search-form">
       <Modal show={show} onHide={onClose}>
           <Modal.Header closeButton>  
@@ -87,27 +95,29 @@ export default function TransactionSearchForm({ show, filter, merchants, types, 
               <Form.Group as={Col} controlId="formGridEmail">
                 <Form.Label>From Date</Form.Label>
                 <Form.Control type="date" placeholder="Enter From Date" 
-                  value={localFilter.fromDate?.toLocaleDateString()}
+                  value={localFilter.fromDate}
+                  // onBlur={(e) => handleFieldChange('fromDate', e.target.value)} />
                   onChange={(e) => handleFieldChange('fromDate', e.target.value)} />
               </Form.Group>
               <Form.Group as={Col} controlId="formGrid2aasdf">
                 <Form.Label>To Date</Form.Label>
                 <Form.Control type="date" placeholder="Enter To Date"
-                  value={localFilter.toDate?.toLocaleDateString()}
+                  value={localFilter.toDate}
                   onChange={(e) => handleFieldChange('toDate', e.target.value)} />
+                  {/* onChange={(e) => handleFieldChange('toDate', e.target.value)} /> */}
               </Form.Group>
             </Row>
             <Row className="mb-3">
               <Form.Group as={Col} controlId="formGridEmail">
                 <Form.Label>From Amount</Form.Label>
-                <Form.Control type="number" placeholder="End From Amount"
-                  value={localFilter.toDate?.toLocaleDateString()}
+                <Form.Control type="number" placeholder="Enter From Amount"
+                  value={localFilter.fromAmount}
                   onChange={(e) => handleFieldChange('fromAmount', e.target.value)} />
               </Form.Group>
               <Form.Group as={Col} controlId="formGrid2aasdf">
                 <Form.Label>To Amount</Form.Label>
                 <Form.Control type="number" placeholder="Enter To Amount" 
-                  value={localFilter.toDate?.toLocaleDateString()}
+                  value={localFilter.toAmount}
                   onChange={(e) => handleFieldChange('toAmount', e.target.value)} />
               </Form.Group>
             </Row>
@@ -123,7 +133,7 @@ export default function TransactionSearchForm({ show, filter, merchants, types, 
               <Form.Label>Comments</Form.Label>
               <Form.Group as={Col} controlId="formGridEmail">
                 <Form.Control type="text" placeholder="Comments"
-                  value={localFilter.toDate?.toLocaleDateString()}
+                  value={localFilter.comments}
                   onChange={(e) => handleFieldChange('comments', e.target.value)} />
               </Form.Group>
             </Row>
