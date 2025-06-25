@@ -1,6 +1,6 @@
 import { vi } from 'vitest';
 import axios from 'axios'
-import { DeleteTransactionFailureAction, DeleteTransactionInitAction, DeleteTransactionSuccessAction, UpdateTransactionAction } from '../../actions/Actions';
+import { DeleteTransactionFailureAction, DeleteTransactionInitAction, DeleteTransactionSuccessAction, UpdateTransactionAction } from '../../actions/TransactionActions';
 import { newTransaction } from '../../types/Transaction';
 import { deleteTransaction } from './deleteTransactionEffect';
 

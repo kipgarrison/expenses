@@ -1,11 +1,11 @@
 import axios from "axios";
-import { ActionTypes } from "../../actions/Action_Types";
-import { UpdateTransactionFailureAction, UpdateTransactionSuccessAction, type UpdateTransactionInitAction } from "../../actions/Actions";
+import { TransactionActionTypes } from "../../actions/TransactionActionTypes";
+import { UpdateTransactionFailureAction, UpdateTransactionSuccessAction, type UpdateTransactionInitAction } from "../../actions/TransactionActions";
 import type { ActionWithPayload } from "../../actions/ActionWithPayload";
 import type { Transaction } from "../../types/Transaction";
 
 export function updateTransaction(action: ActionWithPayload, dispatch: (action: ActionWithPayload)=>void) {
-    if (action?.type === ActionTypes.UPDATE_TRANSACTION_INIT) {
+    if (action?.type === TransactionActionTypes.UPDATE_TRANSACTION_INIT) {
       const trans = (action as UpdateTransactionInitAction).payload as Transaction;
       executeUpdate(trans, dispatch);
     }

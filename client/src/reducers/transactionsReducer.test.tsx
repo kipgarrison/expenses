@@ -1,10 +1,10 @@
-import { AddTransactionAction, ClearCurrentTransactionAction, CreateTransactionFailureAction, CreateTransactionInitAction, CreateTransactionSuccessAction, DeleteTransactionFailureAction, DeleteTransactionInitAction, DeleteTransactionSuccessAction, EditTransactionAction, HideAlertAction, LoadTransactionsFailureAction, LoadTransactionsInitAction, LoadTransactionsSuccessAction, SetCurrentTransactionAction, SetModalAction, SetSearchFilterAction, SetSortAction, ShowAlertAction, UpdatePageNumberAction, UpdateTransactionFailureAction, UpdateTransactionInitAction, UpdateTransactionSuccessAction } from "../actions/Actions";
+import { AddTransactionAction, ClearCurrentTransactionAction, CreateTransactionFailureAction, CreateTransactionInitAction, CreateTransactionSuccessAction, DeleteTransactionFailureAction, DeleteTransactionInitAction, DeleteTransactionSuccessAction, EditTransactionAction, LoadTransactionsFailureAction, LoadTransactionsInitAction, LoadTransactionsSuccessAction, SetCurrentTransactionAction, SetModalAction, SetSearchFilterAction, SetSortAction, UpdatePageNumberAction, UpdateTransactionFailureAction, UpdateTransactionInitAction, UpdateTransactionSuccessAction } from "../actions/TransactionActions";
 import { midnightToday } from "../helpers/midnightToday";
 import { midnightTomorrow } from "../helpers/midnightTomorrow";
-import { API_DELETE_TRANSACTION_FAILURE_ALERT, API_DELETE_TRANSACTION_SUCESS_ALERT, API_LOAD_TRANSACTIONS_FAILURE_ALERT } from "../types/constants";
+import { API_CREATE_TRANSACTION_FAILURE_ALERT, API_CREATE_TRANSACTION_SUCCESS_ALERT, API_DELETE_TRANSACTION_FAILURE_ALERT, API_DELETE_TRANSACTION_SUCESS_ALERT, API_UPDATE_TRANSACTION_FAILURE_ALERT, API_UPDATE_TRANSACTION_SUCCESS_ALERT } from "../types/constants";
 import { newTransaction, type Transaction } from "../types/Transaction";
-import type { TransactionSearchFilterType } from "../types/TransactionSeachFilter";
-import { transactionStateInitialValue, type AlertType, type TransactionsState } from "../types/TransactionsState";
+import type { TransactionSearchFilterType } from "../types/TransactionSeachFilterType";
+import { transactionStateInitialValue, type TransactionsState } from "../types/TransactionsState";
 import { transactionsReducer } from "./transactionsReducer"
 
 describe("TransactionsReducer", () => {
@@ -71,27 +71,6 @@ describe("TransactionsReducer", () => {
     });
   }) 
   
-  describe("Show_Alert", () => {
-    it("should update the alert in state with the one passed in")
-      const alert: AlertType = { type: "success", message: "Successful call" };
-      const action = new ShowAlertAction(alert);
-
-      const newState = reducer(initialState, action);
-
-      expect(newState.alert).toEqual(alert);  
-  });
-
-  describe("Hide_Alert", () => {
-    it("Should remove the alert from state", () => {
-      const initial: TransactionsState = { ...initialState, alert: { type: "success", message: "ABC" }};
-      const action = new HideAlertAction();
-
-      const newState = reducer(initial, action);
-
-      expect(newState.alert).not.toBeDefined();
-    });
-  });
-
   describe("CREATE_TRANSACTION_INIT", () => {
     it("Should should setup the state so the transaction can be sent to the server for saving and add the passed in transaction to the transactions liste", () => {
       const transToSave = { ...transactions[0], id: 0 };
@@ -102,7 +81,7 @@ describe("TransactionsReducer", () => {
         ...initial, 
         currentTransaction: newTransaction, 
         transactions: [...initial.transactions, transToSave], 
-        modal: "None", apiStatus: "RUNNING", backupTransaction: undefined, lastAction: action };
+        modal: "None", backupTransaction: undefined, lastAction: action, showSpinner: true };
       
       const newState = reducer(initial, action);
 
@@ -127,12 +106,13 @@ describe("TransactionsReducer", () => {
 
       const initial: TransactionsState = { ...initialState, 
         transactions: [...transactions, transToSave],
-        currentTransaction: transToSave, modal: "None" };
+        currentTransaction: transToSave, modal: "None",
+        alert: API_CREATE_TRANSACTION_SUCCESS_ALERT, showSpinner: false };
       const expected: TransactionsState = { 
         ...initial, 
         currentTransaction: newTransaction, 
         transactions: [...transactions, transSaved], 
-        apiStatus: "NOT_RUNNING", backupTransaction: undefined, lastAction: action,
+        backupTransaction: undefined, lastAction: action,
         summary: { numPages: 3, totalAmount: 1100, transactionsCount: 5 },
         transactionPage:  transactions.slice(0, 2)};
       
@@ -173,8 +153,8 @@ describe("TransactionsReducer", () => {
         ...initial, 
         currentTransaction: newTransaction, 
         transactions: transactions, summary: { numPages: 2, totalAmount: 1000, transactionsCount: 4 },
-        modal: "None", apiStatus: "NOT_RUNNING", backupTransaction: undefined, lastAction: action,
-        transactionPage: transactions.slice(0, 2) };
+        modal: "None", backupTransaction: undefined, lastAction: action,
+        transactionPage: transactions.slice(0, 2), showSpinner: false,  alert:  API_CREATE_TRANSACTION_FAILURE_ALERT };
       
       const newState = reducer(initial, action);
 
@@ -192,7 +172,7 @@ describe("TransactionsReducer", () => {
         ...initial, 
         currentTransaction: newTransaction, 
         transactions: [...initial.transactions ], 
-        modal: "None", apiStatus: "RUNNING", backupTransaction: transToUpdate, lastAction: action };
+        modal: "None", backupTransaction: transToUpdate, lastAction: action,  showSpinner: true };
       
       const newState = reducer(initial, action);
 
@@ -220,12 +200,12 @@ describe("TransactionsReducer", () => {
       const initial: TransactionsState = { 
         ...initialState, 
         currentTransaction: transToSave, 
-        transactions: newTrans, modal: "None" };
+        transactions: newTrans, modal: "None", showSpinner: false, alert: API_UPDATE_TRANSACTION_SUCCESS_ALERT};
       const expected: TransactionsState = { 
         ...initial, 
         currentTransaction: newTransaction, 
         transactions: newTrans, 
-        apiStatus: "NOT_RUNNING", backupTransaction: undefined, lastAction: action,
+        backupTransaction: undefined, lastAction: action,
         summary: { numPages: 2, totalAmount: 1100, transactionsCount: 4 },
         transactionPage: newTrans.slice(0, 2)
         };
@@ -254,7 +234,8 @@ describe("TransactionsReducer", () => {
         currentTransaction: newTransaction, 
         transactions: transactions, 
         summary: { numPages: 2, totalAmount: 1000, transactionsCount: 4 },
-        modal: "None", apiStatus: "NOT_RUNNING", backupTransaction: undefined, lastAction: action,
+        modal: "None", backupTransaction: undefined, lastAction: action,
+        showSpinner: false, alert:  API_UPDATE_TRANSACTION_FAILURE_ALERT,
         transactionPage: transactions.slice(0, 2) };
       
       const newState = reducer(initial, action);
@@ -273,7 +254,7 @@ describe("TransactionsReducer", () => {
       const expected: TransactionsState = { 
         ...initial, 
         transactions: remaining, 
-        modal: "None", apiStatus: "RUNNING", backupTransaction: transToUpdate, lastAction: action,
+        modal: "None", backupTransaction: transToUpdate, lastAction: action,  showSpinner: true,
         summary: { numPages: 2, totalAmount: 900, transactionsCount: 3}, transactionPage: remaining.slice(0, 2) };
       
       const newState = reducer(initial, action);
@@ -300,16 +281,17 @@ describe("TransactionsReducer", () => {
       const initial: TransactionsState = { 
         ...initialState, 
         transactions: remaining, 
-        modal: "None", alert: API_DELETE_TRANSACTION_SUCESS_ALERT,
+        modal: "None",
         summary: { numPages: 2, totalAmount: 900, transactionsCount: 3 },  
         transactionPage: remaining.slice(0, 2)
       };
       const expected: TransactionsState = { 
         ...initial, 
         transactions: remaining, 
-        apiStatus: "NOT_RUNNING", backupTransaction: undefined, lastAction: action,
         summary: { numPages: 2, totalAmount: 900, transactionsCount: 3 },
-        transactionPage: remaining.slice(0, 2)
+        showSpinner: false, alert:   API_DELETE_TRANSACTION_SUCESS_ALERT,
+        transactionPage: remaining.slice(0, 2),
+        backupTransaction: undefined,  lastAction: action
       };
       
       const newState = reducer(initial, action);
@@ -333,9 +315,10 @@ describe("TransactionsReducer", () => {
         ...initial, 
         transactions: [...remaining, transactions[0]], 
         summary: { numPages: 2, totalAmount: 1000, transactionsCount: 4 },
-        modal: "None", apiStatus: "NOT_RUNNING", backupTransaction: undefined, lastAction: action,
+        modal: "None", backupTransaction: undefined, lastAction: action,
+        showSpinner:  false, alert:  API_DELETE_TRANSACTION_FAILURE_ALERT,
         transactionPage: transactions.slice(0, 2),
-        alert: API_DELETE_TRANSACTION_FAILURE_ALERT };
+      };
       
       const newState = reducer(initial, action);
 
@@ -367,30 +350,6 @@ describe("TransactionsReducer", () => {
 
         expect(actual).toEqual(expected);
       })
-    });
-
-    describe("HIDE_ALERT",  () => {
-      it("should set the alert in state to undefined", () => {
-        const action = new HideAlertAction();
-        const initial: TransactionsState = { ...initialState, alert: API_DELETE_TRANSACTION_FAILURE_ALERT };
-        const expected: TransactionsState = { ...initial, alert: undefined, lastAction: action };
-
-        const actual = reducer(initial, action);
-
-        expect(actual).toEqual(expected);
-      });
-    })
-
-    describe("SHOW_ALERT",  () => {
-      it("should set the alert in state to the value passed in", () => {
-        const action = new HideAlertAction();
-        const initial: TransactionsState = { ...initialState, alert: API_DELETE_TRANSACTION_FAILURE_ALERT };
-        const expected: TransactionsState = { ...initial, alert: undefined, lastAction: action };
-
-        const actual = reducer(initial, action);
-
-        expect(actual).toEqual(expected);
-      });
     });
 
     describe("SET_SORT", () => {
@@ -439,8 +398,8 @@ describe("TransactionsReducer", () => {
   describe("SET_SEARCH_FILTER", () => {
     it("should set the page to just those transactions in the range if searching by date range", () => {
       const filter: TransactionSearchFilterType = { 
-          fromDate: new Date('1/1/2020'),
-          toDate: new Date("1/1/2021"),
+          fromDate: "1/1/2020",
+          toDate: "1/1/2021",
           merchants: [],
           types: []
       };
@@ -551,7 +510,6 @@ describe("TransactionsReducer", () => {
       const initial: TransactionsState = { ...initialState };
       const expected: TransactionsState = { 
         ...initial, 
-        apiStatus: "INITIAL", 
         lastAction: action 
       };
       
@@ -574,7 +532,6 @@ describe("TransactionsReducer", () => {
       const initial: TransactionsState = { ...initialState };
       const expected: TransactionsState = { 
         ...initial, 
-        apiStatus: "NOT_RUNNING", 
         lastAction: action,
         transactions: transactions,
         transactionPage: transactions.slice(0, 2),
@@ -594,8 +551,9 @@ describe("TransactionsReducer", () => {
       const initial: TransactionsState = { ...initialState, transactions: [] };
       const expected: TransactionsState = { 
         ...initial, 
-        apiStatus: "NOT_RUNNING", lastAction: action,
-        alert: API_LOAD_TRANSACTIONS_FAILURE_ALERT };
+        lastAction: action 
+      }
+  
       
       const newState = reducer(initial, action);
 

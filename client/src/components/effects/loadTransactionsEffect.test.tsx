@@ -1,7 +1,7 @@
 import { vi } from "vitest";
 import { newTransaction } from "../../types/Transaction";
 import axios from "axios";
-import { LoadTransactionsFailureAction, LoadTransactionsInitAction, LoadTransactionsSuccessAction, UpdateTransactionAction } from "../../actions/Actions";
+import { LoadTransactionsFailureAction, LoadTransactionsInitAction, LoadTransactionsSuccessAction, UpdateTransactionAction } from "../../actions/TransactionActions";
 import { loadTransactions } from "./loadTransactionsEffect";
 
 describe("loadTransactionsEffect", () => {

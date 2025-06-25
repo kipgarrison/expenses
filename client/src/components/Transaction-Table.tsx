@@ -15,10 +15,9 @@ export default function TransactionTable(props: TransactionTableProps) {
   const { transactions, pageNumber, onDelete, onEdit, onView, onPageNumberChange, summary, onSort, currentSort } = props;
   const view = onView ?? (t => alert('Hello ' + t.merchant));
   const handleSort = onSort ?? (()=> {});
-  const className = props.show ? "table table-hover" : "hide";
   
   return (
-    <table role="transactionTable" className={className}  id="transactions">
+    <table role="transactionTable" className="table table-hover"  id="transactions">
       <TransactionTableHeader onSort={handleSort} sort={currentSort} />
       <tbody>
         {transactions.map(transaction => 
