@@ -387,6 +387,42 @@ app.post("/api/v1/transactions", async (req, res) => {
   }, 2000)
 });
 
+app.get('/api/v1/merchants', (req, res) => {
+  const summary = transactions.reduce((acc, trans) => {
+    if (acc[trans.merchant]) {
+      const curr = acc[trans.merchant];
+      const newCount = curr.totalCount + 1;
+      const totalAmount = curr.totalAmount + trans.amount;
+      return {
+        ...acc,
+        [trans.merchant]: {
+          totalCount: newCount,
+          totalAmount: totalAmount,
+          avgAmount: totalAmount / newCount,
+          firstDate: trans.date < curr.firstDate ? trans.date : curr.firstDate,
+          lastDate: trans.date > curr.firstDate ? trans.date : curr.lastDate,
+          lastAmount: trans.amount
+        }
+      }
+    } else {
+      return {
+        ...acc,
+        [trans.merchant]: {
+          totalCount: 1,
+          totalAmount: trans.amount,
+          avgAmount: trans.amount,
+          firstDate: trans.date,
+          lastDate: trans.date,
+          lastAmount: trans.amount
+        }
+      }
+    }
+  }, {});
+  const response = Object.keys(summary).map(name => ({ name, ...summary[name] }));
+  response.sort((a, b) => a.name > b.name ? -1 : 1);
+  res.json(response);
+})
+
 app.listen(port, () => {
   console.log(`Example app listening on port ${port}`)
 })

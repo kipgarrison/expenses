@@ -3,17 +3,22 @@ import type { AlertType } from "./TransactionsState"
 export const API_DELETE_TRANSACTION_SUCESS_ALERT: AlertType = {
   type: 'success',
   message: "Transaction was successfully deleted"
-}
+};
 
 export const API_DELETE_TRANSACTION_FAILURE_ALERT: AlertType = {
   type: 'failure',
   message: 'An error occurred while attempting to delete transaction'
-}
+};
 
 export const API_LOAD_TRANSACTIONS_FAILURE_ALERT: AlertType = {
   type: 'failure',
-  message: 'An error occured while attemping to load your data'
-}
+  message: 'An error occured while attemping to load your transactions list'
+};
+
+export const API_LOAD_MERCHANTS_FAILURE_ALERT: AlertType = {
+  type: 'failure',
+  message: 'An error occured while attemping to load your merchant list'
+};
 
 export const API_CREATE_TRANSACTION_SUCCESS_ALERT: AlertType = {
   type: 'success',
