@@ -1,6 +1,6 @@
 import { vi } from 'vitest';
 import axios from 'axios'
-import { CreateTransactionFailureAction, CreateTransactionInitAction, CreateTransactionSuccessAction, UpdateTransactionAction } from '../../actions/Actions';
+import { CreateTransactionFailureAction, CreateTransactionInitAction, CreateTransactionSuccessAction, UpdateTransactionAction } from '../../actions/TransactionActions';
 import { newTransaction } from '../../types/Transaction';
 import { createTransaction } from './createTransactionEffect';
 

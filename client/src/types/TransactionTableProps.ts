@@ -6,7 +6,6 @@ export type TransactionTableProps = {
   pageNumber: number,
   currentSort: SortType,
   summary: TranactionsSummaryType,
-  show: boolean,
   onPageNumberChange: (newPageNumber: number) => void
   onSort?: (column: string) => void,
   onDelete: (transaction: Transaction) => void,

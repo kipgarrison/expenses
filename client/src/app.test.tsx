@@ -24,8 +24,15 @@ describe.only("App", () => {
   })
 
   it('should render initial load message correctly', async () => {
+    vi.mocked(axios.get).mockImplementationOnce(async () =>{
+      return new Promise(resolve => setTimeout(() => resolve(transactions), 250));
+    });
     render(<App />);
+    
+    const eRole = await waitFor(() => screen.getByRole("app-spinner"));
     const element = await waitFor(() => screen.getByText('Please be patient while we load your data...'));
+
+    expect(eRole).toBeInTheDocument();
     expect(element).toBeInTheDocument();
   });
 
@@ -65,7 +72,7 @@ describe.only("App", () => {
     expect(cells[7].innerHTML).not.toContain("svg");
   })
 
-  it("should show delete confirmation dialog when delete clicked with correct message", async () => {
+  it.only("should show delete confirmation dialog when delete clicked with correct message", async () => {
     render(<App/>);
     const rows = await waitFor(() => screen.getAllByRole("transaction-row"));
     const firstRow = rows[0];

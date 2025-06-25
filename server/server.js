@@ -359,7 +359,6 @@ app.delete("/api/v1/transactions/:id", async (req, res) => {
     addRunningBalance();
     res.sendStatus(204);
   }, 2000);
-
 });
 
 app.put("/api/v1/transactions/:id", async (req, res) => {

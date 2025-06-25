@@ -1,12 +1,12 @@
 import type { ActionWithPayload } from "../../actions/ActionWithPayload";
-import { ActionTypes } from "../../actions/Action_Types";
-import { DeleteTransactionFailureAction, DeleteTransactionSuccessAction, type DeleteTransactionInitAction } from "../../actions/Actions";
+import { TransactionActionTypes } from "../../actions/TransactionActionTypes";
+import { DeleteTransactionFailureAction, DeleteTransactionSuccessAction, type DeleteTransactionInitAction } from "../../actions/TransactionActions";
 import type { Transaction } from "../../types/Transaction";
 import axios from "axios";
 import { DELETE_URL } from "../../types/constants";
 
 export function deleteTransaction(action: ActionWithPayload, dispatch: (action: ActionWithPayload)=>void) {
-  if (action?.type === ActionTypes.DELETE_TRANSACTION_INIT) {
+  if (action?.type === TransactionActionTypes.DELETE_TRANSACTION_INIT) {
     const trans = (action as DeleteTransactionInitAction).payload as Transaction;
     executeDelete(trans, dispatch);
   }

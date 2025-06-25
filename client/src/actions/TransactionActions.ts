@@ -1,162 +1,155 @@
 import type { Transaction } from "../types/Transaction";
 import type { TransactionSearchFilterType } from "../types/TransactionSeachFilterType"
-import type { AlertType } from "../types/TransactionsState";
 import type { ModalType } from "../types/unionTypes";
-import { ActionTypes } from "./Action_Types";
+import { TransactionActionTypes } from "./TransactionActionTypes";
 import { ActionWithPayload } from "./ActionWithPayload";
 
 // export class SetTransactionsAction extends ActionWithPayload {
 //   constructor(payload: Transaction[]) {
-//     super(ActionTypes.SET_TRANSACTIONS, payload);
+//     super(TransactionActionTypes.SET_TRANSACTIONS, payload);
 //   }
 // }
 
 export class UpdatePageNumberAction extends ActionWithPayload {
   constructor(payload: number) {
-    super(ActionTypes.SET_PAGE_NUMBER, payload);
+    super(TransactionActionTypes.SET_PAGE_NUMBER, payload);
   }
 } 
 
 export class AddTransactionAction extends ActionWithPayload {
   constructor() {
-    super(ActionTypes.ADD_TRANSACTION, "ADD_TRANSACTION");
+    super(TransactionActionTypes.ADD_TRANSACTION, "ADD_TRANSACTION");
   }
 } 
 
 export class UpdateTransactionAction extends ActionWithPayload {
   constructor(payload: Transaction) {
-    super(ActionTypes.UPDATE_TRANSACTION, payload);
+    super(TransactionActionTypes.UPDATE_TRANSACTION, payload);
   }
 }
 
 export class CreateTransactionInitAction extends ActionWithPayload {
   constructor(payload: Transaction) {
-    super(ActionTypes.CREATE_TRANSACTION_INIT, payload);
+    super(TransactionActionTypes.CREATE_TRANSACTION_INIT, payload);
   }
 }
 
 export class CreateTransactionSuccessAction extends ActionWithPayload {
   constructor(payload: Transaction) {
-    super(ActionTypes.CREATE_TRANSACTION_SUCCESS, payload);
+    super(TransactionActionTypes.CREATE_TRANSACTION_SUCCESS, payload);
   }
 }
 
 export class CreateTransactionFailureAction extends ActionWithPayload {
   constructor() {
-    super(ActionTypes.CREATE_TRANSACTION_FAILURE);
+    super(TransactionActionTypes.CREATE_TRANSACTION_FAILURE);
   }
 }
 
 export class UpdateTransactionInitAction extends ActionWithPayload {
   constructor(payload: Transaction) {
-    super(ActionTypes.UPDATE_TRANSACTION_INIT, payload);
+    super(TransactionActionTypes.UPDATE_TRANSACTION_INIT, payload);
   }
 }
 
 export class UpdateTransactionSuccessAction extends ActionWithPayload {
   constructor(payload: Transaction) {
-    super(ActionTypes.UPDATE_TRANSACTION_SUCCESS, payload);
+    super(TransactionActionTypes.UPDATE_TRANSACTION_SUCCESS, payload);
   }
 }
 
 export class UpdateTransactionFailureAction extends ActionWithPayload {
   constructor() {
-    super(ActionTypes.UPDATE_TRANSACTION_FAILURE);
+    super(TransactionActionTypes.UPDATE_TRANSACTION_FAILURE);
   }
 }
 
 export class DeleteTransactionInitAction extends ActionWithPayload {
   constructor(payload: Transaction) {
-    super(ActionTypes.DELETE_TRANSACTION_INIT, payload);
+    super(TransactionActionTypes.DELETE_TRANSACTION_INIT, payload);
   }
 }
 
 export class DeleteTransactionSuccessAction extends ActionWithPayload {
   constructor() {
-    super(ActionTypes.DELETE_TRANSACTION_SUCCESS);
+    super(TransactionActionTypes.DELETE_TRANSACTION_SUCCESS);
   }
 }
 
 export class DeleteTransactionFailureAction extends ActionWithPayload {
   constructor() {
-    super(ActionTypes.DELETE_TRANSACTION_FAILURE);
+    super(TransactionActionTypes.DELETE_TRANSACTION_FAILURE);
   }
 }
 
 export class SetCurrentTransactionAction extends ActionWithPayload {
   constructor(payload: Transaction) {
-    super(ActionTypes.SET_CURRENT_TRANSACTION, payload);
+    super(TransactionActionTypes.SET_CURRENT_TRANSACTION, payload);
   }
 }
 
 export class ClearCurrentTransactionAction extends ActionWithPayload {
   constructor() {
-    super(ActionTypes.CLEAR_CURRENT_TRANSACTION);
+    super(TransactionActionTypes.CLEAR_CURRENT_TRANSACTION);
   }
 }
 
-export class RollbackAction extends ActionWithPayload {
-  constructor() {
-    super(ActionTypes.ROLLBACK);
-  }
-}
+// export class RollbackAction extends ActionWithPayload {
+//   constructor() {
+//     super(TransactionActionTypes.ROLLBACK);
+//   }
+// }
 
 export class EditTransactionAction extends ActionWithPayload {
   constructor(payload: Transaction) {
-    super(ActionTypes.EDIT_TRANSACTION, payload);
-  }
-}
-
-export class HideAlertAction extends ActionWithPayload {
-  constructor() {
-    super(ActionTypes.HIDE_ALERT);
-  }
-}
-
-export class ShowAlertAction extends ActionWithPayload {
-  constructor(alert: AlertType) {
-    super(ActionTypes.SHOW_ALERT, alert);
+    super(TransactionActionTypes.EDIT_TRANSACTION, payload);
   }
 }
 
 export class SetSortAction extends ActionWithPayload {
   constructor(payload: string) {
-    super(ActionTypes.SET_SORT, payload);
+    super(TransactionActionTypes.SET_SORT, payload);
   }
 }
 
 export class SetModalAction extends ActionWithPayload {
   constructor(payload: ModalType) {
-    super(ActionTypes.SET_MODAL, payload);
+    super(TransactionActionTypes.SET_MODAL, payload);
   }
 }
 
 export class SetSearchFilterAction extends ActionWithPayload {
   constructor(payload: TransactionSearchFilterType) {
-    super(ActionTypes.SET_SEARCH_FILTER, payload);
+    super(TransactionActionTypes.SET_SEARCH_FILTER, payload);
   }
 }
 
 export class LoadTransactionsInitAction extends ActionWithPayload {
   constructor() {
-    super(ActionTypes.LOAD_TRANSACTIONS_INIT);
+    super(TransactionActionTypes.LOAD_TRANSACTIONS_INIT);
   }
 }
 
 export class LoadTransactionsSuccessAction extends ActionWithPayload {
   constructor(payload: Transaction[]) {
-    super(ActionTypes.LOAD_TRANSACTIONS_SUCCESS, payload);
+    super(TransactionActionTypes.LOAD_TRANSACTIONS_SUCCESS, payload);
   }
 }
 
 export class LoadTransactionsFailureAction extends ActionWithPayload {
   constructor() {
-    super(ActionTypes.LOAD_TRANSACTIONS_FAILURE);
+    super(TransactionActionTypes.LOAD_TRANSACTIONS_FAILURE);
   }
 }
 
-export class RemoveColumnFilter extends ActionWithPayload {
+export class RemoveColumnFilterAction extends ActionWithPayload {
   constructor(payload: string[]) {
-    super(ActionTypes.REMOVE_COLUMN_FILTER, payload);
+    super(TransactionActionTypes.REMOVE_COLUMN_FILTER, payload);
+  }
+}
+
+export class HideAlertAction extends ActionWithPayload {
+  constructor() {
+    super(TransactionActionTypes.HIDE_ALERT);
   }
 }

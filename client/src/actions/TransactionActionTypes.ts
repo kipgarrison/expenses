@@ -1,4 +1,4 @@
-export const ActionTypes = {
+export const TransactionActionTypes = {
   SET_TRANSACTIONS: "SET_TRANSACTIONS",
   SET_PAGE_NUMBER:  "SET_PAGE_NUMBER",
   ADD_TRANSACTION: "ADD_TRANSACTION",
