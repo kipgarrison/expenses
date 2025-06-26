@@ -1,349 +1,27 @@
 const express = require('express')
+const fs = require('fs/promises');
 const cors = require('cors');
 const app = express()
 const port = 3000
 const bodyParser = require('body-parser');
 
-let total = 6000;
-let transactions = [
-  {
-    id: 1,
-    date: new Date(),
-    merchant: 'Wal-Mart',
-    type: 'Credit Card Debit',
-    amount: 100.00,
-    comments: 'Comments #1'
-  },
-  {
-    id: 2,
-    date: new Date('6/13/2025'),
-    merchant: 'Target',
-    type: 'Credit Card Debit',
-    amount: 110.00,
-    comments: 'Comments #2',
-    hasReceipt: true
-  },
-  {
-    id: 3,
-    date: new Date('6/15/2025'),
-    merchant: 'Wal-Mart',
-    type: 'Credit Card Debit',
-    amount: 120.00,
-    comments: 'Comments #3',
-    hasReceipt: true
-  },
-  {
-    id: 4,
-    date: new Date('6/1/2025'),
-    merchant: 'Wal-Mart',
-    type: 'Credit Card Debit',
-    amount: 140.00,
-    comments: 'Comments #4',
-    hasReceipt: true
-  },
-  {
-    id: 5,
-    date: new Date(),
-    merchant: 'Macy\'s',
-    type: 'Credit Card Debit',
-    amount: 166.66,
-    comments: 'Comments #5'
-  },
-  {
-    id: 6,
-
-    date: new Date(),
-    merchant: 'Wal-Mart',
-    type: 'Credit Card Debit',
-    amount: 100.00,
-    comments: 'Comments #6'
-  },
-  {
-    id: 7,
-
-    date: new Date('6/13/2025'),
-    merchant: 'Target',
-    type: 'Credit Card Debit',
-    amount: 110.00,
-    comments: 'Comments #7',
-    hasReceipt: true
-  },
-  {
-    id: 8,
-
-    date: new Date('6/15/2025'),
-    merchant: 'Wal-Mart',
-    type: 'Credit Card Debit',
-    amount: 120.00,
-    comments: 'Comments #8',
-    hasReceipt: true
-  },
-  {
-    id: 9,
-    date: new Date('6/1/2025'),
-    merchant: 'Wal-Mart',
-    type: 'Credit Card Debit',
-    amount: 140.00,
-    comments: 'Comments #9',
-    hasReceipt: true
-  },
-  {
-    id: 10,
-    date: new Date(),
-    merchant: 'Macy\'s',
-    type: 'Credit Card Debit',
-    amount: 166.66,
-    comments: 'Comments #10'
-  },
-  {
-    id: 11,
-
-    date: new Date(),
-    merchant: 'Wal-Mart',
-    type: 'Credit Card Debit',
-    amount: 100.00,
-    comments: 'Comments #11'
-  },
-  {
-    id: 12,
-
-    date: new Date('6/13/2025'),
-    merchant: 'Target',
-    type: 'Credit Card Debit',
-    amount: 110.00,
-    comments: 'Comments #12',
-    hasReceipt: true
-  },
-  {
-    id: 13,
-    date: new Date('6/15/2025'),
-    merchant: 'Wal-Mart',
-    type: 'Credit Card Debit',
-    amount: 120.00,
-    comments: 'Comments #13',
-    hasReceipt: true
-  },
-  {
-    id: 14,
-
-    date: new Date('6/1/2025'),
-    merchant: 'Wal-Mart',
-    type: 'Credit Card Debit',
-    amount: 140.00,
-    comments: 'Comments #14',
-    hasReceipt: true
-  },
-  {
-    id: 15,
-    date: new Date(),
-    merchant: 'Macy\'s',
-    type: 'Credit Card Debit',
-    amount: 166.66,
-    comments: 'Comments #15'
-  },
-  {
-    id: 16,
-
-    date: new Date(),
-    merchant: 'Wal-Mart',
-    type: 'Credit Card Debit',
-    amount: 100.00,
-    comments: 'Comments #16'
-  },
-  {
-    id: 17,
-
-    date: new Date('6/13/2025'),
-    merchant: 'Target',
-    type: 'Credit Card Debit',
-    amount: 110.00,
-    comments: 'Comments  #17',
-    hasReceipt: true
-  },
-  {
-    id: 18,
-
-    date: new Date('6/15/2025'),
-    merchant: 'Wal-Mart',
-    type: 'Credit Card Debit',
-    amount: 120.00,
-    comments: 'Comments #18',
-    hasReceipt: true
-  },
-  {
-    id: 19,
-
-    date: new Date('6/1/2025'),
-    merchant: 'Wal-Mart',
-    type: 'Credit Card Debit',
-    amount: 140.00,
-    comments: 'Comments #19',
-    hasReceipt: true
-  },
-  {
-    id: 20,
-
-    date: new Date(),
-    merchant: 'Macy\'s',
-    type: 'Credit Card Debit',
-    amount: 166.66,
-    comments: 'Comments #20'
-  },
-  {
-    id: 21,
-
-    date: new Date(),
-    merchant: 'Wal-Mart',
-    type: 'Credit Card Debit',
-    amount: 100.00,
-    comments: 'Comments #21'
-  },
-  {
-    id: 22,
-
-    date: new Date('6/13/2025'),
-    merchant: 'Target',
-    type: 'Credit Card Debit',
-    amount: 110.00,
-    comments: 'Comments #22',
-    hasReceipt: true
-  },
-  {
-    id: 23,
-
-    date: new Date('6/15/2025'),
-    merchant: 'Wal-Mart',
-    type: 'Credit Card Debit',
-    amount: 120.00,
-    comments: 'Comments #23',
-    hasReceipt: true
-  },
-  {
-    id: 24,
-
-    date: new Date('6/1/2025'),
-    merchant: 'Wal-Mart',
-    type: 'Credit Card Debit',
-    amount: 140.00,
-    comments: 'Comments #24',
-    hasReceipt: true
-  },
-  {
-    id: 25,
-
-    date: new Date(),
-    merchant: 'Macy\'s',
-    type: 'Credit Card Debit',
-    amount: 166.66,
-    comments: 'Comments  #25'
-  },
-  {
-    id: 26,
-
-    date: new Date(),
-    merchant: 'Wal-Mart',
-    type: 'Credit Card Debit',
-    amount: 100.00,
-    comments: 'Comments #26'
-  },
-  {
-    id: 27,
-
-    date: new Date('6/13/2025'),
-    merchant: 'Target',
-    type: 'Credit Card Debit',
-    amount: 110.00,
-    comments: 'Comments #27',
-    hasReceipt: true
-  },
-  {
-    id: 28,
-
-    date: new Date('6/15/2025'),
-    merchant: 'Wal-Mart',
-    type: 'Credit Card Debit',
-    amount: 120.00,
-    comments: 'Comments #28',
-    hasReceipt: true
-  },
-  {
-    id: 29,
-
-    date: new Date('6/1/2025'),
-    merchant: 'Wal-Mart',
-    type: 'Credit Card Debit',
-    amount: 140.00,
-    comments: 'Comments #29',
-    hasReceipt: true
-  },
-  {
-    id: 30,
-
-    date: new Date(),
-    merchant: 'Macy\'s',
-    type: 'Credit Card Debit',
-    amount: 166.66,
-    comments: 'Comments #30'
-  },
-  {
-    id: 31,
-
-    date: new Date(),
-    merchant: 'Wal-Mart',
-    type: 'Credit Card Debit',
-    amount: 100.00,
-    comments: 'Comments #31'
-  },
-  {
-    id: 32,
-
-    date: new Date('6/13/2025'),
-    merchant: 'Target',
-    type: 'Credit Card Debit',
-    amount: 110.00,
-    comments: 'Comments  #32',
-    hasReceipt: true
-  },
-  {
-    id: 33,
-
-    date: new Date('6/15/2025'),
-    merchant: 'Wal-Mart',
-    type: 'Credit Card Debit',
-    amount: 120.00,
-    comments: 'Comments #33',
-    hasReceipt: true
-  },
-  {
-    id: 34,
-
-    date: new Date('6/1/2025'),
-    merchant: 'Wal-Mart',
-    type: 'Credit Card Debit',
-    amount: 140.00,
-    comments: 'Comments #34',
-    hasReceipt: true
-  },
-  {
-    id: 35,
-    date: new Date(),
-    merchant: 'Macy\'s',
-    type: 'Credit Card Debit',
-    amount: 166.66,
-    comments: 'Comments #35'
-  },
-];
-
-function addRunningBalance() {
-  total = 10000;
-  transactions = transactions.sort((a, b) => a.date > b.date ? 1 : -1).map(t => {
-    total = total - t.amount;
+function addRunningBalance(transactions) {
+  total = 0;
+  transactions = transactions.sort((a, b) => a.date > b.date ? 1 : (a.date == b.date ? a.id - b.id : -1)).map(t => {
+    total = total + t.amount;
     return { ...t, runningBalance: total }
   });
   transactions.sort((a, b) => a.date > b.date ? -1 : 1);
+  return transactions;
 }
 
-addRunningBalance();
+async function loadTransactions() {
+  let transactions = (await fs.readFile("./expense-data.txt")).toString();
+  let json = addRunningBalance(JSON.parse(transactions));
+  return json;
+}
+
+(async () => transactions = await loadTransactions())();
 
 app.use(cors());
 app.use(bodyParser.json());
@@ -387,41 +65,113 @@ app.post("/api/v1/transactions", async (req, res) => {
   }, 2000)
 });
 
-app.get('/api/v1/merchants', (req, res) => {
-  const summary = transactions.reduce((acc, trans) => {
-    if (acc[trans.merchant]) {
-      const curr = acc[trans.merchant];
+app.get('/api/v1/merchants', async (req, res) => {
+  const summary = transactions.reduce((accumulator, trans) => {
+    let { merchants, totCount, totAmount } = accumulator;
+    totCount += 1;
+    totAmount = totAmount + trans.amount;
+    if (merchants[trans.merchant]) {
+      const curr = merchants[trans.merchant];
       const newCount = curr.totalCount + 1;
       const totalAmount = curr.totalAmount + trans.amount;
       return {
-        ...acc,
-        [trans.merchant]: {
-          totalCount: newCount,
-          totalAmount: totalAmount,
-          avgAmount: totalAmount / newCount,
-          firstDate: trans.date < curr.firstDate ? trans.date : curr.firstDate,
-          lastDate: trans.date > curr.firstDate ? trans.date : curr.lastDate,
-          lastAmount: trans.amount
-        }
+        merchants: {
+          ...merchants,
+          [trans.merchant]: {
+            totalCount: newCount,
+            totalAmount: totalAmount,
+            avgAmount: totalAmount / newCount,
+            firstDate: trans.date < curr.firstDate ? trans.date : curr.firstDate,
+            lastDate: trans.date > curr.firstDate ? trans.date : curr.lastDate,
+            lastAmount: trans.amount
+          }
+        },
+        totCount,
+        totAmount
       }
     } else {
       return {
-        ...acc,
-        [trans.merchant]: {
-          totalCount: 1,
-          totalAmount: trans.amount,
-          avgAmount: trans.amount,
-          firstDate: trans.date,
-          lastDate: trans.date,
-          lastAmount: trans.amount
-        }
+        merchants: {
+          ...merchants,
+          [trans.merchant]: {
+            totalCount: 1,
+            totalAmount: trans.amount,
+            avgAmount: trans.amount,
+            firstDate: trans.date,
+            lastDate: trans.date,
+            lastAmount: trans.amount
+          }
+        },
+        totCount,
+        totAmount
       }
     }
-  }, {});
-  const response = Object.keys(summary).map(name => ({ name, ...summary[name] }));
+  }, { merchants: {}, totCount: 0, totAmount: 0 });
+
+  const { merchants, totCount, totAmount } = summary;
+  const response = Object.keys(merchants).map(name => {
+    const mct = merchants[name];
+    const totCountPct = Math.round((mct.totalCount / totCount) * 1000) / 10;
+    const totAmountPct = Math.round((mct.totalAmount / totAmount) * 1000) / 10;
+    return { name, ...mct, totAmountPct, totCountPct };
+  });
   response.sort((a, b) => a.name > b.name ? -1 : 1);
-  res.json(response);
+  await setTimeout(() => res.json(response), 5000);
+
 })
+
+app.get('/api/v1/testdata', (req, res) => {
+  const getRandom = (range) => {
+    return Math.floor(Math.random() * range);
+  }
+
+  const getDate = (lowerYear) => {
+    const days = (new Date().getFullYear() - lowerYear + 1) * 365;
+    const d = new Date(`1/1/${lowerYear}`).setDate(getRandom(days));
+    return new Date(d);
+  }
+
+  const getType = () => {
+    const rnd = getRandom(100);
+    return rnd <= types.creditCardDebit ? "Credit Card Debit" : "Credit Card Credi";
+  }
+
+  const getComments = () => {
+    commentSource = "Lorem ipsum dolor sit amet consectetur adipiscing elit. Quisque faucibus ex sapien vitae pellentesque sem placerat. In id cursus mi pretium tellus duis convallis. Tempus leo eu aenean sed diam urna tempor. Pulvinar vivamus fringilla lacus nec metus bibendum egestas. Iaculis massa nisl malesuada lacinia integer nunc posuere. Ut hendrerit semper vel class aptent taciti sociosqu. Ad litora torquent per conubia nostra inceptos himenaeos.".split(" ");
+    const length = getRandom(commentLengthRange.upper - commentLengthRange.lower);
+    const words = [];
+    for (let x = 0; x < length; ++x) {
+      words.push(commentSource[getRandom(length)]);
+    }
+    return words.join(" ");
+  }
+
+
+  const merchants = ['Wal-Mart', 'Target', 'Schnucks', 'Wal-Greens', 'Dierbergs', 'CVS', 'Amazon', 'McDonalds', 'Sam\'s Club', 'O\'Fallon IL', 'Macys', 'Joes Exotic Pets', 'Menards', 'Cosco', 'Lowes', 'Home Depot'];
+  const lowerDateYear = 2020;
+  types = { creditCardDebit: 90, bankAccountDebit: 10 };
+  amountRange = { lower: 25, upper: 600 };
+  commentLengthRange = { lower: 5, upper: 25 };
+  hasReceiptPercentage = 85;
+  const items = [];
+  for (let i = 0; i < 1000; i++) {
+    const merchant = merchants[getRandom(merchants.length)];
+    const date = getDate(lowerDateYear);
+    const type = getRandom(100);
+    const amount = getRandom(amountRange.upper - amountRange.lower);
+    const hasReceipt = getRandom(100);
+    items.push({
+      id: i,
+      merchant,
+      date: getDate(lowerDateYear),
+      type: getType(),
+      amount: amountRange.lower + amount + (getRandom(100) / 100),
+      comments: getComments(),
+      hasReceipt: getRandom(100) < hasReceiptPercentage
+    })
+  }
+  res.json(items);
+});
 
 app.listen(port, () => {
   console.log(`Example app listening on port ${port}`)
