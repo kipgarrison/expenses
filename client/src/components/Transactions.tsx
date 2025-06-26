@@ -19,11 +19,10 @@ import { createTransaction } from './effects/createTransactionEffect';
 import { deleteTransaction } from './effects/deleteTransactionEffect';
 import { loadTransactions } from './effects/loadTransactionsEffect';
 import { updateTransaction } from './effects/updateTransactionEffect';
-//import { TransactionActionTypes } from '../actions/TransactionActionTypes';
-//import { API_CREATE_TRANSACTION_FAILURE_ALERT, API_CREATE_TRANSACTION_SUCCESS_ALERT, API_DELETE_TRANSACTION_FAILURE_ALERT, API_DELETE_TRANSACTION_SUCESS_ALERT, API_UPDATE_TRANSACTION_FAILURE_ALERT, API_UPDATE_TRANSACTION_SUCCESS_ALERT } from '../types/constants';
 import { AppSpinner } from './AppSpinner';
 import { AppToast } from './AppToast';
 import { ApiSpinner } from './ApiSpinner';
+import type { ColumnType } from '../types/ColumnType';
 
 
 export function Transactions() {
@@ -57,8 +56,9 @@ export function Transactions() {
             ? new UpdateTransactionInitAction(transaction) 
             : new CreateTransactionInitAction(transaction));      
           },
-          sort: (col: string) => {
-            dispatch(new SetSortAction(col));
+          sort: (col: ColumnType) => {
+            if (col.unsortable) return;
+            dispatch(new SetSortAction(col.column));
           },
           search: (filter: TransactionSearchFilterType) => {
             dispatch(new SetSearchFilterAction(filter));
@@ -121,11 +121,14 @@ export function Transactions() {
             onSort={handlers.sort}
             summary={state.summary}
             onPageNumberChange={handlers.pageNumber}
-            currentSort={state.sort}/>
-          <Button variant="primary" onClick={handlers.addTransaction} role="add-transaction">
-            Add Transaction
-          </Button>          
-          
+            currentSort={state.sort}>
+              <Button variant="primary" onClick={handlers.addTransaction} role="add-transaction" className='mx-3'>
+                Add Transaction
+              </Button>          
+              <Button role="search-button" variant="secondary" onClick={()=>handlers.setModal("Search")}>
+                    Filter
+              </Button>
+            </TransactionTable>
           <Modal role="confirm-delete" show={state.modal === "ConfirmDelete"} onHide={()=>handlers.setModal("None")}>
             <Modal.Header closeButton>
               <Modal.Title>Confirm Deletion</Modal.Title>

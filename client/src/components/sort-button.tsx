@@ -1,9 +1,9 @@
 import type { SortButtonProps } from '../types/SortButtonProps';
-// @ts-ignore
+// @ts-expect-error("The following line complains that the svg file is not found when it's there")
 import ShevronUp from './shevron-up.svg?react';
-// @ts-ignore
+// @ts-expect-error("The following line complains that the svg file is not found when it's there")
 import ShevronDown from './shevron-down.svg?react';
-
+import "./sort-button.css";
 export function SortButton({ sortDir, column, children, onSort }: SortButtonProps) {
   switch (sortDir) {
     case "asc":

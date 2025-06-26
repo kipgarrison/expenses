@@ -6,6 +6,7 @@ import { MerchantActionTypes } from "../../actions/merchants/ActionTypes";
 import { LoadMerchantsSuccessAction, LoadMerchantsFailureAction, LoadMerchantsInitAction } from '../../actions/merchants/Actions'
 import axios from "axios";
 import { formatCurrency } from "../../helpers/currency-formatter";
+import { Table } from 'react-bootstrap';
 
 export function Merchants() {
   const [ state, dispatch ] = useReducer(merchantsReducer, InitialMerchantState);
@@ -32,7 +33,7 @@ export function Merchants() {
   
 
   return (
-      <table className="table table-hover">
+      <Table striped bordered hover variant="dark">  
         <thead>
           <tr>
             <th>
@@ -59,36 +60,48 @@ export function Merchants() {
             <th>
               Last $
             </th>
+            <th>
+              Count %
+            </th>
+            <th>
+              Amount %
+            </th>
           </tr>
         </thead>
         <tbody>
           {state.merchants.map(m => (
-            <tr>
+            <tr key={m.name}>
               <td></td>
-              <td>
+              <td key="1">
                 {m.name}
               </td>
-              <td>
+              <td key="2">
                 {m.totalCount}
               </td>
-              <td>
+              <td key="3">
                 {formatCurrency(m.totalAmount)}
               </td>
-              <td>
+              <td key="4">
                 {formatCurrency(m.avgAmount)}
               </td>
-              <td>
+              <td key="5">
                 {m.firstDate.toLocaleDateString()}
               </td>
-              <td>
+              <td key="6">
                 {m.lastDate.toLocaleDateString()}
               </td>
-              <td>
+              <td key="7">
                 {formatCurrency(m.lastAmount)}
+              </td>
+              <td key="8">
+                {m.totCountPct}%
+              </td>
+              <td key="9">
+                {m.totAmountPct}%
               </td>
             </tr>
           ))}
         </tbody>      
-      </table>
+      </Table>
     )
 }

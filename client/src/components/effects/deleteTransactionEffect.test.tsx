@@ -4,7 +4,7 @@ import { DeleteTransactionFailureAction, DeleteTransactionInitAction, DeleteTran
 import { newTransaction } from '../../types/Transaction';
 import { deleteTransaction } from './deleteTransactionEffect';
 
-describe.only("deleteTransactionEffect", () => {
+describe("deleteTransactionEffect", () => {
   const dispatch= vi.fn();
   
   beforeEach(() => {

@@ -3,13 +3,6 @@ import type { TransactionSearchFilterType } from "../types/TransactionSeachFilte
 import type { ModalType } from "../types/unionTypes";
 import { TransactionActionTypes } from "./TransactionActionTypes";
 import { ActionWithPayload } from "./ActionWithPayload";
-
-// export class SetTransactionsAction extends ActionWithPayload {
-//   constructor(payload: Transaction[]) {
-//     super(TransactionActionTypes.SET_TRANSACTIONS, payload);
-//   }
-// }
-
 export class UpdatePageNumberAction extends ActionWithPayload {
   constructor(payload: number) {
     super(TransactionActionTypes.SET_PAGE_NUMBER, payload);

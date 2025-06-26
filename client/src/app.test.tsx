@@ -9,7 +9,7 @@ import { DELETE_URL } from './types/constants';
 
 
 
-describe.only("App", () => {
+describe("App", () => {
   const transactions: Transaction[] = [ 
     { id: 1, amount: 100, merchant: "Wal-Mart", date: new Date("1/1/2022"), runningBalance: 100, hasReceipt: true, type: "Credit Card Debit", comments: "Comments" },
     { id: 1, amount: 100, merchant: "Target", date: new Date("2/1/2022"), runningBalance: 300, hasReceipt: false, type: "Credit Card Debit", comments: "Comments" },
@@ -72,7 +72,7 @@ describe.only("App", () => {
     expect(cells[7].innerHTML).not.toContain("svg");
   })
 
-  it.only("should show delete confirmation dialog when delete clicked with correct message", async () => {
+  it("should show delete confirmation dialog when delete clicked with correct message", async () => {
     render(<App/>);
     const rows = await waitFor(() => screen.getAllByRole("transaction-row"));
     const firstRow = rows[0];
