@@ -6,5 +6,7 @@ export type Merchant = {
   avgAmount: number,
   firstDate: Date,
   lastDate: Date,
-  lastAmount: number
-}
+  lastAmount: number, 
+  totAmountPct: number,
+  totCountPct: number
+};
