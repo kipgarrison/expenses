@@ -14,10 +14,7 @@ export type MerchantsState = {
   apiStatus?: "NOT_RUNNING" | "RUNNING" | "INITIAL",
   alert?: AlertType,
   sort: SortType,
-  //filter: TransactionSearchFilterType,
   modal: ModalType,
-  //summary: TranactionsSummaryType,
-  //transactionTypes: string[]
 }
 
 export const InitialMerchantState: MerchantsState = {

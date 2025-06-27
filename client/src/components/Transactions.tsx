@@ -5,7 +5,7 @@ import { ModalBody, ModalHeader } from 'react-bootstrap';
 import type { Transaction } from '../types/Transaction';
 import TransactionTable from './Transaction-Table';
 import TransactionSearchForm from './TransactionSearchForm';
-import TransactionForm from './Transaction-Form';
+import TransactionForm from './TransactionForm';
 import type { TransactionFilterSummaryProps } from '../types/TransactionFilterSummaryProps';
 import TransactionSearchSummary from './TransactionSummarySummary';
 import { transactionsReducer } from '../reducers/transactionsReducer';

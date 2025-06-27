@@ -1,5 +1,5 @@
 import type { TransactionFormProps } from "../types/TransactionFormProps";
-import './Transaction-Form.css';
+import './TransactionForm.css';
 
 export default function TransactionForm({ transaction, merchants, types, onChange, onSave }: TransactionFormProps) {
   function setField(field: string, value: string|boolean) {
@@ -23,13 +23,13 @@ export default function TransactionForm({ transaction, merchants, types, onChang
     <form onSubmit={handleSubmit}>
       <div className="form-group">
         <label htmlFor="date">Date</label>
-        <input type="date" className="form-control" id="date" name="date" 
+        <input type="date" className="form-control" id="date" name="date" data-testid="date"
           value={transaction.date.toISOString().split('T')[0]} required
           onChange={(e) => setField("date", e.target.value)} />
       </div>
       <div className="form-group">
         <label htmlFor="merchant">Merchant</label>
-        <select className="form-control" id="merchant" name="merchant" role="merchant-name"
+        <select className="form-control" id="merchant" name="merchant" role="merchant-name" data-testid="merchants"
           value={transaction.merchant} 
           onChange={(e) => setField("merchant", e.target.value)} required>
           <option></option>
@@ -40,7 +40,7 @@ export default function TransactionForm({ transaction, merchants, types, onChang
       </div>
       <div className="form-group">
         <label htmlFor="type">Type</label>
-        <select className="form-control" id="type" name="type" 
+        <select className="form-control" id="type" name="type" data-testid="types" 
           value={transaction.type}
           onChange={(e) => setField("type", e.target.value)} required>
           <option></option>
@@ -51,23 +51,23 @@ export default function TransactionForm({ transaction, merchants, types, onChang
       </div>
       <div className="form-group">
         <label htmlFor="amount">Amount</label>
-        <input type="number" className="form-control" id="amount" name="amount" 
+        <input type="number" className="form-control" id="amount" name="amount" data-testid="amount"
           value={transaction.amount} required 
           onChange={(e) => setField("amount", e.target.value)}/>
       </div>
        <div className="form-group">
         <label htmlFor="comments">Comments</label>
-        <textarea className="form-control" id="comments" name="comments" 
+        <textarea className="form-control" id="comments" name="comments" data-testid="comments" 
           value={transaction.comments}
           onChange={(e) => setField("comments", e.target.value)} />
       </div>
       <div className="form-group form-check">
-        <input type="checkbox" className="form-check-input" id="hasReceipt" name="hasReceipt" 
+        <input type="checkbox" className="form-check-input" id="hasReceipt" name="hasReceipt" data-testid="hasReceipt" 
           checked={transaction.hasReceipt}
           onChange={(e) => setField("hasReceipt", e.target.checked)}/>
         <label className="form-check-label" htmlFor="hasReceipt">Has Receipt</label>
       </div>
-      <button type="submit" className="btn btn-primary">Submit</button>
+      <button type="submit" className="btn btn-primary" data-testid="submit">Submit</button>
     </form>);
 }
 

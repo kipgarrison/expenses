@@ -2,11 +2,15 @@ import { useEffect, useReducer } from "react";
 import { merchantsReducer } from "../../reducers/merchantReducer";
 import "./merchants.css";
 import { InitialMerchantState } from "../../types/merchants/MerchantState";
-import { MerchantActionTypes } from "../../actions/merchants/ActionTypes";
-import { LoadMerchantsSuccessAction, LoadMerchantsFailureAction, LoadMerchantsInitAction } from '../../actions/merchants/Actions'
+import { MerchantActionTypes } from "../../actions/merchants/MerchantActionTypes";
+import { LoadMerchantsSuccessAction, LoadMerchantsFailureAction, LoadMerchantsInitAction } from '../../actions/merchants/MerchantActions'
 import axios from "axios";
-import { formatCurrency } from "../../helpers/currency-formatter";
+import { formatCurrency } from "../../helpers/currencyFormatter";
 import { Table } from 'react-bootstrap';
+import type { ColumnType } from "../../types/ColumnType";
+import { SortButton } from "../SortButton";
+import { SortMerchants } from "../../actions/merchants/MerchantActions";
+import type { SortType } from "../../types/TransactionsState";
 
 export function Merchants() {
   const [ state, dispatch ] = useReducer(merchantsReducer, InitialMerchantState);
@@ -28,9 +32,36 @@ export function Merchants() {
     }
   }, [state.lastAction?.type]); 
 
+  const getSortDir = (col: string, sort: SortType): "asc" | "desc" | "none" => {
+    if (sort?.column !== col) return "none";
+    return sort?.direction || "asc";
+  }  
+
   useEffect(() => dispatch(new LoadMerchantsInitAction()), []);
 
+  const sort = state.sort;
+
+  const columns: ColumnType[] = [ 
+    { column: "name", header: "Name", dir: getSortDir("name", sort) }, 
+    { column: "totalCount", header: "# Trans", dir: getSortDir("totalCount", sort) },
+    { column: "totalAmount", header: "Total $", dir: getSortDir("totalAmount", sort) },
+    { column: "avgAmount", header: "Avg. $", dir: getSortDir("avgAmount", sort) },
+    { column: "firstDate", header: "First Date", dir: getSortDir("firstDate", sort) },
+    { column: "lastDate", header: "Last Date", dir: getSortDir("lastDate", sort) },
+    { column: "lastAmount", header: "Last $", dir: getSortDir("lastAmount", sort) },
+    { column: "totCountPct", header: "Count %", dir: getSortDir("totCountPct", sort)},
+    { column: "totAmountPct", header: "Amount %", dir: getSortDir("totAmountPct", sort)},
+  ];
   
+  const onSort = (column: ColumnType) => {
+    dispatch(new SortMerchants(column.column));
+  }
+
+  const headers = columns.map(c => (
+    <th key={c.column}>
+      <SortButton sortDir={c.dir} column={c.column} onSort={() => onSort(c)}>{c.header}</SortButton>
+    </th>
+  ));
 
   return (
       <Table striped bordered hover variant="dark">  
@@ -39,33 +70,7 @@ export function Merchants() {
             <th>
 
             </th>
-            <th>
-              Name
-            </th>
-            <th>
-              # Trans
-            </th>
-            <th>
-              Total $
-            </th>
-            <th>
-              Avg. $
-            </th>
-            <th>
-              First Date
-            </th>
-            <th>
-              Last Date
-            </th>
-            <th>
-              Last $
-            </th>
-            <th>
-              Count %
-            </th>
-            <th>
-              Amount %
-            </th>
+            { headers }
           </tr>
         </thead>
         <tbody>

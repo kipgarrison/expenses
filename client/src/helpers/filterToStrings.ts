@@ -1,5 +1,5 @@
 import type { TransactionSearchFilterType } from "../types/TransactionSeachFilterType";
-import { formatCurrency } from "./currency-formatter";
+import { formatCurrency } from "./currencyFormatter";
 import { elipsis } from "./elipsis";
 
 export type FilterMessage = { columns: string[], message: string };
@@ -12,7 +12,7 @@ export function filterToStrings(filter: TransactionSearchFilterType): FilterMess
   else if (toDate) messages = [{ columns: ['toDate'], message: `Date before ${toDate}` }];
 
   if (fromAmount && toAmount) messages = [ ...messages, { columns: ['fromAmount', 'toAmount'], message: `Amount between ${formatCurrency(fromAmount)} and ${formatCurrency(toAmount)}` }];
-  else if (fromAmount) messages = [ ...messages, { columns: ['fromAmount', 'toAmount'], message: `Amount above ${formatCurrency(fromAmount)}` } ];
+  else if (fromAmount) messages = [ ...messages, { columns: ['fromAmount' ], message: `Amount above ${formatCurrency(fromAmount)}` } ];
   else if (toAmount) messages = [ ...messages, { columns: ['toAmount'], message: `Amount below ${formatCurrency(toAmount)}`}];
 
   if (comments) messages = [ ...messages, { columns: ['comments'], message: `Comments contains ${elipsis(comments, 10)}` }];

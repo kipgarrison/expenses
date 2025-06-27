@@ -18,7 +18,7 @@ export function NavigationTabs({ tabs}: { tabs: TabType[]}) {
         <h3>Expenses</h3>
         <Tabs
           activeKey={key}
-          onSelect={(k) => { alert(k); setKey(k??"")}}
+          onSelect={(k) => { setKey(k??"")}}
           className="mb-3">
           {tabs.map(tab => ( 
             <Tab key={tab.title} eventKey={tab.title} title={tab.title}>

@@ -8,7 +8,7 @@ import { emptyFilter, maxFilter, type TransactionSearchFilterType } from "../typ
 import type { TranactionsSummaryType, TransactionsState } from "../types/TransactionsState";
 import type { ModalType } from "../types/unionTypes";
 
-function filterTransactions({ transactions, pageNumber, pageSize, sort, filter }: TransactionsState): { transactionPage: Transaction[], summary: TranactionsSummaryType } {
+export function filterTransactions({ transactions, pageNumber, pageSize, sort, filter }: TransactionsState): { transactionPage: Transaction[], summary: TranactionsSummaryType } {
   if (!transactions) return { transactionPage: [], summary: { numPages: 0, totalAmount: 0, transactionsCount: 0}};
   const sortCol = sort?.column || "date";
   const direction = sort?.direction || "asc";
