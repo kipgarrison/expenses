@@ -5,6 +5,22 @@ const app = express()
 const port = 3000
 const bodyParser = require('body-parser');
 
+const budget = [
+  { category: "Health & Wellness", amount: 250 },
+  { category: "Utilities", amount: 500 },
+  { category: "Eating Out", amount: 100 },
+  { category: "Groceries", amount: 600 },
+  { category: "Gas", amount: 200 },
+  { category: "Education", amount: 50 },
+  { category: "Fees", amount: 50 },
+  { category: "Automotive", amount: 125 },
+  { category: "Travel", amount: 100 },
+  { category: "Home Goods", amount: 150 },
+  { category: "Insurance", amount: 250 },
+  { category: "Mortgage", amount: 500 },
+  { category: "Pets", amount: 15 }
+];
+
 function addRunningBalance(transactions) {
   total = 0;
   transactions = transactions.sort((a, b) => a.date > b.date ? 1 : (a.date == b.date ? a.id - b.id : -1)).map(t => {
@@ -120,6 +136,11 @@ app.get('/api/v1/merchants', async (req, res) => {
 
 })
 
+app.get("/api/v1/budget", async (req, res) => {
+  await setTimeout(() => {
+    res.json(budget)
+  }, 2000)
+})
 app.get('/api/v1/testdata', (req, res) => {
   const getRandom = (range) => {
     return Math.floor(Math.random() * range);
@@ -146,8 +167,30 @@ app.get('/api/v1/testdata', (req, res) => {
     return words.join(" ");
   }
 
+  const merchants = [
+    { name: 'Wal-Mart', categories: ["Groceries", "Home Goods"] },
+    { name: 'Target', categories: ["Groceries", "Home Goods"] },
+    { name: 'Schnucks', categories: ["Grocery"] },
+    { name: 'Wal-Greens', categories: ["Health & Wellsness", "Home Goods"] },
+    { name: 'Dierbergs', categories: ["Groceries"] },
+    { name: 'CVS', categories: ["Health & Wellness"] },
+    { name: 'Amazon', categories: ["Shopping"] },
+    { name: 'McDonalds', categories: ["Eating Out"] },
+    { name: 'Sam\'s Club', categories: [["Groceries", "Home Goods"]] },
+    { name: 'Sam\'s Club Gas', categories: ['Gas'] },
+    { name: 'O\'Fallon IL', categories: ["Utilities"] },
+    { name: 'Macys', categories: ["Home Goods"] },
+    { name: 'Joes Exotic Pets', categories: ["Pets"] },
+    { name: 'Menards', categories: ["Home Goods"] },
+    { name: 'Cosco', categories: ["Groceries"] },
+    { name: 'Lowes', categories: ["Home Goods"] },
+    { name: 'Home Depot', categories: ["Home Goods"] },
+    { name: 'Scott Credit Union', categories: ['Mortgage'] },
+    { name: 'Plural Sight', categories: ['Education'] },
+    { name: 'Kindle', categories: ['Entertainment', 'Education'] },
+    { name: 'Chase', categories: ['Fees'] }
+  ];
 
-  const merchants = ['Wal-Mart', 'Target', 'Schnucks', 'Wal-Greens', 'Dierbergs', 'CVS', 'Amazon', 'McDonalds', 'Sam\'s Club', 'O\'Fallon IL', 'Macys', 'Joes Exotic Pets', 'Menards', 'Cosco', 'Lowes', 'Home Depot'];
   const lowerDateYear = 2020;
   types = { creditCardDebit: 90, bankAccountDebit: 10 };
   amountRange = { lower: 25, upper: 600 };
@@ -155,14 +198,15 @@ app.get('/api/v1/testdata', (req, res) => {
   hasReceiptPercentage = 85;
   const items = [];
   for (let i = 0; i < 1000; i++) {
-    const merchant = merchants[getRandom(merchants.length)];
+    const { name, categories } = merchants[getRandom(merchants.length)];
     const date = getDate(lowerDateYear);
     const type = getRandom(100);
     const amount = getRandom(amountRange.upper - amountRange.lower);
     const hasReceipt = getRandom(100);
     items.push({
       id: i,
-      merchant,
+      category: categories[getRandom(categories.length)],
+      merchant: name,
       date: getDate(lowerDateYear),
       type: getType(),
       amount: amountRange.lower + amount + (getRandom(100) / 100),
