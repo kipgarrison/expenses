@@ -1,15 +1,16 @@
-import { AddTransactionAction, ClearCurrentTransactionAction, CreateTransactionFailureAction, CreateTransactionInitAction, CreateTransactionSuccessAction, DeleteTransactionFailureAction, DeleteTransactionInitAction, DeleteTransactionSuccessAction, EditTransactionAction, LoadTransactionsFailureAction, LoadTransactionsInitAction, LoadTransactionsSuccessAction, SetCurrentTransactionAction, SetModalAction, SetSearchFilterAction, SetSortAction, UpdatePageNumberAction, UpdateTransactionFailureAction, UpdateTransactionInitAction, UpdateTransactionSuccessAction } from "../actions/TransactionActions";
+import { AddTransactionAction, ClearCurrentTransactionAction, CreateTransactionFailureAction, CreateTransactionInitAction, CreateTransactionSuccessAction, DeleteTransactionFailureAction, DeleteTransactionInitAction, DeleteTransactionSuccessAction, EditTransactionAction, HideAlertAction, LoadTransactionsFailureAction, LoadTransactionsInitAction, LoadTransactionsSuccessAction, RemoveColumnFilterAction, SetCurrentTransactionAction, SetModalAction, SetSearchFilterAction, SetSortAction, UpdatePageNumberAction, UpdateTransactionAction, UpdateTransactionFailureAction, UpdateTransactionInitAction, UpdateTransactionSuccessAction } from "../actions/TransactionActions";
 import { midnightToday } from "../helpers/midnightToday";
 import { midnightTomorrow } from "../helpers/midnightTomorrow";
+//import { sortObjectsArray } from "../helpers/sortObjectsArray";
 import { API_CREATE_TRANSACTION_FAILURE_ALERT, API_CREATE_TRANSACTION_SUCCESS_ALERT, API_DELETE_TRANSACTION_FAILURE_ALERT, API_DELETE_TRANSACTION_SUCESS_ALERT, API_UPDATE_TRANSACTION_FAILURE_ALERT, API_UPDATE_TRANSACTION_SUCCESS_ALERT } from "../types/constants";
 import { newTransaction, type Transaction } from "../types/Transaction";
-import type { TransactionSearchFilterType } from "../types/TransactionSeachFilterType";
+import { emptyFilter, maxFilter, type TransactionSearchFilterType } from "../types/TransactionSeachFilterType";
 import { transactionStateInitialValue, type TransactionsState } from "../types/TransactionsState";
-import { transactionsReducer } from "./transactionsReducer"
+import { filterTransactions, transactionsReducer } from "./transactionsReducer"
 
 describe("TransactionsReducer", () => {
   let transactions: Array<Transaction>;
-  let initialState: TransactionsState;
+  let initialTransactionState: TransactionsState;
   const reducer = transactionsReducer;
 
   beforeEach(() => {  
@@ -20,14 +21,14 @@ describe("TransactionsReducer", () => {
         { id: 4, date: new Date("4/1/2023"), merchant: "Schnucks", type: "Bank Account Credit",  amount: 400, comments: "12356 TESTING", runningBalance: 1000 },
       ];
 
-       initialState  = { ...transactionStateInitialValue, pageSize: 2, transactions };
+       initialTransactionState  = { ...transactionStateInitialValue, pageSize: 2, transactions };
   });
 
   describe("SET_PAGE_NUMBER", () => {
     it("should set the page number to the passed in value and set transactionsPage", () => {
       const action = new UpdatePageNumberAction(2);
 
-      const newState = reducer(initialState, action);
+      const newState = reducer(initialTransactionState, action);
 
       expect(newState.pageNumber).toBe(2);
       expect(newState.transactionPage).toEqual(transactions.slice(2, 4));
@@ -39,7 +40,7 @@ describe("TransactionsReducer", () => {
       //const newTransaction = { ...transactions[0], merchant: "Test", id: 20 }
       const action = new AddTransactionAction();
 
-      const newState = reducer(initialState, action)
+      const newState = reducer(initialTransactionState, action)
       const expectedTransaction = { ...newTransaction, date: midnightToday()}
       
       expect(newState.currentTransaction).toEqual(expectedTransaction);    
@@ -51,7 +52,18 @@ describe("TransactionsReducer", () => {
     it("Should set the the state correctly to edit the passed in transaction", () => {
       const action = new EditTransactionAction(transactions[0]);
 
-      const newState = reducer(initialState, action);
+      const newState = reducer(initialTransactionState, action);
+
+      expect(newState.currentTransaction).toBe(action.payload);
+      expect(newState.modal).toBe("Edit");
+    });
+  });
+
+  describe("UPDATE_Transaction", () => {
+    it("Should set the the state correctly to update the passed in transaction", () => {
+      const action = new UpdateTransactionAction(transactions[0]);
+
+      const newState = reducer(initialTransactionState, action);
 
       expect(newState.currentTransaction).toBe(action.payload);
       expect(newState.modal).toBe("Edit");
@@ -64,7 +76,7 @@ describe("TransactionsReducer", () => {
 
       const action = new EditTransactionAction(updatedTrans);
 
-      const newState = reducer(initialState, action);
+      const newState = reducer(initialTransactionState, action);
 
       expect(newState.currentTransaction).toBe(action.payload);
       expect(newState.modal).toBe("Edit");
@@ -76,7 +88,7 @@ describe("TransactionsReducer", () => {
       const transToSave = { ...transactions[0], id: 0 };
       const action = new CreateTransactionInitAction(transToSave);
 
-      const initial: TransactionsState = { ...initialState, transactions,  currentTransaction: transToSave, modal: "Edit" };
+      const initial: TransactionsState = { ...initialTransactionState, transactions,  currentTransaction: transToSave, modal: "Edit" };
       const expected: TransactionsState = { 
         ...initial, 
         currentTransaction: newTransaction, 
@@ -92,7 +104,7 @@ describe("TransactionsReducer", () => {
       const transToSave = { ...transactions[0], id: 1 };
       const action = new CreateTransactionInitAction(transToSave);
 
-      const initial: TransactionsState = { ...initialState, transactions,  currentTransaction: transToSave, modal: "Edit" };
+      const initial: TransactionsState = { ...initialTransactionState, transactions,  currentTransaction: transToSave, modal: "Edit" };
       expect(() => reducer(initial, action)).toThrow();
     })
   })
@@ -104,7 +116,7 @@ describe("TransactionsReducer", () => {
 
       const action = new CreateTransactionSuccessAction(transSaved);
 
-      const initial: TransactionsState = { ...initialState, 
+      const initial: TransactionsState = { ...initialTransactionState, 
         transactions: [...transactions, transToSave],
         currentTransaction: transToSave, modal: "None",
         alert: API_CREATE_TRANSACTION_SUCCESS_ALERT, showSpinner: false };
@@ -125,7 +137,7 @@ describe("TransactionsReducer", () => {
       const transToSave: Transaction = { ...transactions[0], id: 0, date: midnightTomorrow() };
       const action = new CreateTransactionSuccessAction(transToSave);
 
-      expect( () => reducer(initialState, action)).toThrow();
+      expect( () => reducer(initialTransactionState, action)).toThrow();
     });
 
     it("should throw if passed a new transaction (i.e. id = 0)", () => {
@@ -133,7 +145,7 @@ describe("TransactionsReducer", () => {
       const transSaved = { ...transactions[0], id: 5,  date: midnightTomorrow() };
       const action = new CreateTransactionSuccessAction(transSaved);
 
-      const initial: TransactionsState = { ...initialState, 
+      const initial: TransactionsState = { ...initialTransactionState, 
         transactions: [...transactions, transToSave],
         currentTransaction: transToSave, modal: "None" };
       
@@ -148,7 +160,7 @@ describe("TransactionsReducer", () => {
       const action = new CreateTransactionFailureAction();
 
       const newTrans = [...transactions, transToSave ];
-      const initial: TransactionsState = { ...initialState, transactions: newTrans,  currentTransaction: transToSave };
+      const initial: TransactionsState = { ...initialTransactionState, transactions: newTrans,  currentTransaction: transToSave };
       const expected: TransactionsState = { 
         ...initial, 
         currentTransaction: newTransaction, 
@@ -167,7 +179,7 @@ describe("TransactionsReducer", () => {
       const transToUpdate = { ...transactions[0] };
       const action = new UpdateTransactionInitAction(transToUpdate);
 
-      const initial: TransactionsState = { ...initialState, transactions,  currentTransaction: transToUpdate, modal: "Edit" };
+      const initial: TransactionsState = { ...initialTransactionState, transactions,  currentTransaction: transToUpdate, modal: "Edit" };
       const expected: TransactionsState = { 
         ...initial, 
         currentTransaction: newTransaction, 
@@ -183,7 +195,7 @@ describe("TransactionsReducer", () => {
       const transToUpdate = { ...transactions[0], id: 0 };
       const action = new UpdateTransactionInitAction(transToUpdate);
 
-      const initial: TransactionsState = { ...initialState, transactions,  currentTransaction: transToUpdate, modal: "Edit" };
+      const initial: TransactionsState = { ...initialTransactionState, transactions,  currentTransaction: transToUpdate, modal: "Edit" };
       
       expect(() => reducer(initial, action)).toThrow();
     });
@@ -198,7 +210,7 @@ describe("TransactionsReducer", () => {
       const action = new UpdateTransactionSuccessAction(transToSave);
 
       const initial: TransactionsState = { 
-        ...initialState, 
+        ...initialTransactionState, 
         currentTransaction: transToSave, 
         transactions: newTrans, modal: "None", showSpinner: false, alert: API_UPDATE_TRANSACTION_SUCCESS_ALERT};
       const expected: TransactionsState = { 
@@ -224,7 +236,7 @@ describe("TransactionsReducer", () => {
       const [_, ...remaining] = transactions; 
       const newTrans = [ transToSave, ...remaining];
       const initial: TransactionsState = { 
-        ...initialState, 
+        ...initialTransactionState, 
         transactions: newTrans,  
         currentTransaction: transToSave,
         backupTransaction: transactions[0] 
@@ -250,7 +262,7 @@ describe("TransactionsReducer", () => {
       const action = new DeleteTransactionInitAction(transToUpdate);
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
       const [_, ...remaining] = transactions;
-      const initial: TransactionsState = { ...initialState, transactions, currentTransaction: transToUpdate, modal: "None" };
+      const initial: TransactionsState = { ...initialTransactionState, transactions, currentTransaction: transToUpdate, modal: "None" };
       const expected: TransactionsState = { 
         ...initial, 
         transactions: remaining, 
@@ -266,7 +278,7 @@ describe("TransactionsReducer", () => {
       const transToUpdate = { ...transactions[0], id: 0 };
       const action = new UpdateTransactionInitAction(transToUpdate);
 
-      const initial: TransactionsState = { ...initialState, transactions,  currentTransaction: transToUpdate, modal: "Edit" };
+      const initial: TransactionsState = { ...initialTransactionState, transactions,  currentTransaction: transToUpdate, modal: "Edit" };
       
       expect(() => reducer(initial, action)).toThrow();
     });
@@ -279,7 +291,7 @@ describe("TransactionsReducer", () => {
       const action = new DeleteTransactionSuccessAction();
 
       const initial: TransactionsState = { 
-        ...initialState, 
+        ...initialTransactionState, 
         transactions: remaining, 
         modal: "None",
         summary: { numPages: 2, totalAmount: 900, transactionsCount: 3 },  
@@ -306,7 +318,7 @@ describe("TransactionsReducer", () => {
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
       const [_, ...remaining] = transactions; 
        const initial: TransactionsState = { 
-        ...initialState, 
+        ...initialTransactionState, 
         transactions: remaining,  
         backupTransaction: transactions[0],
         transactionPage: transactions.slice(0, 2)
@@ -331,8 +343,8 @@ describe("TransactionsReducer", () => {
       const trans = transactions[0];
       const action = new SetCurrentTransactionAction(trans);
 
-      const initial = initialState;
-      const expected = { ...initialState,  lastAction: action, currentTransaction: trans };
+      const initial = initialTransactionState;
+      const expected = { ...initialTransactionState,  lastAction: action, currentTransaction: trans };
 
       const actual = reducer(initial, action);
 
@@ -343,8 +355,8 @@ describe("TransactionsReducer", () => {
       it("should set the current transaction in state to undefined", () => {
         const action = new ClearCurrentTransactionAction();
 
-        const initial: TransactionsState = { ...initialState, currentTransaction: transactions[0] };
-        const expected = { ...initialState,  lastAction: action, currentTransaction: undefined };
+        const initial: TransactionsState = { ...initialTransactionState, currentTransaction: transactions[0] };
+        const expected = { ...initialTransactionState,  lastAction: action, currentTransaction: undefined };
 
         const actual = reducer(initial, action);
 
@@ -355,7 +367,7 @@ describe("TransactionsReducer", () => {
     describe("SET_SORT", () => {
       it("should set the sort property in state and update the page to reflect the sort", () => {
         const action = new SetSortAction("merchant");
-        const initial: TransactionsState = { ...initialState, transactionPage: transactions.slice(0,2) };
+        const initial: TransactionsState = { ...initialTransactionState, transactionPage: transactions.slice(0,2) };
         const expected: TransactionsState = { 
           ...initial, 
           transactionPage: [ transactions[3], transactions[2] ], 
@@ -370,7 +382,7 @@ describe("TransactionsReducer", () => {
 
       it("if called twice in a row with same column should set the direction to desc", () => {
         const action = new SetSortAction("merchant");
-        const initial: TransactionsState = { ...initialState, transactionPage: transactions.slice(0,2) };
+        const initial: TransactionsState = { ...initialTransactionState, transactionPage: transactions.slice(0,2) };
         const expected: TransactionsState = { 
           ...initial, 
           transactionPage: transactions.slice(0, 2),
@@ -388,8 +400,8 @@ describe("TransactionsReducer", () => {
   describe("SET_MODAL", () => {
     it("should set the modal property in state to reflect the value passed in", () => {
       const action = new SetModalAction("Search");
-      const expected: TransactionsState = { ...initialState, modal: "Search", lastAction: action };
-      const actual = reducer(initialState, action);
+      const expected: TransactionsState = { ...initialTransactionState, modal: "Search", lastAction: action };
+      const actual = reducer(initialTransactionState, action);
 
       expect(actual).toEqual(expected);
     });
@@ -406,14 +418,14 @@ describe("TransactionsReducer", () => {
       const action = new SetSearchFilterAction(filter);
       
       const expected: TransactionsState = { 
-        ...initialState, 
+        ...initialTransactionState, 
         lastAction: action, 
         transactionPage: [ transactions[0] ],  
         filter, 
         summary: { numPages: 1, totalAmount: 100, transactionsCount: 1 }
       };
       
-      const actual = reducer(initialState, action);
+      const actual = reducer(initialTransactionState, action);
 
       expect(actual).toEqual(expected);
     });
@@ -428,14 +440,14 @@ describe("TransactionsReducer", () => {
       const action = new SetSearchFilterAction(filter);
       
       const expected: TransactionsState = { 
-        ...initialState, 
+        ...initialTransactionState, 
         lastAction: action, 
         transactionPage: [ transactions[3] ],  
         filter, 
         summary: { numPages: 1, totalAmount: 400, transactionsCount: 1 }
       };
       
-      const actual = reducer(initialState, action);
+      const actual = reducer(initialTransactionState, action);
 
       expect(actual).toEqual(expected);
     })
@@ -449,7 +461,7 @@ describe("TransactionsReducer", () => {
       const action = new SetSearchFilterAction(filter);
       
       const expected: TransactionsState = { 
-        ...initialState, 
+        ...initialTransactionState, 
         lastAction: action, 
         transactionPage: [ transactions[0], transactions[3] ],  
         filter, 
@@ -457,7 +469,7 @@ describe("TransactionsReducer", () => {
       };
       
       
-      const actual = reducer(initialState, action);
+      const actual = reducer(initialTransactionState, action);
 
       expect(actual).toEqual(expected);
     })
@@ -470,14 +482,14 @@ describe("TransactionsReducer", () => {
       const action = new SetSearchFilterAction(filter);
       
       const expected: TransactionsState = { 
-        ...initialState, 
+        ...initialTransactionState, 
         lastAction: action, 
         transactionPage: [ transactions[1], transactions[2] ],  
         filter, 
         summary: { numPages: 1, totalAmount: 500, transactionsCount: 2 }
       };
       
-      const actual = reducer(initialState, action);
+      const actual = reducer(initialTransactionState, action);
 
       expect(actual).toEqual(expected);
     })
@@ -490,14 +502,14 @@ describe("TransactionsReducer", () => {
       const action = new SetSearchFilterAction(filter);
       
       const expected: TransactionsState = { 
-        ...initialState, 
+        ...initialTransactionState, 
         lastAction: action, 
         transactionPage: [ transactions[0], transactions[1] ],  
         filter, 
         summary: { numPages: 2, totalAmount: 600, transactionsCount: 3 }
       };
       
-      const actual = reducer(initialState, action);
+      const actual = reducer(initialTransactionState, action);
 
       expect(actual).toEqual(expected);
     })
@@ -507,7 +519,7 @@ describe("TransactionsReducer", () => {
     it("should set the state to show the initial load message", () => {
       const action = new LoadTransactionsInitAction();
 
-      const initial: TransactionsState = { ...initialState };
+      const initial: TransactionsState = { ...initialTransactionState };
       const expected: TransactionsState = { 
         ...initial, 
         lastAction: action 
@@ -529,7 +541,7 @@ describe("TransactionsReducer", () => {
 
       const action = new LoadTransactionsSuccessAction(transactions);
 
-      const initial: TransactionsState = { ...initialState };
+      const initial: TransactionsState = { ...initialTransactionState };
       const expected: TransactionsState = { 
         ...initial, 
         lastAction: action,
@@ -548,7 +560,7 @@ describe("TransactionsReducer", () => {
     it("should set the alert to notify user of failure", () => {
       const action = new LoadTransactionsFailureAction();
 
-      const initial: TransactionsState = { ...initialState, transactions: [] };
+      const initial: TransactionsState = { ...initialTransactionState, transactions: [] };
       const expected: TransactionsState = { 
         ...initial, 
         lastAction: action 
@@ -559,6 +571,45 @@ describe("TransactionsReducer", () => {
 
       expect(newState).toEqual(expected);
     })
-  })
+  });
 
+  describe("HIDE_ALERT", () => {
+    it("should clear the alert field in state", () => {
+      const action = new HideAlertAction();
+      const initState = { ...initialTransactionState, alert: API_CREATE_TRANSACTION_FAILURE_ALERT };
+
+      const expectedState = { ...initState, alert: undefined, lastAction: action };
+      const actualState = transactionsReducer(initState, action);
+
+      expect(actualState).toEqual(expectedState);
+    })
+  });
+
+  describe("REMOVE_COLUMN_FILTER", () => {
+    it("should update the filter in state to remove the passed in column", () => {
+      const action = new RemoveColumnFilterAction([ "fromDate", "toDate"]);
+      const initState: TransactionsState = {...initialTransactionState, filter: { ...maxFilter } };
+  
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      const { fromDate, toDate, ...filter } = maxFilter; 
+      const newState = { ...initState, filter };
+      const transactionsPage = filterTransactions(newState);
+      
+      const expectedState = {...initialTransactionState, filter, ...transactionsPage  };
+      const actualState = transactionsReducer(initState, action);
+      expect(actualState).toEqual(expectedState);
+    });
+
+    it("should update the filter in state to remove all columns if empty list passed", () => {
+      const action = new RemoveColumnFilterAction([]);
+      const initState: TransactionsState = {...initialTransactionState, filter: { ...maxFilter } };
+  
+      const newState = { ...initState, filter: emptyFilter };
+      const transactionsPage = filterTransactions(newState);
+      
+      const expectedState = {...initialTransactionState, filter: emptyFilter, ...transactionsPage  };
+      const actualState = transactionsReducer(initState, action);
+      expect(actualState).toEqual(expectedState);
+    });
+  });
 });

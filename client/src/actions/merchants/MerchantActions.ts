@@ -1,6 +1,6 @@
 import type { Merchant } from "../../types/merchants/Merchant";
 import { ActionWithPayload } from "../ActionWithPayload";
-import { MerchantActionTypes } from "./ActionTypes";
+import { MerchantActionTypes } from "./MerchantActionTypes";
 
 export class LoadMerchantsInitAction extends ActionWithPayload {
   constructor() {
@@ -17,5 +17,11 @@ export class LoadMerchantsSuccessAction extends ActionWithPayload {
 export class LoadMerchantsFailureAction extends ActionWithPayload {
   constructor() {
     super(MerchantActionTypes.LOAD_MERCHANTS_FAILURE);
+  }
+}
+
+export class SortMerchants extends ActionWithPayload {
+  constructor(payload: string) {
+    super(MerchantActionTypes.SORT_MERCHANTS, payload);
   }
 }

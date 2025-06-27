@@ -4,7 +4,7 @@ import App from './App';
 import { vi } from 'vitest';
 import axios from 'axios'
 import { type Transaction } from './types/Transaction';
-import { formatCurrency } from './helpers/currency-formatter';
+import { formatCurrency } from './helpers/currencyFormatter';
 import { DELETE_URL } from './types/constants';
 
 
@@ -25,7 +25,7 @@ describe("App", () => {
 
   it('should render initial load message correctly', async () => {
     vi.mocked(axios.get).mockImplementationOnce(async () =>{
-      return new Promise(resolve => setTimeout(() => resolve(transactions), 250));
+      return new Promise(resolve => setTimeout(() => resolve(transactions), 500));
     });
     render(<App />);
     

@@ -13,7 +13,7 @@ export default function AppAlert({alert, onClose }: {alert: AlertType, onClose: 
    
   return (
     alert &&
-      <Alert variant={alert.type} onClose={() => onClose()} dismissible>
+      <Alert variant={alert.type} onClose={() => onClose()} dismissible >
           {alert.message}
       </Alert>
   )
