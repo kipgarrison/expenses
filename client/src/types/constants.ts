@@ -41,5 +41,14 @@ export const API_UPDATE_TRANSACTION_FAILURE_ALERT: AlertType = {
   message: 'An error occured when attempting to update your transaction'
 }
 
+export const API_LOAD_BUDGET_FAILURE_ALERT: AlertType = {
+  type: 'failure',
+  message: 'An error occured when attempting to load your budget'
+}
+
+export const API_LOAD_MONTH_YEARS_FAILURE_ALERT: AlertType = {
+  type: 'failure',
+  message: 'An error occured when attempting to load your budget'
+}
 export const BASE_API_URL = "http://localhost:3000/api/v1";  
 export const DELETE_URL = `${BASE_API_URL}/transactions` 
