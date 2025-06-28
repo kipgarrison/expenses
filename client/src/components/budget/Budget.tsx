@@ -75,7 +75,7 @@ export default function Budget() {
         onChange={handleMonthYearSelection} required
         className="from-control month-year-select mx-2">
         {state.monthYears.map(my => (
-            <option selected>{formatMonthYear(my)}</option>
+            <option selected key={`${my.month}${my.year}`}>{formatMonthYear(my)}</option>
         ))}
       </select>
       <ApiSpinner show={showSpinner} />
