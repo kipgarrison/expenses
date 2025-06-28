@@ -6,19 +6,19 @@ const port = 3000
 const bodyParser = require('body-parser');
 
 const budget = [
-  { category: "Health & Wellness", amount: 250 },
-  { category: "Utilities", amount: 500 },
-  { category: "Eating Out", amount: 100 },
-  { category: "Groceries", amount: 600 },
-  { category: "Gas", amount: 200 },
-  { category: "Education", amount: 50 },
-  { category: "Fees", amount: 50 },
-  { category: "Automotive", amount: 125 },
-  { category: "Travel", amount: 100 },
-  { category: "Home Goods", amount: 150 },
-  { category: "Insurance", amount: 250 },
-  { category: "Mortgage", amount: 500 },
-  { category: "Pets", amount: 15 }
+  { category: "Health & Wellness", budgeted: 250 },
+  { category: "Utilities", budgeted: 500 },
+  { category: "Eating Out", budgeted: 100 },
+  { category: "Groceries", budgeted: 600 },
+  { category: "Gas", budgeted: 200 },
+  { category: "Education", budgeted: 50 },
+  { category: "Fees", budgeted: 50 },
+  { category: "Automotive", budgeted: 125 },
+  { category: "Travel", budgeted: 100 },
+  { category: "Home Goods", budgeted: 150 },
+  { category: "Insurance", budgeted: 250 },
+  { category: "Mortgage", budgeted: 500 },
+  { category: "Pets", budgeted: 15 }
 ];
 
 function addRunningBalance(transactions) {
@@ -36,6 +36,7 @@ async function loadTransactions() {
   let json = addRunningBalance(JSON.parse(transactions));
   return json;
 }
+
 
 (async () => transactions = await loadTransactions())();
 
@@ -136,11 +137,54 @@ app.get('/api/v1/merchants', async (req, res) => {
 
 })
 
-app.get("/api/v1/budget", async (req, res) => {
+app.get("/api/v1/budget/months", async (req, res) => {
+  const minYear = transactions.reduce((a, t) => Math.min(a, new Date(t.date).getFullYear()), 20000);
+
+  const monthYears = [];
+  for (let yr = new Date().getFullYear(); yr >= minYear; yr--) {
+    for (let mo = 12; mo >= 1; mo--) {
+      monthYears.push({ month: mo, year: yr });
+    }
+  }
+  res.send(monthYears);
+});
+
+app.get("/api/v1/budget/:year/:month", async (req, res) => {
+  const year = parseInt(req.params.year);
+  const month = parseInt(req.params.month);
+  if (isNaN(year) || isNaN(month)) res.sendStatus(400).send("Year and month should be numeric");
+  if (month < 1 || month > 12) res.sendStatus(400).send("Month should be between 1 and 12");
+  const minYear = transactions.reduce((m, t) => Math.min(new Date(t.date).getFullYear(), m), 20000);
+  if (year < minYear) res.sendStatus(400).send("Year specified is before start of transaction history");
+
+  const filteredTrans = transactions.filter(t => {
+    const date = new Date(t.date);
+    return date.getFullYear() === year && (date.getMonth() - 1) === month;
+  });
+
+  const budgetTotals = filteredTrans.reduce((acc, trans) => {
+    const catTotals = acc[trans.category] ?? { transactions: 0, actual: 0 }
+    return {
+      ...acc,
+      [trans.category]: { transactions: catTotals.transactions + 1, actual: catTotals.actual + trans.amount }
+    }
+  }, {});
+
+  const lineItems = budget.map(b => {
+    const actual = budgetTotals[b.category] || { tranactions: 0, actual: 0 };
+    return { ...b, ...actual };
+  });
+
+  const totals = lineItems.reduce((acc, li) => ({ budgeted: acc.budgeted + li.budgeted, actual: acc.actual + li.actual }), { budgeted: 0, actual: 0 });
+  const startDate = new Date(year, month, 1, 1);
+  const endDate = new Date(year, month + 1, -1)
+
   await setTimeout(() => {
-    res.json(budget)
+    res.json({ startDate, endDate, lineItems, ...totals });
   }, 2000)
-})
+});
+
+
 app.get('/api/v1/testdata', (req, res) => {
   const getRandom = (range) => {
     return Math.floor(Math.random() * range);
