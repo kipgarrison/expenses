@@ -2,42 +2,44 @@ import { useEffect, useReducer } from "react";
 import { merchantsReducer } from "../../reducers/merchantReducer";
 import "./merchants.css";
 import { InitialMerchantState } from "../../types/merchants/MerchantState";
-import { MerchantActionTypes } from "../../actions/merchants/MerchantActionTypes";
-import { LoadMerchantsSuccessAction, LoadMerchantsFailureAction, LoadMerchantsInitAction } from '../../actions/merchants/MerchantActions'
-import axios from "axios";
 import { formatCurrency } from "../../helpers/currencyFormatter";
 import { Table } from 'react-bootstrap';
 import type { ColumnType } from "../../types/ColumnType";
 import { SortButton } from "../SortButton";
-import { SortMerchants } from "../../actions/merchants/MerchantActions";
+import { LoadMerchantsInitAction, SortMerchants } from "../../actions/merchants/MerchantActions";
 import type { SortType } from "../../types/TransactionsState";
+import type { ActionWithPayload } from "../../actions/ActionWithPayload";
+import { loadMerchantsEffect } from "../effects/merchants/loadMerchantsEffect";
 
 export function Merchants() {
   const [ state, dispatch ] = useReducer(merchantsReducer, InitialMerchantState);
   
-  useEffect(() => {
-    if (state.lastAction?.type === MerchantActionTypes.LOAD_MERCHANTS_INIT) {
-      executeLoad();
-    }
+  useEffect(() => dispatch(new LoadMerchantsInitAction()), []);
+
+  useEffect(() => loadMerchantsEffect(state.lastAction as ActionWithPayload, dispatch), [state.lastAction]);
+  // useEffect(() => {
+  //   if (state.lastAction?.type === MerchantActionTypes.LOAD_MERCHANTS_INIT) {
+  //     executeLoad();
+  //   }
     
-    async function executeLoad() {
-      const url = `http://localhost:3000/api/v1/merchants` 
-      try {
-        const result = await axios.get(url);
-        dispatch(new LoadMerchantsSuccessAction(result.data));
-      }
-      catch {
-        dispatch(new LoadMerchantsFailureAction());
-      }
-    }
-  }, [state.lastAction?.type]); 
+  //   async function executeLoad() {
+  //     const url = `http://localhost:3000/api/v1/merchants` 
+  //     try {
+  //       const result = await axios.get(url);
+  //       dispatch(new LoadMerchantsSuccessAction(result.data));
+  //     }
+  //     catch {
+  //       dispatch(new LoadMerchantsFailureAction());
+  //     }
+  //   }
+  //}, [state.lastAction?.type]); 
 
   const getSortDir = (col: string, sort: SortType): "asc" | "desc" | "none" => {
     if (sort?.column !== col) return "none";
     return sort?.direction || "asc";
   }  
 
-  useEffect(() => dispatch(new LoadMerchantsInitAction()), []);
+  
 
   const sort = state.sort;
 
@@ -110,3 +112,5 @@ export function Merchants() {
       </Table>
     )
 }
+
+

@@ -50,5 +50,17 @@ export const API_LOAD_MONTH_YEARS_FAILURE_ALERT: AlertType = {
   type: 'failure',
   message: 'An error occured when attempting to load your budget'
 }
+
+
+export const API_LOAD_BUDGET_SUMMARY_FAILURE_ALERT: AlertType = {
+  type: 'failure',
+  message: 'An error occured when attempting to load your budget'
+}
+
+export const API_LOAD_REFERENCE_LIST_FAILURE_ALERT: AlertType = {
+  type: 'failure',
+  message: 'An error occured when attempting to load reference data'
+}
+
 export const BASE_API_URL = "http://localhost:3000/api/v1";  
 export const DELETE_URL = `${BASE_API_URL}/transactions` 

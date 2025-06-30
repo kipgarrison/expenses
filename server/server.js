@@ -4,6 +4,7 @@ const cors = require('cors');
 const app = express()
 const port = 3000
 const bodyParser = require('body-parser');
+const _ = require('lodash');
 
 const budget = [
   { category: "Health & Wellness", budgeted: 250 },
@@ -21,22 +22,22 @@ const budget = [
   { category: "Pets", budgeted: 15 }
 ];
 
-function addRunningBalance(transactions) {
+function addRunningTotal(transactions) {
   total = 0;
   transactions = transactions.sort((a, b) => a.date > b.date ? 1 : (a.date == b.date ? a.id - b.id : -1)).map(t => {
     total = total + t.amount;
-    return { ...t, runningBalance: total }
+    dateParts = t.date.split("-");
+    return { ...t, runningBalance: total, year: parseInt(dateParts[0]), month: parseInt(dateParts[1]), day: parseInt(dateParts[2]) };
   });
   transactions.sort((a, b) => a.date > b.date ? -1 : 1);
   return transactions;
 }
 
 async function loadTransactions() {
-  let transactions = (await fs.readFile("./expense-data.txt")).toString();
-  let json = addRunningBalance(JSON.parse(transactions));
+  let transactions = (await fs.readFile("./expenses.txt")).toString();
+  let json = addRunningTotal(JSON.parse(transactions));
   return json;
 }
-
 
 (async () => transactions = await loadTransactions())();
 
@@ -51,7 +52,7 @@ app.get('/api/v1/transactions', async (req, res) => {
 app.delete("/api/v1/transactions/:id", async (req, res) => {
   await setTimeout(() => {
     transactions = transactions.filter(t => t.id !== parseInt(req.params["id"]))
-    addRunningBalance();
+    addRunningTotal(transactions);
     res.sendStatus(204);
   }, 2000);
 });
@@ -65,7 +66,7 @@ app.put("/api/v1/transactions/:id", async (req, res) => {
       return res.sendStatus(400).send("Invalid id");
     }
     transactions = transactions.map(t => t.id === tId ? trans : t);
-    addRunningBalance();
+    addRunningTotal(transactions);
     res.sendStatus(204);
   }, 2000)
 
@@ -76,8 +77,8 @@ app.post("/api/v1/transactions", async (req, res) => {
     let trans = req.body;
     if (req.body.id !== 0) return res.status(400).send("bad request id is set");
     trans.id = transactions.length + 1;
-    transactions = [...transactions, trans]
-    addRunningBalance();
+    transactions = [trans, ...transactions]
+    addRunningTotal(transactions);
     res.status(201).json(transactions.find(t => t.id === trans.id));
   }, 2000)
 });
@@ -87,14 +88,14 @@ app.get('/api/v1/merchants', async (req, res) => {
     let { merchants, totCount, totAmount } = accumulator;
     totCount += 1;
     totAmount = totAmount + trans.amount;
-    if (merchants[trans.merchant]) {
-      const curr = merchants[trans.merchant];
+    if (merchants[trans.merchant.name]) {
+      const curr = merchants[trans.merchant.name];
       const newCount = curr.totalCount + 1;
       const totalAmount = curr.totalAmount + trans.amount;
       return {
         merchants: {
           ...merchants,
-          [trans.merchant]: {
+          [trans.merchant.name]: {
             totalCount: newCount,
             totalAmount: totalAmount,
             avgAmount: totalAmount / newCount,
@@ -110,7 +111,7 @@ app.get('/api/v1/merchants', async (req, res) => {
       return {
         merchants: {
           ...merchants,
-          [trans.merchant]: {
+          [trans.merchant.name]: {
             totalCount: 1,
             totalAmount: trans.amount,
             avgAmount: trans.amount,
@@ -212,27 +213,27 @@ app.get('/api/v1/testdata', (req, res) => {
   }
 
   const merchants = [
-    { name: 'Wal-Mart', categories: ["Groceries", "Home Goods"] },
-    { name: 'Target', categories: ["Groceries", "Home Goods"] },
-    { name: 'Schnucks', categories: ["Grocery"] },
-    { name: 'Wal-Greens', categories: ["Health & Wellsness", "Home Goods"] },
-    { name: 'Dierbergs', categories: ["Groceries"] },
-    { name: 'CVS', categories: ["Health & Wellness"] },
-    { name: 'Amazon', categories: ["Shopping"] },
-    { name: 'McDonalds', categories: ["Eating Out"] },
-    { name: 'Sam\'s Club', categories: [["Groceries", "Home Goods"]] },
-    { name: 'Sam\'s Club Gas', categories: ['Gas'] },
-    { name: 'O\'Fallon IL', categories: ["Utilities"] },
-    { name: 'Macys', categories: ["Home Goods"] },
-    { name: 'Joes Exotic Pets', categories: ["Pets"] },
-    { name: 'Menards', categories: ["Home Goods"] },
-    { name: 'Cosco', categories: ["Groceries"] },
-    { name: 'Lowes', categories: ["Home Goods"] },
-    { name: 'Home Depot', categories: ["Home Goods"] },
-    { name: 'Scott Credit Union', categories: ['Mortgage'] },
-    { name: 'Plural Sight', categories: ['Education'] },
-    { name: 'Kindle', categories: ['Entertainment', 'Education'] },
-    { name: 'Chase', categories: ['Fees'] }
+    { id: 1, name: 'Wal-Mart', category: { id: 1, name: "Groceries" } },
+    { id: 2, name: 'Target', category: { id: 2, name: "Home Goods" } },
+    { id: 3, name: 'Schnucks', category: { id: 1, name: "Groceries" } },
+    { id: 4, name: 'Wal-Greens', category: { id: 3, name: "Health & Wellness" } },
+    { id: 5, name: 'Dierbergs', category: { id: 1, name: "Groceries" } },
+    { id: 6, name: 'CVS', category: { id: 3, name: "Health & Wellness" } },
+    { id: 7, name: 'Amazon', category: { id: 4, name: "Shopping" } },
+    { id: 8, name: 'McDonalds', category: { id: 5, name: "Eating Out" } },
+    { id: 9, name: 'Sam\'s Club', category: { id: 1, name: "Groceries" } },
+    { id: 10, name: 'Sam\'s Club Gas', category: { id: 6, name: 'Gas' } },
+    { id: 11, name: 'O\'Fallon IL', category: { id: 7, name: "Utilities" } },
+    { id: 12, name: 'Macys', category: { id: 2, name: "Home Goods" } },
+    { id: 13, name: 'Joes Exotic Pets', category: { id: 8, name: "Pets" } },
+    { id: 14, name: 'Menards', category: { id: 2, name: "Home Goods" } },
+    { id: 15, name: 'Cosco', category: { id: 1, name: "Groceries" } },
+    { id: 16, name: 'Lowes', category: { id: 2, name: "Home Goods" } },
+    { id: 17, name: 'Home Depot', category: { id: 2, name: "Home Goods" } },
+    { id: 18, name: 'Scott Credit Union', category: { id: 9, name: 'Mortgage' } },
+    { id: 19, name: 'Plural Sight', category: { id: 10, name: 'Education' } },
+    { id: 20, name: 'Kindle', category: { id: 11, name: 'Entertainment' } },
+    { id: 21, name: 'Chase', category: { id: 12, name: 'Fees' } }
   ];
 
   const lowerDateYear = 2020;
@@ -241,16 +242,16 @@ app.get('/api/v1/testdata', (req, res) => {
   commentLengthRange = { lower: 5, upper: 25 };
   hasReceiptPercentage = 85;
   const items = [];
-  for (let i = 0; i < 1000; i++) {
-    const { name, categories } = merchants[getRandom(merchants.length)];
+  for (let i = 0; i < 2000; i++) {
+    const { id, name, category } = merchants[getRandom(merchants.length)];
     const date = getDate(lowerDateYear);
     const type = getRandom(100);
     const amount = getRandom(amountRange.upper - amountRange.lower);
     const hasReceipt = getRandom(100);
     items.push({
       id: i,
-      category: categories[getRandom(categories.length)],
-      merchant: name,
+      category,
+      merchant: { id, name },
       date: getDate(lowerDateYear),
       type: getType(),
       amount: amountRange.lower + amount + (getRandom(100) / 100),
@@ -259,6 +260,72 @@ app.get('/api/v1/testdata', (req, res) => {
     })
   }
   res.json(items);
+});
+
+app.get("/api/v1/budget/daily/:year/:month", async (req, res) => {
+  const year = parseInt(req.params.year);
+  const month = parseInt(req.params.month);
+
+  // grab all transactions for the request month regardless of year
+  const ymTrans = transactions.filter(t => t.month === month);
+
+  // sum amounts by day for request year and over all by day
+  const { reqYear, totals } = ymTrans.reduce((a, t) => {
+    let { reqYear, totals } = a;
+    const reqYrAmt = (reqYear[t.day] ?? 0) + t.amount;
+    const totalAmt = (totals[t.day] ?? 0) + t.amount;
+    reqYear = t.year === year ? { ...reqYear, [t.day]: reqYrAmt } : reqYear;
+    totals = { ...totals, [t.day]: totalAmt };
+    return { reqYear, totals }
+  }, { reqYear: {}, totals: {} });
+
+  // figure out how  many years of data there is
+  const { maxYear, minYear } = transactions.reduce((a, t) => {
+    return { maxYear: Math.max(t.year, a.maxYear), minYear: Math.min(t.year, a.minYear) }
+  }, { maxYear: 0, minYear: 3000 });
+  const years = maxYear - minYear + 1;
+
+  // compute running total for budget 
+  const totalBudget = budget.reduce((a, b) => a + b.budgeted, 0);
+  const days = new Date(year, month, 0).getDate();
+  const perDay = totalBudget / days;
+  const dailyBudget = _.range(1, days + 1).map(d => ({ day: d, budgeted: perDay * d }));
+
+  const results = Object.keys(dailyBudget).map(d => ({ day: d, req: reqYear[d] ?? 0, avg: (totals[d] ?? 0) / years, budgeted: dailyBudget[d].budgeted }));
+
+  let actual = 0;
+  let average = 0;
+  const cummResults = results.map(r => {
+    actual += r.req;
+    average += r.avg;
+    day = parseInt(r.day) + 1;
+    return { date: `${month}/${day}`, budgeted: r.budgeted, actual, average };
+  })
+  const firstDay = new Date(year, month - 1, 1);
+  const lastDay = new Date(year, month, 0);
+  const today = new Date();
+  const daysRemaining = Math.ceil((lastDay.getTime() - firstDay.getTime()) / (1000 * 60 * 60 * 24));
+
+  const status = firstDay <= today && lastDay >= today ? "In Progress" : (firstDay >= today ? "Future" : "Past");
+  const monthlyTotal = cummResults[cummResults.length - 1].actual;
+  const balance = totalBudget > monthlyTotal ? totalBudget - monthlyTotal : 0;
+  const perDayRemaining = Math.floor(balance / daysRemaining);
+  const currentPace = Math.floor(monthlyTotal / today.getDate()) * lastDay.getDate();
+  res.json({ status, balance, perDay: perDayRemaining, currentPace, daily: cummResults });
+});
+
+app.get("/api/v1/reference/merchants", (req, res) => {
+  const merchants = transactions.map(t => t.merchant);
+  const mers = _.uniqBy(merchants, "id")
+  mers.sort((a, b) => a.name > b.name ? 1 : -1);
+  res.json([... new Set(mers)]);
+});
+
+app.get("/api/v1/reference/categories", (req, res) => {
+  const categories = transactions.map(t => t.category);
+  const cats = _.uniqBy(categories, "id");
+  cats.sort((a, b) => a.name > b.name ? 1 : -1);
+  res.json([...new Set(cats)]);
 });
 
 app.listen(port, () => {

@@ -1,7 +1,7 @@
 import type { TransactionFormProps } from "../types/TransactionFormProps";
 import './TransactionForm.css';
 
-export default function TransactionForm({ transaction, merchants, types, onChange, onSave }: TransactionFormProps) {
+export default function TransactionForm({ transaction, merchants, categories, onChange, onSave }: TransactionFormProps) {
   function setField(field: string, value: string|boolean) {
     if (field === "date") {
       onChange({ ...transaction, date: new Date(value as string) });
@@ -9,6 +9,12 @@ export default function TransactionForm({ transaction, merchants, types, onChang
       onChange({ ...transaction, amount: parseFloat(value as string) });
     } else if (field === "hasReceipt") {
       onChange({ ...transaction, hasReceipt: value as boolean });
+    } else if (field === "merchant") {
+      const merchant = merchants.find(m => m.name === value) ?? { id: 0, name: "" };
+      onChange({ ...transaction, merchant })
+    } else if (field === "category") {
+      const category = categories.find(c => c.name === value) ?? { id: 0, name: "" };
+      onChange({ ...transaction, category })
     } else {
       onChange({ ...transaction, [field]: value });
     }
@@ -30,22 +36,22 @@ export default function TransactionForm({ transaction, merchants, types, onChang
       <div className="form-group">
         <label htmlFor="merchant">Merchant</label>
         <select className="form-control" id="merchant" name="merchant" role="merchant-name" data-testid="merchants"
-          value={transaction.merchant} 
+          value={transaction.merchant.name} 
           onChange={(e) => setField("merchant", e.target.value)} required>
-          <option></option>
+          <option key=""></option>
           {merchants.map(m => (
-            <option>{m}</option>
+            <option key={m.id}>{m.name}</option>
           ))}
         </select>
       </div>
       <div className="form-group">
-        <label htmlFor="type">Type</label>
-        <select className="form-control" id="type" name="type" data-testid="types" 
-          value={transaction.type}
-          onChange={(e) => setField("type", e.target.value)} required>
-          <option></option>
-          {types.map(t => (
-            <option>{t}</option>
+        <label htmlFor="type">Category</label>
+        <select className="form-control" id="type" name="type" data-testid="categories"
+          value={transaction.category.name}
+          onChange={(e) => setField("category", e.target.value)} required>
+          <option key="none"></option>
+          {categories.map(c => (
+            <option key={c.id}>{c.name}</option>
           ))}
         </select>
       </div>

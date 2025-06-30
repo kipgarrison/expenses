@@ -17,6 +17,7 @@ export function NavigationTabs({ tabs}: { tabs: TabType[]}) {
     <>
         <h3>Expenses</h3>
         <Tabs
+          data-testid="app-tabs"
           activeKey={key}
           onSelect={(k) => { setKey(k??"")}}
           className="mb-3">

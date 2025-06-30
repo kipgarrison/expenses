@@ -1,26 +1,18 @@
+import type { ReferenceData } from "./app/ReferenceData";
+
 export type TransactionSearchFilterType = {
   fromDate?: string,
   toDate?: string,
-  merchants: string[],
+  merchants: ReferenceData[],
   fromAmount?: number,
   toAmount?: number,
   comments?: string,
-  types: string[]
+  categories: ReferenceData[]
 }
-
-// export type MaxTransactionSearchFilter = {
-//   fromDate: Date,
-//   toDate: Date,
-//   merchants: string[],
-//   fromAmount: number,
-//   toAmount: number,
-//   comments: string,
-//   types: string[]
-// }
 
 export const emptyFilter: TransactionSearchFilterType = {
   merchants: [],
-  types: []
+  categories: []
 };
 
 export const maxFilter: TransactionSearchFilterType = {
@@ -29,6 +21,6 @@ export const maxFilter: TransactionSearchFilterType = {
   fromAmount: 0,
   toAmount: 1000000000,
   merchants: [],
-  types: [],
+  categories: [],
   comments: ''
 };

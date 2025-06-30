@@ -1,7 +1,6 @@
 import Modal from 'react-bootstrap/modal';
 import Button from 'react-bootstrap/button';
 import { ModalBody, ModalHeader } from 'react-bootstrap';
-//import type { TransactionsProps } from '../types/TransactionsProps';
 import type { Transaction } from '../types/Transaction';
 import TransactionTable from './Transaction-Table';
 import TransactionSearchForm from './TransactionSearchForm';
@@ -10,23 +9,24 @@ import type { TransactionFilterSummaryProps } from '../types/TransactionFilterSu
 import TransactionSearchSummary from './TransactionSummarySummary';
 import { transactionsReducer } from '../reducers/transactionsReducer';
 import { transactionStateInitialValue } from '../types/TransactionsState';
-import { useEffect, useReducer } from 'react';
+import { useEffect} from 'react';
 import type { ModalType } from '../types/unionTypes';
 import { AddTransactionAction, ClearCurrentTransactionAction, CreateTransactionInitAction, DeleteTransactionInitAction, EditTransactionAction, HideAlertAction, LoadTransactionsInitAction, RemoveColumnFilterAction, SetCurrentTransactionAction, SetModalAction, SetSearchFilterAction, SetSortAction, UpdatePageNumberAction, UpdateTransactionAction, UpdateTransactionInitAction } from '../actions/TransactionActions';
 import type { TransactionSearchFilterType } from '../types/TransactionSeachFilterType';
 import type { ActionWithPayload } from '../actions/ActionWithPayload';
-import { createTransaction } from './effects/createTransactionEffect';
-import { deleteTransaction } from './effects/deleteTransactionEffect';
-import { loadTransactions } from './effects/loadTransactionsEffect';
-import { updateTransaction } from './effects/updateTransactionEffect';
 import { AppSpinner } from './AppSpinner';
 import { AppToast } from './AppToast';
 import { ApiSpinner } from './ApiSpinner';
 import type { ColumnType } from '../types/ColumnType';
+import type { TransactionsProps } from '../types/TransactionsProps';
+import React from 'react';
+import { loadTransactions } from './effects/transactions/loadTransactionsEffect';
+import { createTransaction } from './effects/transactions/createTransactionEffect';
+import { deleteTransaction } from './effects/transactions/deleteTransactionEffect';
+import { updateTransaction } from './effects/transactions/updateTransactionEffect';
 
-
-export function Transactions() {
-  const [ state, dispatch ] = useReducer(transactionsReducer, transactionStateInitialValue );
+export function Transactions( { merchants, categories }: TransactionsProps) {
+  const [ state, dispatch ] = React.useReducer(transactionsReducer, transactionStateInitialValue );
   // const [showSpinner, setShowSpinner] = useState(true);
   
   const handlers = {
@@ -66,7 +66,7 @@ export function Transactions() {
           },
           setModal: (modal: ModalType) => dispatch(new SetModalAction(modal)),
           clearFilterColumns: (columns: string[]) => dispatch(new RemoveColumnFilterAction(columns))
-      }
+  }
 
   const filterSummaryProps: TransactionFilterSummaryProps = {
     filter: state.filter,
@@ -90,68 +90,68 @@ export function Transactions() {
     dispatch(new HideAlertAction());
   }
 
-  const show = state.transactions?.length === 0;
+  const show = state.showAppSpinner;
 
   return (
-      <AppSpinner show={show}>
+    <AppSpinner show={show}>
       <>
-         <Modal show={state.modal==="Edit"} onHide={() => handlers.setModal("None")} role="transaction-form">
-            <ModalHeader closeButton>
-              <Modal.Title>
-                { state.currentTransaction?.id ? 'Edit Transaction' : 'Add Transaction' }
-              </Modal.Title>
-            </ModalHeader>
-            <ModalBody>
-                <TransactionForm 
-                  transaction={state.currentTransaction as Transaction}
-                  merchants={state.merchants}
-                  types={state.transactionTypes}
-                  onChange={handlers.update}
-                  onSave={handlers.save}/>
-            </ModalBody>
-          </Modal>
-          <ApiSpinner show={state.showSpinner} />
-          <AppToast alert={state?.alert} onClose={closeAlert} />
-          <TransactionSearchSummary {...filterSummaryProps} />
-          <TransactionTable 
-            transactions={state.transactionPage} 
-            onDelete={handlers.startDelete} 
-            onEdit={handlers.edit} 
-            pageNumber={state.pageNumber}
-            onSort={handlers.sort}
-            summary={state.summary}
-            onPageNumberChange={handlers.pageNumber}
-            currentSort={state.sort}>
-              <Button variant="primary" onClick={handlers.addTransaction} role="add-transaction" className='mx-3'>
-                Add Transaction
-              </Button>          
-              <Button role="search-button" variant="secondary" onClick={()=>handlers.setModal("Search")}>
-                    Filter
-              </Button>
-            </TransactionTable>
-          <Modal role="confirm-delete" show={state.modal === "ConfirmDelete"} onHide={()=>handlers.setModal("None")}>
-            <Modal.Header closeButton>
-              <Modal.Title>Confirm Deletion</Modal.Title>
-            </Modal.Header>
-            <Modal.Body>Are you sure you want to delete this transation from {state.currentTransaction?.merchant} which occured on {state.currentTransaction?.date.toLocaleDateString()}?</Modal.Body>
-            <Modal.Footer>
-              <Button variant="secondary" onClick={handlers.cancelDelete} role="cancel-button">
-                Cancel
-              </Button>
-              <Button variant="primary" onClick={() => handlers.delete(state.currentTransaction as Transaction)} role="confirm-button">
-                Delete Transaction
-              </Button>
-            </Modal.Footer>
-          </Modal>
+        <Modal show={state.modal==="Edit"} onHide={() => handlers.setModal("None")} role="transaction-form">
+          <ModalHeader closeButton>
+            <Modal.Title>
+              { state.currentTransaction?.id ? 'Edit Transaction' : 'Add Transaction' }
+            </Modal.Title>
+          </ModalHeader>
+          <ModalBody>
+              <TransactionForm 
+                transaction={state.currentTransaction as Transaction}
+                merchants={merchants}
+                categories={categories}
+                onChange={handlers.update}
+                onSave={handlers.save}/>
+          </ModalBody>x
+        </Modal>
+        <ApiSpinner show={state.showApiSpinner} />
+        <AppToast alert={state?.alert} onClose={closeAlert} />
+        <TransactionSearchSummary {...filterSummaryProps} />
+        <TransactionTable 
+          transactions={state.transactionPage} 
+          onDelete={handlers.startDelete} 
+          onEdit={handlers.edit} 
+          pageNumber={state.pageNumber}
+          onSort={handlers.sort}
+          summary={state.summary}
+          onPageNumberChange={handlers.pageNumber}
+          currentSort={state.sort}>
+            <Button variant="primary" onClick={handlers.addTransaction} role="add-transaction" className='mx-3'>
+              Add Transaction
+            </Button>          
+            <Button role="search-button" variant="secondary" onClick={()=>handlers.setModal("Search")}>
+                  Filter
+            </Button>
+          </TransactionTable>
+        <Modal data-testid="confirm-delete" show={state.modal === "ConfirmDelete"} onHide={()=>handlers.setModal("None")}>
+          <Modal.Header closeButton>
+            <Modal.Title>Confirm Deletion</Modal.Title>
+          </Modal.Header>
+          <Modal.Body>Are you sure you want to delete this transation from {state.currentTransaction?.merchant.name} which occured on {state.currentTransaction?.date.toLocaleDateString()}?</Modal.Body>
+          <Modal.Footer>
+            <Button variant="secondary" onClick={handlers.cancelDelete} data-testid="cancel-button">
+              Cancel
+            </Button>
+            <Button variant="primary" onClick={() => handlers.delete(state.currentTransaction as Transaction)} data-testid="confirm-button">
+              Delete Transaction
+            </Button>
+          </Modal.Footer>
+        </Modal>
 
-          <TransactionSearchForm 
-            filter={state.filter} 
-            merchants={state.merchants}
-            types={state.transactionTypes}
-            show={state.modal === "Search"} 
-            onClose={() => handlers.setModal("None")} 
-            onSearch={(f) => {handlers.search(f)}} />
-        </>
-        </AppSpinner>
+        <TransactionSearchForm 
+          filter={state.filter} 
+          merchants={merchants}
+          categories={categories}
+          show={state.modal === "Search"} 
+          onClose={() => handlers.setModal("None")} 
+          onSearch={(f) => {handlers.search(f)}} />
+      </>
+    </AppSpinner>
     )
 }

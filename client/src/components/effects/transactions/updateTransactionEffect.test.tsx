@@ -1,8 +1,10 @@
 import { vi } from 'vitest';
 import axios from 'axios'
-import { newTransaction, type Transaction } from '../../types/Transaction';
-import { UpdateTransactionAction, UpdateTransactionFailureAction, UpdateTransactionInitAction, UpdateTransactionSuccessAction } from '../../actions/TransactionActions';
+import { UpdateTransactionAction, UpdateTransactionFailureAction, UpdateTransactionInitAction, UpdateTransactionSuccessAction } from '../../../actions/TransactionActions';
+import { newTransaction, type Transaction } from '../../../types/Transaction';
 import { updateTransaction } from './updateTransactionEffect';
+
+
 
 describe("deleteTransactionEffect", () => {
   const dispatch= vi.fn();

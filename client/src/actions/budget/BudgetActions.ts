@@ -1,7 +1,8 @@
 import { getCurrentMonthYear } from "../../helpers/formatDate";
 import type { Budget } from "../../types/budget/Budget";
+import type { BudgetSummary } from "../../types/budget/BudgetDailySummary";
 import { ActionWithPayload } from "../ActionWithPayload";
-import { BudgetActionTypes } from "./budgetActionTypes";
+import { BudgetActionTypes } from "./BudgetActionTypes";
 
 export class LoadBudgetInitAction extends ActionWithPayload {
   constructor(monthYear?: { month: number, year?: number }) {
@@ -37,6 +38,25 @@ export class LoadMonthYearsSuccessAction extends ActionWithPayload {
 export class LoadMonthYearsFailureAction extends ActionWithPayload {
   constructor() {
     super(BudgetActionTypes.LOAD_MONTH_YEARS_FAILURE);
+  }
+}
+
+export class LoadSummaryInitAction extends ActionWithPayload {
+  constructor(monthYear?: { month: number, year: number}) {
+    monthYear = monthYear ?? getCurrentMonthYear(); 
+    super(BudgetActionTypes.LOAD_SUMMARY_INIT, monthYear);
+  }
+}
+
+export class LoadSummarySuccessAction extends ActionWithPayload {
+  constructor(payload: BudgetSummary) {
+    super(BudgetActionTypes.LOAD_SUMMARY_SUCCESS, payload);
+  }
+}
+
+export class LoadSummaryFailureAction extends ActionWithPayload {
+  constructor() {
+    super(BudgetActionTypes.LOAD_SUMMARY_FAILURE);
   }
 }
 

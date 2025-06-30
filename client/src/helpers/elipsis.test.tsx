@@ -1,6 +1,6 @@
 import { elipsis } from "./elipsis";
 
-describe.only("elipsis", () => {
+describe("elipsis", () => {
   it("should not add an elipsis to text strings shorted the max parameter", () => {
     const str = "four score and seven years ago";
     const elided = elipsis(str, 40);

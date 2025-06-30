@@ -1,7 +1,6 @@
 import { AddTransactionAction, ClearCurrentTransactionAction, CreateTransactionFailureAction, CreateTransactionInitAction, CreateTransactionSuccessAction, DeleteTransactionFailureAction, DeleteTransactionInitAction, DeleteTransactionSuccessAction, EditTransactionAction, HideAlertAction, LoadTransactionsFailureAction, LoadTransactionsInitAction, LoadTransactionsSuccessAction, RemoveColumnFilterAction, SetCurrentTransactionAction, SetModalAction, SetSearchFilterAction, SetSortAction, UpdatePageNumberAction, UpdateTransactionAction, UpdateTransactionFailureAction, UpdateTransactionInitAction, UpdateTransactionSuccessAction } from "../actions/TransactionActions";
 import { midnightToday } from "../helpers/midnightToday";
 import { midnightTomorrow } from "../helpers/midnightTomorrow";
-//import { sortObjectsArray } from "../helpers/sortObjectsArray";
 import { API_CREATE_TRANSACTION_FAILURE_ALERT, API_CREATE_TRANSACTION_SUCCESS_ALERT, API_DELETE_TRANSACTION_FAILURE_ALERT, API_DELETE_TRANSACTION_SUCESS_ALERT, API_UPDATE_TRANSACTION_FAILURE_ALERT, API_UPDATE_TRANSACTION_SUCCESS_ALERT } from "../types/constants";
 import { newTransaction, type Transaction } from "../types/Transaction";
 import { emptyFilter, maxFilter, type TransactionSearchFilterType } from "../types/TransactionSeachFilterType";
@@ -15,10 +14,10 @@ describe("TransactionsReducer", () => {
 
   beforeEach(() => {  
      transactions = [ 
-        { id: 1, date: new Date("1/1/2020"), merchant: "Wal-Mart", type: "Credit Card Debit",  amount: 100, comments: "testing 123 testing", runningBalance: 100 },
-        { id: 2, date: new Date("2/1/2021"), merchant: "Target",   type: "Bank Account Debit",  amount: 200, comments: "", runningBalance: 300 },
-        { id: 3, date: new Date("3/1/2022"), merchant: "Sears",    type: "Credit Card Debit",  amount: 300, comments: "", runningBalance: 600 },
-        { id: 4, date: new Date("4/1/2023"), merchant: "Schnucks", type: "Bank Account Credit",  amount: 400, comments: "12356 TESTING", runningBalance: 1000 },
+        { id: 1, date: new Date("1/1/2020"), merchant: { id: 1, name: "Wal-Mart" }, category: { id: 1, name: "Category1" },  amount: 100, comments: "testing 123 testing", runningBalance: 100 },
+        { id: 2, date: new Date("2/1/2021"), merchant: { id: 2, name: "Target" },  category: { id: 2, name: "Category1" },  amount: 200, comments: "", runningBalance: 300 },
+        { id: 3, date: new Date("3/1/2022"), merchant: { id: 3, name: "Sears" },   category: { id: 3, name: "Category1" },  amount: 300, comments: "", runningBalance: 600 },
+        { id: 4, date: new Date("4/1/2023"), merchant: { id: 4, name: "Schnucks" }, category: { id: 4, name: "Category1" },  amount: 400, comments: "12356 TESTING", runningBalance: 1000 },
       ];
 
        initialTransactionState  = { ...transactionStateInitialValue, pageSize: 2, transactions };
@@ -72,7 +71,7 @@ describe("TransactionsReducer", () => {
 
   describe("Update_Transaction", () => {
     it("should update the current transaction in state to reflect the one passed in", () => {
-      const updatedTrans = { ...transactions[0], merchant: "Test Merchant" };
+      const updatedTrans = { ...transactions[0], merchant: { id: 1, name: "Test Merchant" } };
 
       const action = new EditTransactionAction(updatedTrans);
 
@@ -93,7 +92,7 @@ describe("TransactionsReducer", () => {
         ...initial, 
         currentTransaction: newTransaction, 
         transactions: [...initial.transactions, transToSave], 
-        modal: "None", backupTransaction: undefined, lastAction: action, showSpinner: true };
+        modal: "None", backupTransaction: undefined, lastAction: action, showApiSpinner: true, showAppSpinner: false };
       
       const newState = reducer(initial, action);
 
@@ -119,7 +118,7 @@ describe("TransactionsReducer", () => {
       const initial: TransactionsState = { ...initialTransactionState, 
         transactions: [...transactions, transToSave],
         currentTransaction: transToSave, modal: "None",
-        alert: API_CREATE_TRANSACTION_SUCCESS_ALERT, showSpinner: false };
+        alert: API_CREATE_TRANSACTION_SUCCESS_ALERT, showApiSpinner: false };
       const expected: TransactionsState = { 
         ...initial, 
         currentTransaction: newTransaction, 
@@ -166,7 +165,7 @@ describe("TransactionsReducer", () => {
         currentTransaction: newTransaction, 
         transactions: transactions, summary: { numPages: 2, totalAmount: 1000, transactionsCount: 4 },
         modal: "None", backupTransaction: undefined, lastAction: action,
-        transactionPage: transactions.slice(0, 2), showSpinner: false,  alert:  API_CREATE_TRANSACTION_FAILURE_ALERT };
+        transactionPage: transactions.slice(0, 2), showApiSpinner: false,  alert:  API_CREATE_TRANSACTION_FAILURE_ALERT };
       
       const newState = reducer(initial, action);
 
@@ -184,7 +183,7 @@ describe("TransactionsReducer", () => {
         ...initial, 
         currentTransaction: newTransaction, 
         transactions: [...initial.transactions ], 
-        modal: "None", backupTransaction: transToUpdate, lastAction: action,  showSpinner: true };
+        modal: "None", backupTransaction: transToUpdate, lastAction: action,  showApiSpinner: true };
       
       const newState = reducer(initial, action);
 
@@ -212,7 +211,7 @@ describe("TransactionsReducer", () => {
       const initial: TransactionsState = { 
         ...initialTransactionState, 
         currentTransaction: transToSave, 
-        transactions: newTrans, modal: "None", showSpinner: false, alert: API_UPDATE_TRANSACTION_SUCCESS_ALERT};
+        transactions: newTrans, modal: "None", showApiSpinner: false, alert: API_UPDATE_TRANSACTION_SUCCESS_ALERT};
       const expected: TransactionsState = { 
         ...initial, 
         currentTransaction: newTransaction, 
@@ -247,7 +246,7 @@ describe("TransactionsReducer", () => {
         transactions: transactions, 
         summary: { numPages: 2, totalAmount: 1000, transactionsCount: 4 },
         modal: "None", backupTransaction: undefined, lastAction: action,
-        showSpinner: false, alert:  API_UPDATE_TRANSACTION_FAILURE_ALERT,
+        showApiSpinner: false, alert:  API_UPDATE_TRANSACTION_FAILURE_ALERT,
         transactionPage: transactions.slice(0, 2) };
       
       const newState = reducer(initial, action);
@@ -266,7 +265,7 @@ describe("TransactionsReducer", () => {
       const expected: TransactionsState = { 
         ...initial, 
         transactions: remaining, 
-        modal: "None", backupTransaction: transToUpdate, lastAction: action,  showSpinner: true,
+        modal: "None", backupTransaction: transToUpdate, lastAction: action,  showApiSpinner: true,
         summary: { numPages: 2, totalAmount: 900, transactionsCount: 3}, transactionPage: remaining.slice(0, 2) };
       
       const newState = reducer(initial, action);
@@ -301,7 +300,7 @@ describe("TransactionsReducer", () => {
         ...initial, 
         transactions: remaining, 
         summary: { numPages: 2, totalAmount: 900, transactionsCount: 3 },
-        showSpinner: false, alert:   API_DELETE_TRANSACTION_SUCESS_ALERT,
+        showApiSpinner: false, alert:   API_DELETE_TRANSACTION_SUCESS_ALERT,
         transactionPage: remaining.slice(0, 2),
         backupTransaction: undefined,  lastAction: action
       };
@@ -328,7 +327,7 @@ describe("TransactionsReducer", () => {
         transactions: [...remaining, transactions[0]], 
         summary: { numPages: 2, totalAmount: 1000, transactionsCount: 4 },
         modal: "None", backupTransaction: undefined, lastAction: action,
-        showSpinner:  false, alert:  API_DELETE_TRANSACTION_FAILURE_ALERT,
+        showApiSpinner:  false, alert:  API_DELETE_TRANSACTION_FAILURE_ALERT,
         transactionPage: transactions.slice(0, 2),
       };
       
@@ -413,7 +412,7 @@ describe("TransactionsReducer", () => {
           fromDate: "1/1/2020",
           toDate: "1/1/2021",
           merchants: [],
-          types: []
+          categories: []
       };
       const action = new SetSearchFilterAction(filter);
       
@@ -435,7 +434,7 @@ describe("TransactionsReducer", () => {
           fromAmount: 400,
           toAmount: 500,
           merchants: [],
-          types: []
+          categories: []
       };
       const action = new SetSearchFilterAction(filter);
       
@@ -456,7 +455,7 @@ describe("TransactionsReducer", () => {
       const filter: TransactionSearchFilterType = { 
           comments: "testing",
           merchants: [],
-          types: []
+          categories: []
       };
       const action = new SetSearchFilterAction(filter);
       
@@ -474,10 +473,10 @@ describe("TransactionsReducer", () => {
       expect(actual).toEqual(expected);
     })
 
-    it("should set the page to just those transactions in that are for the merchants specifed in the action", () => {
+    it("should set the page to just those transactions that are in the merchants specifed in the action", () => {
       const filter: TransactionSearchFilterType = { 
-          merchants: ["Target", "Sears"],
-          types: []
+          merchants: [{ id: 2, name: "Target" }, { id: 3, name: "Sears" }],
+          categories: []
       };
       const action = new SetSearchFilterAction(filter);
       
@@ -494,10 +493,10 @@ describe("TransactionsReducer", () => {
       expect(actual).toEqual(expected);
     })
 
-    it("should set the page to just those transactions in that are for the types specifed in the action", () => {
+    it("should set the page to just those transactions that are in the categories specifed in the action", () => {
       const filter: TransactionSearchFilterType = { 
           merchants: [],
-          types: [ "Credit Card Debit", "Bank Account Debit" ]
+          categories: [{ id: 1, name: "Cat #1" }, { id: 2, name: "Cat #2" } ]
       };
       const action = new SetSearchFilterAction(filter);
       
@@ -506,7 +505,7 @@ describe("TransactionsReducer", () => {
         lastAction: action, 
         transactionPage: [ transactions[0], transactions[1] ],  
         filter, 
-        summary: { numPages: 2, totalAmount: 600, transactionsCount: 3 }
+        summary: { numPages: 1, totalAmount: 300, transactionsCount: 2 }
       };
       
       const actual = reducer(initialTransactionState, action);
@@ -522,6 +521,7 @@ describe("TransactionsReducer", () => {
       const initial: TransactionsState = { ...initialTransactionState };
       const expected: TransactionsState = { 
         ...initial, 
+        showAppSpinner: true,
         lastAction: action 
       };
       

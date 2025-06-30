@@ -19,7 +19,7 @@ import { sortObjectsArray } from "../helpers/sortObjectsArray";
 
 export const merchantsReducer = (state: MerchantsState, action: ActionWithPayload): MerchantsState => {
   const newState: MerchantsState = { ...state, lastAction: action };
-  console.log("*********************>" + action.type, action);
+  console.log("Merchant Reducer*********************>" + action.type, action);
   switch (action.type) {
     case MerchantActionTypes.LOAD_MERCHANTS_INIT: {
       return { ...newState, apiStatus: "RUNNING" };

@@ -6,7 +6,7 @@ describe("filterToStrings", () => {
     const filter:TransactionSearchFilterType = {
       fromDate: "1/1/2025",
       merchants: [],
-      types: []
+      categories: []
     };
   
     const actual = filterToStrings(filter);
@@ -19,7 +19,7 @@ describe("filterToStrings", () => {
     const filter:TransactionSearchFilterType = {
       toDate: "12/31/2025",
       merchants: [],
-      types: []
+      categories: []
     };
       
     const actual = filterToStrings(filter);
@@ -33,7 +33,7 @@ describe("filterToStrings", () => {
       fromDate: "1/1/2025",
       toDate: "12/31/2025",
       merchants: [],
-      types: []
+      categories: []
     };
       
     const actual = filterToStrings(filter);
@@ -45,7 +45,7 @@ describe("filterToStrings", () => {
     const filter:TransactionSearchFilterType = {
       fromAmount: 100,
       merchants: [],
-      types: []
+      categories: []
     };
       
     const actual = filterToStrings(filter);
@@ -57,7 +57,7 @@ describe("filterToStrings", () => {
     const filter:TransactionSearchFilterType = {
       toAmount: 1000,
       merchants: [],
-      types: []
+      categories: []
     };
       
     const actual = filterToStrings(filter);
@@ -71,7 +71,7 @@ describe("filterToStrings", () => {
       fromAmount: 100,
       toAmount: 1000,
       merchants: [],
-      types: []
+      categories: []
     };
       
     const actual = filterToStrings(filter);
@@ -83,7 +83,7 @@ describe("filterToStrings", () => {
     const filter: TransactionSearchFilterType = {
       comments: "testing",
       merchants: [],
-      types: []
+      categories: []
     };
       
     const actual = filterToStrings(filter);
@@ -93,8 +93,8 @@ describe("filterToStrings", () => {
 
   it("should return correct filter string for single merchant", () => {
     const filter: TransactionSearchFilterType = {
-      merchants: ['Exxon'],
-      types: []
+      merchants: [ { id: 1, name: "Exxon" } ],
+      categories: []
     };
       
     const actual = filterToStrings(filter);
@@ -104,8 +104,8 @@ describe("filterToStrings", () => {
 
   it("should return correct filter string for two merchants", () => {
     const filter: TransactionSearchFilterType = {
-      merchants: [ 'Exxon', 'Target' ],
-      types: []
+      merchants: [ { id: 1, name: "Exxon" }, { id: 2, name: "Target"} ],
+      categories: []
     };
       
     const actual = filterToStrings(filter);
@@ -115,45 +115,45 @@ describe("filterToStrings", () => {
 
   it("should return correct filter string for three or more merchants", () => {
     const filter: TransactionSearchFilterType = {
-      merchants: [ 'Exxon', 'Target', 'Wal-Mart' ],
-      types: []
+      merchants: [ { id: 1, name: "Exxon" }, { id: 2, name: "Wal-Mart" }, { id: 3, name: "Target"} ],
+      categories: []
     };
       
     const actual = filterToStrings(filter);
-    const expected = [ { columns: [ 'merchants' ], message: "Merchants are Exxon, Target, ..." }];
+    const expected = [ { columns: [ 'merchants' ], message: "Merchants are Exxon, Wal-Mart, ..." }];
     expect(actual).toEqual(expected);
   })
 
-    it("should return correct filter string for single type", () => {
+    it("should return correct filter string for single category", () => {
     const filter: TransactionSearchFilterType = {
       merchants: [],
-      types: ['CCD']
+      categories: [ { id: 1, name: "Cat #1" } ]
     };
       
     const actual = filterToStrings(filter);
-    const expected = [ { columns: [ 'types' ], message: "Types are CCD" }];
+    const expected = [ { columns: [ 'categories' ], message: "Categories are Cat #1" }];
     expect(actual).toEqual(expected);
   })
 
   it("should return correct filter string for two types", () => {
     const filter: TransactionSearchFilterType = {
       merchants: [  ],
-      types: ['CCD', 'CCC']
+      categories: [ { id: 1, name: "Cat #1" }, { id: 2, name: "Cat #2" } ]
     };
       
     const actual = filterToStrings(filter);
-    const expected = [ { columns: [ 'types' ], message: "Types are CCD, CCC" }];
+    const expected = [ { columns: [ 'categories' ], message: "Categories are Cat #1, Cat #2" }];
     expect(actual).toEqual(expected);
   })
 
   it("should return correct filter string for three or more types", () => {
     const filter: TransactionSearchFilterType = {
       merchants: [ ],
-      types: [ 'CCD', 'CCC', 'BCD' ]
+      categories: [ { id: 1, name: "Cat #1" }, { id: 2, name: "Cat #2" }, { id: 3, name: "Cat #3" } ]
     };
       
     const actual = filterToStrings(filter);
-    const expected = [ { columns: [ 'types' ], message: "Types are CCD, CCC, ..." }];
+    const expected = [ { columns: [ 'categories' ], message: "Categories are Cat #1, Cat #2, ..." }];
     expect(actual).toEqual(expected);
   });
 
@@ -164,8 +164,8 @@ describe("filterToStrings", () => {
       fromAmount: 100,
       toAmount: 1000,
       comments: 'testing',
-      merchants: [ "Exxon", "Wal-Mart"],
-      types: [ 'CCD', 'CCC', 'BCD' ]
+      merchants: [ { id: 1, name: "Exxon" }, { id: 2, name: "Wal-Mart" } ],
+      categories: [ { id: 1, name: "Cat 1"}, { id: 2, name: "Cat 2" }]
     };
       
     const actual = filterToStrings(filter);
@@ -174,7 +174,7 @@ describe("filterToStrings", () => {
       { columns: [ 'fromAmount', 'toAmount' ], message: "Amount between $100.00 and $1,000.00" },
       { columns: [ 'comments' ], message: "Comments contains testing" },
       { columns: [ 'merchants' ], message: "Merchants are Exxon, Wal-Mart" },
-      { columns: [ 'types' ], message: "Types are CCD, CCC, ..." }];
+      { columns: [ 'categories' ], message: "Categories are Cat 1, Cat 2" }];
     expect(actual).toEqual(expected);
   });
 })

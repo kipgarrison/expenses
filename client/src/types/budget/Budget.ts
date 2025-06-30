@@ -10,5 +10,4 @@ export const EmptyBudget: Budget = {
   lineItems: [],
   budgeted: 0,
   actual: 0
-
 }

@@ -4,7 +4,7 @@ import { elipsis } from "./elipsis";
 
 export type FilterMessage = { columns: string[], message: string };
 export function filterToStrings(filter: TransactionSearchFilterType): FilterMessage[] {
-  const { fromDate, toDate, fromAmount, toAmount, comments, merchants, types } = filter;
+  const { fromDate, toDate, fromAmount, toAmount, comments, merchants, categories } = filter;
   let messages: FilterMessage[] = [];
 
   if (fromDate && toDate) messages = [{ columns: ['fromDate', 'toDate'], message: `Date between ${fromDate} and ${toDate}` }];
@@ -17,10 +17,12 @@ export function filterToStrings(filter: TransactionSearchFilterType): FilterMess
 
   if (comments) messages = [ ...messages, { columns: ['comments'], message: `Comments contains ${elipsis(comments, 10)}` }];
 
-  const limitedMerchants = merchants.length <=2 ? merchants : [ ...merchants.slice(0, 2), "..." ];
+  const merchantNames = merchants.map(m => m.name);
+  const categoryNames = categories.map(c => c.name);
+  const limitedMerchants = merchantNames.length <= 2 ? merchantNames : [ ...merchantNames.slice(0, 2), '...' ];
   if (merchants && merchants.length) messages = [ ...messages, { columns: ['merchants'],  message: `Merchants are ${limitedMerchants.join(", ")}` }];
-  const limitedTypes = types.length <= 2 ? types : [ ...types.slice(0, 2), "..." ];
-  if (types && types.length) messages = [ ...messages, { columns: ['types'], message: `Types are ${limitedTypes.join(", ")}` }];
+  const limitedCatorgies = categoryNames.length <= 2 ? categoryNames : [ ...categoryNames.slice(0, 2), "..." ];
+  if (categories && categories.length) messages = [ ...messages, { columns: ['categories'], message: `Categories are ${limitedCatorgies.join(", ")}` }];
 
   return messages;  
 }

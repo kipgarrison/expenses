@@ -1,7 +1,7 @@
 import axios from "axios";
-import { LoadTransactionsFailureAction, LoadTransactionsSuccessAction } from "../../actions/TransactionActions";
-import type { ActionWithPayload } from "../../actions/ActionWithPayload";
-import { TransactionActionTypes } from "../../actions/TransactionActionTypes";
+import type { ActionWithPayload } from "../../../actions/ActionWithPayload";
+import { TransactionActionTypes } from "../../../actions/TransactionActionTypes";
+import { LoadTransactionsFailureAction, LoadTransactionsSuccessAction } from "../../../actions/TransactionActions";
 
 export function loadTransactions(action: ActionWithPayload, dispatch: (action: ActionWithPayload)=>void) {
   if (action?.type === TransactionActionTypes.LOAD_TRANSACTIONS_INIT) {

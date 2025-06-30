@@ -1,11 +1,17 @@
-import type { ActionWithPayload } from "../actions/ActionWithPayload"
-import type { ApiSatusType } from "./unionTypes"
+import type { ReferenceData } from "./app/ReferenceData"
+import type { AlertType } from "./TransactionsState"
 
 export type AppState = {
-  apiStatus?: ApiSatusType,
-  lastAction?: ActionWithPayload
+  merchants: ReferenceData[],
+  categories: ReferenceData[],
+  merchantsLoading: boolean,
+  categoriesLoading: boolean,
+  alert?: AlertType
 }
 
 export const InitialAppState: AppState = {
-  apiStatus: "INITIAL"
+  merchants: [],
+  categories: [],
+  merchantsLoading: false,
+  categoriesLoading: false
 }
