@@ -1,18 +1,36 @@
 import type { ActionWithPayload } from "../actions/ActionWithPayload";
-import { AppActionTypes } from "../actions/AppActionTypes";
+import { AppActionTypes } from "../actions/app/AppActionTypes";
+import type { ReferenceDataLoadSuccess } from "../types/app/ReferenceDataLoadSuccess";
 import type { AppState } from "../types/AppState";
-//import type { AlertType } from "../types/TransactionsState";
-import type { ApiSatusType } from "../types/unionTypes";
+import { API_LOAD_REFERENCE_LIST_FAILURE_ALERT } from "../types/constants";
+import type { ReferenceDataType } from "../types/unionTypes";
 
 export const AppReducer = (state: AppState, action: ActionWithPayload): AppState => {
-  const newState: AppState = { ...state, lastAction: action };
-  console.log("*********************>" + action.type, action);
+  console.log("App Reducer*********************>" + action.type, action);
   switch (action.type) {
-    case (AppActionTypes.SET_API_STATUS): {
-    return { ...newState, apiStatus: action.payload as ApiSatusType };
+    case (AppActionTypes.LOAD_REFERENCE_DATA_INIT): {
+      const field = (action.payload as string).toLowerCase() + "Loading";
+      return { ...state, [field]: true }
+    }
+    case (AppActionTypes.LOAD_REFERENCE_DATA_SUCCESS): {
+      const { type, data} = action.payload as ReferenceDataLoadSuccess;
+      const loadingField = type === "Categories" ? "categoriesLoading" : "merchantsLoding";
+      const dataField = type.toLocaleLowerCase();
+      return { 
+        ...state, 
+        [loadingField]: false, 
+        [dataField]: data
+      }
+    }
+    case (AppActionTypes.LOAD_REFERENCE_DATA_FAILURE): {
+      const loadingField = action.payload as ReferenceDataType + "Loading";
+      return { 
+        ...state, 
+        [loadingField]: false,
+        alert: API_LOAD_REFERENCE_LIST_FAILURE_ALERT }
     }
     default: {
-      return { ...newState };
+      return { ...state };
     }
   }
 }

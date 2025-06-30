@@ -1,8 +1,8 @@
 import axios from "axios";
-import { TransactionActionTypes } from "../../actions/TransactionActionTypes";
-import { UpdateTransactionFailureAction, UpdateTransactionSuccessAction, type UpdateTransactionInitAction } from "../../actions/TransactionActions";
-import type { ActionWithPayload } from "../../actions/ActionWithPayload";
-import type { Transaction } from "../../types/Transaction";
+import type { ActionWithPayload } from "../../../actions/ActionWithPayload";
+import { TransactionActionTypes } from "../../../actions/TransactionActionTypes";
+import type { Transaction } from "../../../types/Transaction";
+import { UpdateTransactionInitAction, UpdateTransactionSuccessAction, UpdateTransactionFailureAction } from "../../../actions/TransactionActions";
 
 export function updateTransaction(action: ActionWithPayload, dispatch: (action: ActionWithPayload)=>void) {
     if (action?.type === TransactionActionTypes.UPDATE_TRANSACTION_INIT) {

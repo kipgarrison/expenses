@@ -1,7 +1,7 @@
 import { vi } from 'vitest';
 import axios from 'axios'
-import { CreateTransactionFailureAction, CreateTransactionInitAction, CreateTransactionSuccessAction, UpdateTransactionAction } from '../../actions/TransactionActions';
-import { newTransaction } from '../../types/Transaction';
+import { CreateTransactionFailureAction, CreateTransactionInitAction, CreateTransactionSuccessAction, UpdateTransactionAction } from '../../../actions/TransactionActions';
+import { newTransaction } from '../../../types/Transaction';
 import { createTransaction } from './createTransactionEffect';
 
 describe("CreateTransactionEffect", () => {

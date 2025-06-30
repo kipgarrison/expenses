@@ -1,7 +1,7 @@
 import { vi } from 'vitest';
 import axios from 'axios'
-import { DeleteTransactionFailureAction, DeleteTransactionInitAction, DeleteTransactionSuccessAction, UpdateTransactionAction } from '../../actions/TransactionActions';
-import { newTransaction } from '../../types/Transaction';
+import { DeleteTransactionInitAction, DeleteTransactionSuccessAction, UpdateTransactionAction, DeleteTransactionFailureAction } from '../../../actions/TransactionActions';
+import { newTransaction } from '../../../types/Transaction';
 import { deleteTransaction } from './deleteTransactionEffect';
 
 describe("deleteTransactionEffect", () => {

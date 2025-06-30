@@ -3,6 +3,7 @@ import { getCurrentMonthYear } from "../../helpers/formatDate";
 import type { AlertType, SortType } from "../TransactionsState";
 import type { ModalType } from "../unionTypes";
 import { EmptyBudget, type Budget } from "./Budget";
+import { EmptyBudgetSummary, type BudgetSummary } from "./BudgetDailySummary";
 import type { BudgetLineItem } from "./budgetLineItem";
 
 export type BudgetState = {
@@ -11,7 +12,8 @@ export type BudgetState = {
   currentLineItem?: BudgetLineItem,
   backupLineItem?: BudgetLineItem,
   lastActions: ActionWithPayload[],
-  apiStatus?: "NOT_RUNNING" | "RUNNING" | "INITIAL_MONTH_YEARS" | "INITIAL_BUDGET",
+  summary: BudgetSummary,
+  apiStatus?: "NOT_RUNNING" | "RUNNING" | "INITIAL_MONTH_YEARS" | "INITIAL_BUDGET" | 'INITIAL_SUMMARY',
   alert?: AlertType,
   sort: SortType,
   modal: ModalType,
@@ -23,6 +25,7 @@ export type BudgetState = {
 export const InitialBudgetState: BudgetState = {
   budget: EmptyBudget,
   monthYears: [],
+  summary: EmptyBudgetSummary,
   sort: { column: "category", direction: "asc" },
   modal: "None",
   selectedMonthYear: getCurrentMonthYear(),

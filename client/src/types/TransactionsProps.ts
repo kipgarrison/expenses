@@ -1,9 +1,9 @@
-import type { AlertType } from "./TransactionsState"
-import type { ApiSatusType } from "./unionTypes"
+import type { ReferenceData } from "./app/ReferenceData";
+
 
 export type TransactionsProps = {
-  setAlert: (alert: AlertType) => void,
-  setApiStatus: (status: ApiSatusType) => void,
-  show: boolean
+  merchants: ReferenceData[],
+  categories: ReferenceData[]
+//  show: boolean
 };
 

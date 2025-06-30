@@ -1,4 +1,5 @@
 import type { ActionWithPayload } from '../../actions/ActionWithPayload';
+import { NullAction } from '../../actions/app/AppActions';
 import type { AlertType, SortType } from '../TransactionsState';
 import type { ModalType } from '../unionTypes';
 import type { Merchant } from './Merchant';
@@ -10,7 +11,7 @@ export type MerchantsState = {
   currentMerchant?: Merchant,
   backupMerchant?: Merchant,
   merchantPage: Merchant[],
-  lastAction?: ActionWithPayload,
+  lastAction: ActionWithPayload,
   apiStatus?: "NOT_RUNNING" | "RUNNING" | "INITIAL",
   alert?: AlertType,
   sort: SortType,
@@ -24,5 +25,6 @@ export const InitialMerchantState: MerchantsState = {
   merchantPage: [],
   apiStatus: "INITIAL",
   sort: { column: "name", direction: "asc" },
-  modal: 'None'
+  modal: 'None',
+  lastAction: new NullAction()
 };

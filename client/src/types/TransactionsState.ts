@@ -1,4 +1,5 @@
 import type { ActionWithPayload } from "../actions/ActionWithPayload";
+import { NullAction } from "../actions/app/AppActions";
 import type { Transaction } from "./Transaction";
 import type { TransactionSearchFilterType } from "./TransactionSeachFilterType";
 import type { ModalType } from "./unionTypes";
@@ -10,15 +11,14 @@ export type TransactionsState = {
   currentTransaction?: Transaction,
   backupTransaction?: Transaction,
   transactionPage: Transaction[],
-  lastAction?: ActionWithPayload,
+  lastAction: ActionWithPayload,
   sort: SortType,
   filter: TransactionSearchFilterType,
   modal: ModalType,
   summary: TranactionsSummaryType,
-  merchants: string[],
-  transactionTypes: string[],
   alert?: AlertType, 
-  showSpinner: boolean;
+  showAppSpinner: boolean;
+  showApiSpinner: boolean;
 }
 
 export type TranactionsSummaryType = {
@@ -33,12 +33,12 @@ export const transactionStateInitialValue: TransactionsState = {
   pageSize: 10,
   sort: { column: 'date', direction: "asc" },
   transactionPage: [],
-  filter: { merchants: [], types: [] },
+  filter: { merchants: [], categories: [] },
   modal: "None",
   summary: { numPages: 0, transactionsCount: 0, totalAmount: 0},
-  merchants: [ "Wal-Mart", "Sam's Club", "Schnucks", "Target", "QT", "Dierbergs", "Aldis", "O'Fallon City", "McDonalds", "Menards", "Touchette", "Wal-Greens" ],
-  transactionTypes: [ "Credit Card Debit", "Bank Account Debit", "Credit Card Credit", "Bank Account Credit" ],
-  showSpinner: false
+  showAppSpinner: false,
+  showApiSpinner: false,
+  lastAction: new NullAction()
 }
 
 export type AlertType = { type: "success" | "failure" , message: string } 

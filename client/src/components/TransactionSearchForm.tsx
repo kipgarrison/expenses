@@ -5,47 +5,50 @@ import Row from 'react-bootstrap/Row';
 import Modal from 'react-bootstrap/modal';
 import type { TransactionSearchFormProps } from '../types/TransactionSearchFormProps';
 import { useEffect, useState } from 'react';
+import type { ReferenceData } from '../types/app/ReferenceData';
 
 
-export default function TransactionSearchForm({ show, filter, merchants, types, onClose, onSearch }: TransactionSearchFormProps) {
+export default function TransactionSearchForm({ show, filter, merchants, categories, onClose, onSearch }: TransactionSearchFormProps) {
   useEffect(() => {
     updateFilter(filter);
   }, [filter]);
   
   const [ localFilter, updateFilter ] = useState(filter)
 
-  const handleFieldChange = (fieldName: string, value: string) => {
+  const handleFieldChange = (fieldName: string, value: string|ReferenceData) => {
     if ([ "toDate", "fromDate" ].includes(fieldName)) {
       //const date = isNaN(new Date(value).getTime()) ?  undefined : new Date(value);
       updateFilter({...localFilter, [fieldName]: value});
     } else 
     if ( [ "toAmount", "fromAmount" ].includes(fieldName)) {
-      updateFilter({ ...localFilter, [fieldName]: parseFloat(value)});
+      updateFilter({ ...localFilter, [fieldName]: parseFloat(value as string)});
     } else if (fieldName==="merchants") {
       let merchants = [];
-      if (localFilter.merchants.includes(value)) {
+      const merchant = value as ReferenceData;
+      if (localFilter.merchants.includes(value as ReferenceData)) {
         merchants = localFilter.merchants.filter(m => m !== value);
       } else {
-        merchants = [ ...localFilter.merchants, value];
+        merchants = [ ...localFilter.merchants, merchant];
       }
       updateFilter( { ...localFilter, merchants });
-    } else if (fieldName==="types") {
-      let types = [];
-      if (localFilter.types.includes(value)) {
-        types = localFilter.types.filter(m => m !== value);
+    } else if (fieldName==="categories") {
+      let categories = [];
+      const category = value as ReferenceData;
+      if (localFilter.categories.includes(category)) {
+        categories = localFilter.categories.filter(m => m !== value);
       } else {
-        types = [ ...localFilter.types, value];
+        categories = [ ...localFilter.categories, category];
       }
-      updateFilter( { ...localFilter, types})
+      updateFilter( { ...localFilter, categories})
     } else if (fieldName==="comments") {
-      updateFilter({ ...localFilter, comments: value });
+      updateFilter({ ...localFilter, comments: value as string});
     } else {
       throw new Error(`unknown field name ${fieldName}` )
     }
   };
 
-  const getFieldGroupings = (fields: string[]): string[][] => {
-    const groupings = [new Array<string>(), new Array<string>(), new Array<string>()];
+  const getFieldGroupings = (fields: ReferenceData[]): ReferenceData[][] => {
+    const groupings = [new Array<ReferenceData>(), new Array<ReferenceData>(), new Array<ReferenceData>()];
 
     fields.forEach((field, index) => {
       const grouping = index % 3;
@@ -55,14 +58,15 @@ export default function TransactionSearchForm({ show, filter, merchants, types, 
   }
 
   const merchantGroupings = getFieldGroupings(merchants);
-  const typeGroupings = getFieldGroupings(types);
+  const categoryGroupings = getFieldGroupings(categories);
 
 
   const merchantFields = merchantGroupings.map((mg, i) => (
     <Form.Group as={Col}>
        { mg.map((merchant, j) => (
          <Form.Check
-          label = {merchant}
+          key = {merchant.id}
+          label = {merchant.name}
           type="checkbox"
           id={`merchants-${i}-${j}`}
           checked={ localFilter.merchants.includes(merchant) }
@@ -71,15 +75,16 @@ export default function TransactionSearchForm({ show, filter, merchants, types, 
       </Form.Group>
   ));
 
-  const typeFields = typeGroupings.map((tg, index) => (
+  const categoryFields = categoryGroupings.map((cg, index) => (
     <Form.Group as={Col}>
-       { tg.map(type => (
+       { cg.map(category => (
          <Form.Check
-          label = {type}
+          key={category.id}
+          label = {category.name}
           type="checkbox"
-          checked={ localFilter.types.includes(type) }
+          checked={ localFilter.categories.includes(category) }
           id= {`types-${index}`}
-          onChange={() => handleFieldChange('types', type)}
+          onChange={() => handleFieldChange('categories', category)}
         />))}
       </Form.Group>
   ));
@@ -89,7 +94,6 @@ export default function TransactionSearchForm({ show, filter, merchants, types, 
   }
 
   function getDisplayValue(value: string | number | undefined): string {
-    console.log(value);
     if (!value) return "";
     return value.toString();
   }
@@ -102,14 +106,14 @@ export default function TransactionSearchForm({ show, filter, merchants, types, 
           </Modal.Header>
           <Modal.Body> 
             <Row className="mb-3">
-              <Form.Group as={Col} controlId="formGridEmail">
+              <Form.Group as={Col}>
                 <Form.Label>From Date</Form.Label>
                 <Form.Control type="date" placeholder="Enter From Date" 
                   value={getDisplayValue(localFilter.fromDate)}
                   // onBlur={(e) => handleFieldChange('fromDate', e.target.value)} />
                   onChange={(e) => handleFieldChange('fromDate', e.target.value)} />
               </Form.Group>
-              <Form.Group as={Col} controlId="formGrid2aasdf">
+              <Form.Group as={Col}>
                 <Form.Label>To Date</Form.Label>
                 <Form.Control type="date" placeholder="Enter To Date"
                   value={localFilter.toDate}
@@ -136,8 +140,8 @@ export default function TransactionSearchForm({ show, filter, merchants, types, 
               {merchantFields}  
             </Row>
             <Row className="mb-3">
-              <Form.Label>Transaction Types</Form.Label>
-              {typeFields}
+              <Form.Label>Categories</Form.Label>
+              {categoryFields}
             </Row>
             <Row className="mb-3">
               <Form.Label>Comments</Form.Label>

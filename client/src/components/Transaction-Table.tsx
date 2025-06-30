@@ -20,7 +20,7 @@ export default function TransactionTable(props: TransactionTableProps) {
   const handleSort = onSort ?? (()=> {});
   
   return (
-    <Table role="transactionTable" striped bordered hover variant="dark">  
+    <Table data-testid="transaction-table" striped bordered hover variant="dark">  
       <TransactionTableHeader onSort={(c) => handleSort(c)} sort={currentSort} key={1}/>
       <tbody>
         {transactions.map(transaction => 
@@ -48,7 +48,7 @@ function TransactionTableHeader({ onSort, sort }: TransactionTableHeaderProps) {
 
   const columns: ColumnType[] = [ 
     { column: "date", header: "Date", dir: getSortDir("date", sort) }, 
-    { column: "type", header: "Type", dir: getSortDir("type", sort) },
+    { column: "category", header: "Category", dir: getSortDir("category", sort) },
     { column: "merchant", header: "Merchant", dir: getSortDir("merchant", sort) },
     { column: "amount", header: "Amount", dir: getSortDir("amount", sort) },
     { column: "runningBalance", header: "Running Balance", dir: getSortDir("runningBalance", sort) },
@@ -75,7 +75,7 @@ function TransactionTableRow({ transaction, onDelete, onEdit, onView}: Transacti
   const comments = elidedComments === transaction.comments ? transaction.comments : <span title={transaction.comments}>{elidedComments}</span>;
 
   return (
-      <tr role="transaction-row">
+      <tr data-testid="transaction-row">
         <td>
           <DeleteIcon onAction={onDelete} item={transaction}/>
           <EditIcon onAction={onEdit} item={transaction} />
@@ -84,10 +84,10 @@ function TransactionTableRow({ transaction, onDelete, onEdit, onView}: Transacti
           {transaction.date.toLocaleDateString()}
         </td>
         <td>
-          {transaction.type}
+          {transaction.category.name}
         </td>
         <td>
-          {transaction.merchant}
+          {transaction.merchant.name}
         </td>
         <td>
           {formatCurrency(transaction.amount)}
@@ -96,7 +96,7 @@ function TransactionTableRow({ transaction, onDelete, onEdit, onView}: Transacti
           {formatCurrency(transaction.runningBalance as number)}
         </td>
         <td>
-          {comments}
+          {comments} - {transaction.id}
         </td>
         <td>
           {transaction.hasReceipt &&
@@ -121,15 +121,15 @@ function TransactionTableFooter({ summary, currentPage, onPageChanged, children 
   };
 
   const items: Array<ReactNode> = [];
-  if (minElipsis) items.push(<Pagination.Item key="0" disabled>...</Pagination.Item>)
+  if (minElipsis) items.push(<Pagination.Item key="0" disabled data-testid="paging-item">...</Pagination.Item>)
   for (let number = numbers.starting; number <= numbers.ending; number++) {
     items.push(
-      <Pagination.Item key={number} active={number === currentPage}>
+      <Pagination.Item key={number} active={number === currentPage} data-testid="paging-item">
         {number}
       </Pagination.Item>
     );
   }
-  if (maxElipsis) items.push(<Pagination.Item key="-1" disabled>...</Pagination.Item>);
+  if (maxElipsis) items.push(<Pagination.Item key="-1" disabled data-testid="paging-item">...</Pagination.Item>);
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const handlePageChange = (e: any) => {
@@ -141,7 +141,7 @@ function TransactionTableFooter({ summary, currentPage, onPageChanged, children 
   };
 
   return (
-    <tr className='table-dark text-center'>
+    <tr className='table-dark text-center' data-testid="transactions-summary">
       <td colSpan={3}>
         {children}
       </td>
@@ -149,7 +149,7 @@ function TransactionTableFooter({ summary, currentPage, onPageChanged, children 
         {summary.transactionsCount} total transactions for {formatCurrency(summary.totalAmount)}
       </td>
       <td colSpan={6}> 
-        <Pagination onClick={handlePageChange}>{items}</Pagination>
+        <Pagination onClick={handlePageChange} data-testid="pagination">{items}</Pagination>
       </td>
     </tr>
   ); 
