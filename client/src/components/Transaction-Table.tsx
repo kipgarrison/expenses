@@ -20,6 +20,22 @@ export default function TransactionTable(props: TransactionTableProps) {
   const handleSort = onSort ?? (()=> {});
   
   return (
+    <>
+    <div className="row mb-2">
+      <div className="col-3 text-center">
+        <strong className="me-1">Transactions:</strong>{summary.transactionsCount} 
+      </div>
+      <div className="col-3 text-center">
+        <strong className="me-1">Total Debits:</strong> {formatCurrency(summary.totalDebitAmount)}    
+      </div>
+      <div className="col-3 text-center">
+        <strong className="me-1">Total Credits:</strong> {formatCurrency(summary.totalCreditAmount)}
+      </div>
+      <div className="col-3 text-center">
+        <strong className="me-1">Current Balance:</strong> {formatCurrency(summary.totalCreditAmount - summary.totalDebitAmount)}
+      </div>
+      
+    </div> 
     <Table data-testid="transaction-table" striped bordered hover variant="dark">  
       <TransactionTableHeader onSort={(c) => handleSort(c)} sort={currentSort} key={1}/>
       <tbody>
@@ -36,6 +52,7 @@ export default function TransactionTable(props: TransactionTableProps) {
         </TransactionTableFooter>
       </tfoot>
     </Table>
+    </>
   )
 }
 
@@ -142,14 +159,11 @@ function TransactionTableFooter({ summary, currentPage, onPageChanged, children 
 
   return (
     <tr className='table-dark text-center' data-testid="transactions-summary">
-      <td colSpan={3}>
+      <td colSpan={4}>
         {children}
       </td>
-      <td colSpan={3}>
-        {summary.transactionsCount} total transactions for {formatCurrency(summary.totalAmount)}
-      </td>
-      <td colSpan={6}> 
-        <Pagination onClick={handlePageChange} data-testid="pagination">{items}</Pagination>
+      <td colSpan={8}> 
+        <Pagination  style={{width: "max-content", margin: "auto" }} onClick={handlePageChange} data-testid="pagination">{items}</Pagination>
       </td>
     </tr>
   ); 

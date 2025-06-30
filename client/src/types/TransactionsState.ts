@@ -24,7 +24,8 @@ export type TransactionsState = {
 export type TranactionsSummaryType = {
   numPages: number,  
   transactionsCount: number;
-  totalAmount: number
+  totalCreditAmount: number,
+  totalDebitAmount: number
 }
 
 export const transactionStateInitialValue: TransactionsState = {
