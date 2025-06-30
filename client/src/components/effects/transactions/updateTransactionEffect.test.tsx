@@ -1,7 +1,7 @@
 import { vi } from 'vitest';
 import axios from 'axios'
 import { UpdateTransactionAction, UpdateTransactionFailureAction, UpdateTransactionInitAction, UpdateTransactionSuccessAction } from '../../../actions/TransactionActions';
-import { newTransaction, type Transaction } from '../../../types/Transaction';
+import { newDebitTransaction, type Transaction } from '../../../types/Transaction';
 import { updateTransaction } from './updateTransactionEffect';
 
 
@@ -12,7 +12,7 @@ describe("deleteTransactionEffect", () => {
 
   beforeEach(() => {
     vi.mock('axios');
-    transaction = {...newTransaction, id: 1 }
+    transaction = {...newDebitTransaction, id: 1 }
     vi.mocked(axios.put).mockResolvedValue({ data: transaction})
     dispatch.mockClear();
   })
@@ -25,7 +25,7 @@ describe("deleteTransactionEffect", () => {
   });
 
   it("should not do anything if the action is not a delete action init", async () => {
-    const wrongAction = new UpdateTransactionAction(newTransaction);
+    const wrongAction = new UpdateTransactionAction(newDebitTransaction);
     await updateTransaction(wrongAction, dispatch);
     expect(dispatch).not.toHaveBeenCalled();
   })

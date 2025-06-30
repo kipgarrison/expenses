@@ -1,6 +1,6 @@
 import type { Transaction } from "../types/Transaction";
 import type { TransactionSearchFilterType } from "../types/TransactionSeachFilterType"
-import type { ModalType } from "../types/unionTypes";
+import type { CreditCardTransactionType, ModalType } from "../types/unionTypes";
 import { TransactionActionTypes } from "./TransactionActionTypes";
 import { ActionWithPayload } from "./ActionWithPayload";
 export class UpdatePageNumberAction extends ActionWithPayload {
@@ -10,8 +10,8 @@ export class UpdatePageNumberAction extends ActionWithPayload {
 } 
 
 export class AddTransactionAction extends ActionWithPayload {
-  constructor() {
-    super(TransactionActionTypes.ADD_TRANSACTION, "ADD_TRANSACTION");
+  constructor(payload: CreditCardTransactionType) {
+    super(TransactionActionTypes.ADD_TRANSACTION, payload);
   }
 } 
 

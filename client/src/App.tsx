@@ -16,7 +16,7 @@ function App() {
 
   const tabs: TabType[] = [ 
     { title: "Transactions", content: <Transactions merchants={state.merchants} categories={state.categories}/>, isActive: true },
-  { title: "Merchants", content: <Merchants />, isActive: false },
+    { title: "Merchants", content: <Merchants />, isActive: false },
     { title: "Budget", content: <Budget />, isActive: false}
   ]
 

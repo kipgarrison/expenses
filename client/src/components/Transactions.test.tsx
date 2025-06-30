@@ -1,7 +1,7 @@
 import { vi } from "vitest";
 import { Transactions } from "./Transactions";
 import { render, screen, waitFor } from "@testing-library/react";
-import { newTransaction, type Transaction } from "../types/Transaction";
+import { newDebitTransaction, type Transaction } from "../types/Transaction";
 import React from "react";
 import { transactionStateInitialValue, type TransactionsState } from "../types/TransactionsState";
 import { ClearCurrentTransactionAction, DeleteTransactionInitAction, EditTransactionAction, LoadTransactionsInitAction, SetCurrentTransactionAction, SetModalAction, UpdatePageNumberAction } from "../actions/TransactionActions";
@@ -10,11 +10,11 @@ import userEvent from "@testing-library/user-event";
 
 describe.only("Transactions", () => {
   const transactions: Transaction[] = [ 
-    { id: 1, amount: 100, merchant: { id: 1, name: "Wal-Mart" }, category: { id: 1, name: 'Category1' }, date: new Date("1/1/2022"), runningBalance: 100, hasReceipt: true, comments: "Comments" },
-    { id: 2, amount: 100, merchant: { id: 2, name: "Target" }, category: { id: 2, name: 'Category2' }, date: new Date("2/1/2022"), runningBalance: 300, hasReceipt: false, comments: "Comments" },
-    { id: 3, amount: 100, merchant: { id: 3, name: "Schnucks" }, category: { id: 3, name: 'Category3' }, date: new Date("3/1/2022"), runningBalance: 600, hasReceipt: true,  comments: "Comments" },
-    { id: 4, amount: 100, merchant: { id: 4, name: "Wal-Greens" }, category: { id: 4, name: 'Category4' }, date: new Date("4/1/2022"), runningBalance: 1000, hasReceipt: false, comments: "Comments" },
-    { id: 5, amount: 100, merchant: { id: 5, name: "Amazon" }, category: { id: 5, name: 'Category5' }, date: new Date("5/1/2022"), runningBalance: 1500, hasReceipt: true, comments: "Comments" },
+    { id: 1, amount: 100, merchant: { id: 1, name: "Wal-Mart" }, category: { id: 1, name: 'Category1' }, date: new Date("1/1/2022"), runningBalance: 100, hasReceipt: true, comments: "Comments", type: "Debit" },
+    { id: 2, amount: 100, merchant: { id: 2, name: "Target" }, category: { id: 2, name: 'Category2' }, date: new Date("2/1/2022"), runningBalance: 300, hasReceipt: false, comments: "Comments", type: "Debit" },
+    { id: 3, amount: 100, merchant: { id: 3, name: "Schnucks" }, category: { id: 3, name: 'Category3' }, date: new Date("3/1/2022"), runningBalance: 600, hasReceipt: true,  comments: "Comments", type: "Debit" },
+    { id: 4, amount: 100, merchant: { id: 4, name: "Wal-Greens" }, category: { id: 4, name: 'Category4' }, date: new Date("4/1/2022"), runningBalance: 1000, hasReceipt: false, comments: "Comments", type: "Debit" },
+    { id: 5, amount: 100, merchant: { id: 5, name: "Amazon" }, category: { id: 5, name: 'Category5' }, date: new Date("5/1/2022"), runningBalance: 1500, hasReceipt: true, comments: "Comments", type: "Debit" },
   ];
   const mockState: TransactionsState = {
     ...transactionStateInitialValue, 
@@ -121,7 +121,7 @@ describe.only("Transactions", () => {
   });
 
   it("should dispach action to initiate delete and close dialog if 'OK' button on the delete modal is clicked", async () => {
-    const mockUseReducer = vi.fn().mockImplementation(() => [{ ...mockState, currentTransaction: newTransaction, modal: 'ConfirmDelete' }, mockDispatch]);
+    const mockUseReducer = vi.fn().mockImplementation(() => [{ ...mockState, currentTransaction: newDebitTransaction, modal: 'ConfirmDelete' }, mockDispatch]);
     vi.spyOn(React, 'useReducer').mockImplementation(mockUseReducer);
     render(<Transactions merchants={merchants} categories={categories} />);
     const confirmBtn = await waitFor(() => screen.queryByTestId("confirm-button"));
@@ -129,12 +129,12 @@ describe.only("Transactions", () => {
     vi.resetAllMocks();
     await userEvent.click(confirmBtn as HTMLButtonElement);
     expect(mockDispatch).toHaveBeenCalledTimes(2);
-    expect(mockDispatch).toHaveBeenCalledWith(new DeleteTransactionInitAction(newTransaction));
+    expect(mockDispatch).toHaveBeenCalledWith(new DeleteTransactionInitAction(newDebitTransaction));
     expect(mockDispatch).toHaveBeenCalledWith(new SetModalAction("None"));
   });
 
   it("should dispach actions to close dialog and clear the current transaction if 'Cancel' button on the delete modal is clicked", async () => {
-    const mockUseReducer = vi.fn().mockImplementation(() => [{ ...mockState, currentTransaction: newTransaction, modal: 'ConfirmDelete' }, mockDispatch]);
+    const mockUseReducer = vi.fn().mockImplementation(() => [{ ...mockState, currentTransaction: newDebitTransaction, modal: 'ConfirmDelete' }, mockDispatch]);
     vi.spyOn(React, 'useReducer').mockImplementation(mockUseReducer);
     render(<Transactions merchants={merchants} categories={categories} />);
     const confirmBtn = await waitFor(() => screen.queryByTestId("cancel-button"));

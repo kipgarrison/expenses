@@ -27,34 +27,39 @@ export default function TransactionForm({ transaction, merchants, categories, on
 
   return (
     <form onSubmit={handleSubmit}>
+      {transaction.type}
       <div className="form-group">
         <label htmlFor="date">Date</label>
         <input type="date" className="form-control" id="date" name="date" data-testid="date"
           value={transaction.date.toISOString().split('T')[0]} required
           onChange={(e) => setField("date", e.target.value)} />
       </div>
-      <div className="form-group">
-        <label htmlFor="merchant">Merchant</label>
-        <select className="form-control" id="merchant" name="merchant" role="merchant-name" data-testid="merchants"
-          value={transaction.merchant.name} 
-          onChange={(e) => setField("merchant", e.target.value)} required>
-          <option key=""></option>
-          {merchants.map(m => (
-            <option key={m.id}>{m.name}</option>
-          ))}
-        </select>
-      </div>
-      <div className="form-group">
-        <label htmlFor="type">Category</label>
-        <select className="form-control" id="type" name="type" data-testid="categories"
-          value={transaction.category.name}
-          onChange={(e) => setField("category", e.target.value)} required>
-          <option key="none"></option>
-          {categories.map(c => (
-            <option key={c.id}>{c.name}</option>
-          ))}
-        </select>
-      </div>
+      {(transaction.type === "Debit") &&
+        <>
+        <div className="form-group">
+          <label htmlFor="merchant">Merchant</label>
+          <select className="form-control" id="merchant" name="merchant" role="merchant-name" data-testid="merchants"
+            value={transaction.merchant.name} 
+            onChange={(e) => setField("merchant", e.target.value)} required>
+            <option key=""></option>
+            {merchants.map(m => (
+              <option key={m.id}>{m.name}</option>
+            ))}
+          </select>
+        </div>
+        <div className="form-group">
+          <label htmlFor="type">Category</label>
+          <select className="form-control" id="type" name="type" data-testid="categories"
+            value={transaction.category.name}
+            onChange={(e) => setField("category", e.target.value)} required>
+            <option key="none"></option>
+            {categories.map(c => (
+              <option key={c.id}>{c.name}</option>
+            ))}
+          </select>
+        </div>
+        </>
+      }
       <div className="form-group">
         <label htmlFor="amount">Amount</label>
         <input type="number" className="form-control" id="amount" name="amount" data-testid="amount"

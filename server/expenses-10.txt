@@ -1,0 +1,162 @@
+[
+    {
+        "id": 2,
+        "category": {
+            "id": 2,
+            "name": "Home Goods"
+        },
+        "type": "Credit Card Debit",
+        "merchant": {
+            "id": 16,
+            "name": "Lowes"
+        },
+        "date": "2024-07-21T05:00:00.000Z",
+        "amount": 200,
+        "comments": "adipiscing Lorem faucibus sit adipiscing consectetur consectetur amet adipiscing Quisque",
+        "hasReceipt": true
+    },
+    {
+        "id": 6,
+        "category": {
+            "id": 12,
+            "name": "Fees"
+        },
+        "type": "Credit Card Debit",
+        "merchant": {
+            "id": 21,
+            "name": "Chase"
+        },
+        "date": "2024-07-21T05:00:00.000Z",
+        "amount": 600,
+        "comments": "dolor elit. ipsum Quisque amet amet Quisque Lorem amet ex ex",
+        "hasReceipt": true
+    },
+    {
+        "id": 1,
+        "category": {
+            "id": 6,
+            "name": "Gas"
+        },
+        "type": "Credit Card Debit",
+        "merchant": {
+            "id": 10,
+            "name": "Sam's Club Gas"
+        },
+        "date": "2024-07-21T05:00:00.000Z",
+        "amount": 100,
+        "comments": "Lorem sit sit sit consectetur amet adipiscing",
+        "hasReceipt": false
+    },
+    {
+        "id": 10,
+        "category": {
+            "id": 1,
+            "name": "Groceries"
+        },
+        "type": "Credit Card Debit",
+        "merchant": {
+            "id": 1,
+            "name": "Wal-Mart"
+        },
+        "date": "2024-07-21T05:00:00.000Z",
+        "amount": 1000,
+        "comments": "sit dolor ipsum dolor",
+        "hasReceipt": true
+    },
+    {
+        "id": 4,
+        "category": {
+            "id": 7,
+            "name": "Utilities"
+        },
+        "type": "Credit Card Debit",
+        "merchant": {
+            "id": 11,
+            "name": "O'Fallon IL"
+        },
+        "date": "2024-07-21T05:00:00.000Z",
+        "amount": 400,
+        "comments": "sit sit adipiscing ipsum consectetur ipsum adipiscing",
+        "hasReceipt": true
+    },
+    {
+        "id": 9,
+        "category": {
+            "id": 1,
+            "name": "Groceries"
+        },
+        "type": "Credit Card Debit",
+        "merchant": {
+            "id": 3,
+            "name": "Schnucks"
+        },
+        "date": "2024-07-21T05:00:00.000Z",
+        "amount": 900,
+        "comments": "",
+        "hasReceipt": true
+    },
+    {
+        "id": 3,
+        "category": {
+            "id": 5,
+            "name": "Eating Out"
+        },
+        "type": "Credit Card Debit",
+        "merchant": {
+            "id": 8,
+            "name": "McDonalds"
+        },
+        "date": "2024-07-21T05:00:00.000Z",
+        "amount": 300,
+        "comments": "sit consectetur ex Quisque adipiscing faucibus dolor ipsum faucibus Lorem consectetur",
+        "hasReceipt": false
+    },
+    {
+        "id": 8,
+        "category": {
+            "id": 5,
+            "name": "Eating Out"
+        },
+        "type": "Credit Card Debit",
+        "merchant": {
+            "id": 8,
+            "name": "McDonalds"
+        },
+        "date": "2024-07-21T05:00:00.000Z",
+        "amount": 800,
+        "comments": "sit dolor amet amet Lorem Lorem Lorem dolor",
+        "hasReceipt": true
+    },
+    {
+        "id": 12,
+        "category": {
+            "id": 2,
+            "name": "Home Goods"
+        },
+        "type": "Credit Card Debit",
+        "merchant": {
+            "id": 12,
+            "name": "Macys"
+        },
+        "date": "2024-07-21T05:00:00.000Z",
+        "amount": 1200,
+        "comments": "Lorem Lorem",
+        "hasReceipt": true
+    },
+    {
+        "id": 11,
+        "category": {
+            "id": 11,
+            "name": "Entertainment"
+        },
+        "type": "Credit Card Debit",
+        "merchant": {
+            "id": 20,
+            "name": "Kindle"
+        },
+        "date": "2024-07-21T05:00:00.000Z",
+        "amount": 1100,
+        "comments": "dolor dolor ipsum consectetur ipsum consectetur",
+        "hasReceipt": true
+    }
+   ]

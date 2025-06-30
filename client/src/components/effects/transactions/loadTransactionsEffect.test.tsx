@@ -1,12 +1,12 @@
 import { vi } from "vitest";
 import axios from "axios";
-import { newTransaction } from "../../../types/Transaction";
+import { newDebitTransaction } from "../../../types/Transaction";
 import { LoadTransactionsFailureAction, LoadTransactionsInitAction, LoadTransactionsSuccessAction, UpdateTransactionAction } from "../../../actions/TransactionActions";
 import { loadTransactions } from "./loadTransactionsEffect";
 
 describe("loadTransactionsEffect", () => {
   const dispatch= vi.fn();
-  const transactions = [ { ...newTransaction, id: 1 }, {...newTransaction, id: 2 }, {...newTransaction, id: 3 } ];
+  const transactions = [ { ...newDebitTransaction, id: 1 }, {...newDebitTransaction, id: 2 }, {...newDebitTransaction, id: 3 } ];
 
   beforeEach(() => {
     vi.mock('axios');
@@ -22,7 +22,7 @@ describe("loadTransactionsEffect", () => {
   });
 
   it("should not do anything if the action is not a load transactions init", async () => {
-    const wrongAction = new UpdateTransactionAction(newTransaction);
+    const wrongAction = new UpdateTransactionAction(newDebitTransaction);
     await loadTransactions(wrongAction, dispatch);
     expect(dispatch).not.toHaveBeenCalled();
   })

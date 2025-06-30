@@ -24,10 +24,11 @@ const budget = [
 
 function addRunningTotal(transactions) {
   total = 0;
-  transactions = transactions.sort((a, b) => a.date > b.date ? 1 : (a.date == b.date ? a.id - b.id : -1)).map(t => {
-    total = total + t.amount;
-    dateParts = t.date.split("-");
-    return { ...t, runningBalance: total, year: parseInt(dateParts[0]), month: parseInt(dateParts[1]), day: parseInt(dateParts[2]) };
+  localTrans = transactions.sort((a, b) => a.date > b.date ? 1 : (a.date == b.date ? a.id - b.id : -1));
+  transactions = localTrans.map(t => {
+    total = total + (t.type === "Credit" ? (-1 * t.amount) : t.amount);
+    dateParts = t.date ? t.date.split("-") : [0, 0, 0];
+    return { ...t, runningBalance: (Math.round(total * 100)) / 100, year: parseInt(dateParts[0]), month: parseInt(dateParts[1]), day: parseInt(dateParts[2]) };
   });
   transactions.sort((a, b) => a.date > b.date ? -1 : 1);
   return transactions;
@@ -37,6 +38,31 @@ async function loadTransactions() {
   let transactions = (await fs.readFile("./expenses.txt")).toString();
   let json = addRunningTotal(JSON.parse(transactions));
   return json;
+}
+
+function addPayments(transactions) {
+  let localTrans = [...transactions];
+  const totals = transactions.reduce((acc, trans) => {
+    const d1 = new Date(trans.date);
+    const d = new Date(d1.getFullYear(), d1.getMonth() + 1, 1);
+    const key = `${d.getFullYear()}-${d.getMonth() + 1}-1`;
+    const newTotal = (acc[key] ?? 0) + trans.amount;
+    return { ...acc, [key]: newTotal }
+  }, {})
+  nextId = transactions.length + 1;
+  Object.keys(totals).forEach(t => {
+    const date = new Date(t);
+    localTrans.push({
+      id: nextId++,
+      type: "Credit",
+      category: { id: 0, name: "Payment" },
+      merchant: { id: 0, name: "N/A" },
+      date,
+      amount: totals[t],
+      comments: `Payment for ${date.getMonth()}/${date.getFullYear()}`
+    });
+  })
+  return localTrans;
 }
 
 (async () => transactions = await loadTransactions())();
@@ -241,8 +267,8 @@ app.get('/api/v1/testdata', (req, res) => {
   amountRange = { lower: 25, upper: 600 };
   commentLengthRange = { lower: 5, upper: 25 };
   hasReceiptPercentage = 85;
-  const items = [];
-  for (let i = 0; i < 2000; i++) {
+  let items = [];
+  for (let i = 1; i <= 2000; i++) {
     const { id, name, category } = merchants[getRandom(merchants.length)];
     const date = getDate(lowerDateYear);
     const type = getRandom(100);
@@ -251,6 +277,7 @@ app.get('/api/v1/testdata', (req, res) => {
     items.push({
       id: i,
       category,
+      type: "Debit",
       merchant: { id, name },
       date: getDate(lowerDateYear),
       type: getType(),
@@ -259,6 +286,7 @@ app.get('/api/v1/testdata', (req, res) => {
       hasReceipt: getRandom(100) < hasReceiptPercentage
     })
   }
+  items = addPayments(items);
   res.json(items);
 });
 
