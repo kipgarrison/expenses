@@ -223,11 +223,6 @@ app.get('/api/v1/testdata', (req, res) => {
     return new Date(d);
   }
 
-  const getType = () => {
-    const rnd = getRandom(100);
-    return rnd <= types.creditCardDebit ? "Credit Card Debit" : "Credit Card Credi";
-  }
-
   const getComments = () => {
     commentSource = "Lorem ipsum dolor sit amet consectetur adipiscing elit. Quisque faucibus ex sapien vitae pellentesque sem placerat. In id cursus mi pretium tellus duis convallis. Tempus leo eu aenean sed diam urna tempor. Pulvinar vivamus fringilla lacus nec metus bibendum egestas. Iaculis massa nisl malesuada lacinia integer nunc posuere. Ut hendrerit semper vel class aptent taciti sociosqu. Ad litora torquent per conubia nostra inceptos himenaeos.".split(" ");
     const length = getRandom(commentLengthRange.upper - commentLengthRange.lower);
@@ -280,7 +275,6 @@ app.get('/api/v1/testdata', (req, res) => {
       type: "Debit",
       merchant: { id, name },
       date: getDate(lowerDateYear),
-      type: getType(),
       amount: amountRange.lower + amount + (getRandom(100) / 100),
       comments: getComments(),
       hasReceipt: getRandom(100) < hasReceiptPercentage

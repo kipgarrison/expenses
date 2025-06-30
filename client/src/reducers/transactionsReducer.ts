@@ -11,13 +11,6 @@ import type { CreditCardTransactionType, ModalType } from "../types/unionTypes";
 
 export function filterTransactions({ transactions, pageNumber, pageSize, sort, filter }: TransactionsState): { transactionPage: Transaction[], summary: TranactionsSummaryType } {
   if (!transactions) return { transactionPage: [], summary: { numPages: 0, totalAmount: 0, transactionsCount: 0}};
-  //const sortCol = sort?.column || "date";
-  //const direction = sort?.direction || "asc";
-  //const ascSorter = (a: Indexable, b: Indexable) => a[sortCol] > b[sortCol] ? 1 : -1;
-  //const descSorter = (a: Indexable, b: Indexable) => a[sortCol] > b[sortCol] ? -1 : 1;
-  // const sorter = direction === "asc" ? ascSorter : descSorter;
-  // don't want to mutate the original array so...
-  //let localTrans = [...transactions ].sort(sorter);
   let localTrans = sortObjectsArray([ ...transactions ], sort, "id") as Array<Transaction>;
   const localFilter = { ...maxFilter, ...filter};
   localTrans = localTrans.filter(t => 
@@ -45,7 +38,8 @@ function getTransactionsSummary(transactions: Transaction[], pageSize: number): 
   return ({ 
     numPages: Math.ceil(transactions.length / pageSize),
     transactionsCount: transactions.length,
-    totalAmount: transactions.reduce((a, t) => a + t.amount, 0)
+    totalCreditAmount: transactions.reduce((a, t) => t.type === "Credit" ? (a + t.amount) : a, 0),
+    totalDebitAmount: transactions.reduce((a, t) => t.type === "Debit" ? (a + t.amount) : a, 0)
   });
 }
 
