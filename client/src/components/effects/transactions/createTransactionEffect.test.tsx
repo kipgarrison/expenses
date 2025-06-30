@@ -1,7 +1,7 @@
 import { vi } from 'vitest';
 import axios from 'axios'
 import { CreateTransactionFailureAction, CreateTransactionInitAction, CreateTransactionSuccessAction, UpdateTransactionAction } from '../../../actions/TransactionActions';
-import { newTransaction } from '../../../types/Transaction';
+import { newDebitTransaction } from '../../../types/Transaction';
 import { createTransaction } from './createTransactionEffect';
 
 describe("CreateTransactionEffect", () => {
@@ -9,25 +9,25 @@ describe("CreateTransactionEffect", () => {
   
   beforeEach(() => {
     vi.mock('axios');
-    vi.mocked(axios.post).mockResolvedValue({ data: {...newTransaction, id: 1 }})
+    vi.mocked(axios.post).mockResolvedValue({ data: {...newDebitTransaction, id: 1 }})
     dispatch.mockClear();
   })
 
   it("should call dispatch with success action when call succeeds", async () => {
-    const createAction = new CreateTransactionInitAction(newTransaction);
+    const createAction = new CreateTransactionInitAction(newDebitTransaction);
     await createTransaction(createAction, dispatch);
-    const expectedAction = new CreateTransactionSuccessAction({ ...newTransaction, id: 1 });
+    const expectedAction = new CreateTransactionSuccessAction({ ...newDebitTransaction, id: 1 });
     expect(dispatch).toHaveBeenCalledWith(expectedAction);
   });
 
   it("should not do anything if the action is not a create action init", async () => {
-    const wrongAction = new UpdateTransactionAction(newTransaction);
+    const wrongAction = new UpdateTransactionAction(newDebitTransaction);
     await createTransaction(wrongAction, dispatch);
     expect(dispatch).not.toHaveBeenCalled();
   })
 
   it("should call dispatch with failure action when call fails", async () => {
-    const createAction = new CreateTransactionInitAction(newTransaction);
+    const createAction = new CreateTransactionInitAction(newDebitTransaction);
     const expectedAction = new CreateTransactionFailureAction();
     vi.mocked(axios.post).mockResolvedValue({})
     await createTransaction(createAction, dispatch);

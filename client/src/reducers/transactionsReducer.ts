@@ -1,22 +1,24 @@
 import { ActionWithPayload } from "../actions/ActionWithPayload";
 import { TransactionActionTypes } from "../actions/TransactionActionTypes";
 import { midnightToday } from "../helpers/midnightToday";
+import { sortObjectsArray } from "../helpers/sortObjectsArray";
 import { API_CREATE_TRANSACTION_FAILURE_ALERT, API_CREATE_TRANSACTION_SUCCESS_ALERT, API_DELETE_TRANSACTION_FAILURE_ALERT, API_DELETE_TRANSACTION_SUCESS_ALERT, API_UPDATE_TRANSACTION_FAILURE_ALERT, API_UPDATE_TRANSACTION_SUCCESS_ALERT } from "../types/constants";
 import type { Indexable } from "../types/Indexable";
-import { newTransaction, type Transaction } from "../types/Transaction";
+import { newCreditTransaction, newDebitTransaction, type Transaction } from "../types/Transaction";
 import { emptyFilter, maxFilter, type TransactionSearchFilterType } from "../types/TransactionSeachFilterType";
 import type { TranactionsSummaryType, TransactionsState } from "../types/TransactionsState";
-import type { ModalType } from "../types/unionTypes";
+import type { CreditCardTransactionType, ModalType } from "../types/unionTypes";
 
 export function filterTransactions({ transactions, pageNumber, pageSize, sort, filter }: TransactionsState): { transactionPage: Transaction[], summary: TranactionsSummaryType } {
   if (!transactions) return { transactionPage: [], summary: { numPages: 0, totalAmount: 0, transactionsCount: 0}};
-  const sortCol = sort?.column || "date";
-  const direction = sort?.direction || "asc";
-  const ascSorter = (a: Indexable, b: Indexable) => a[sortCol] > b[sortCol] ? 1 : -1;
-  const descSorter = (a: Indexable, b: Indexable) => a[sortCol] > b[sortCol] ? -1 : 1;
-  const sorter = direction === "asc" ? ascSorter : descSorter;
+  //const sortCol = sort?.column || "date";
+  //const direction = sort?.direction || "asc";
+  //const ascSorter = (a: Indexable, b: Indexable) => a[sortCol] > b[sortCol] ? 1 : -1;
+  //const descSorter = (a: Indexable, b: Indexable) => a[sortCol] > b[sortCol] ? -1 : 1;
+  // const sorter = direction === "asc" ? ascSorter : descSorter;
   // don't want to mutate the original array so...
-  let localTrans = [...transactions ].sort(sorter);
+  //let localTrans = [...transactions ].sort(sorter);
+  let localTrans = sortObjectsArray([ ...transactions ], sort, "id") as Array<Transaction>;
   const localFilter = { ...maxFilter, ...filter};
   localTrans = localTrans.filter(t => 
       t.amount >= (localFilter.fromAmount ?? 0) &&
@@ -27,7 +29,6 @@ export function filterTransactions({ transactions, pageNumber, pageSize, sort, f
     );
 
   if (localFilter.merchants.length > 0) {
-    //localTrans = localTrans.filter(t => localFilter.merchants.find(m => t.merchant?.id === m.id) > -1);
     localTrans = localTrans.filter(t => !!localFilter.merchants.find(m => t.merchant?.id === m.id));
   }
   if (localFilter.categories.length > 0) {
@@ -36,6 +37,7 @@ export function filterTransactions({ transactions, pageNumber, pageSize, sort, f
   const startNumber = (pageNumber - 1) * pageSize;
   const endNumber = startNumber + pageSize;
   const transactionPage = localTrans.slice(startNumber, endNumber);
+  console.log("Sorted ", localTrans);
   return { transactionPage, summary: getTransactionsSummary(localTrans, pageSize) }
 }
 
@@ -57,7 +59,9 @@ export const transactionsReducer = (state: TransactionsState, action: ActionWith
       return { ...localState, ...filterTransactions(localState), };
     }
     case TransactionActionTypes.ADD_TRANSACTION: { 
-      const currentTransaction = { ...newTransaction, date: midnightToday() };
+      const type = action.payload as CreditCardTransactionType;
+      const baseTransaction = type === "Credit" ? newCreditTransaction : newDebitTransaction;
+      const currentTransaction = { ...baseTransaction, date: midnightToday() };
       return { ...newState, currentTransaction, modal: "Edit" }
     }
     case TransactionActionTypes.EDIT_TRANSACTION: {
@@ -72,8 +76,8 @@ export const transactionsReducer = (state: TransactionsState, action: ActionWith
       const trans = action.payload as Transaction;
       const transId = trans?.id;
       if (transId) throw new Error("Create cannot be called for an existing transaction");
-      const transactions = [ ...newState.transactions, trans ];
-      return { ...newState, backupTransaction: undefined, currentTransaction: newTransaction, transactions, modal: "None", showAppSpinner: false, showApiSpinner: true }; 
+      //const transactions = [ ...newState.transactions, trans ];
+      return { ...newState, backupTransaction: undefined, currentTransaction: newDebitTransaction, modal: "None", showAppSpinner: false, showApiSpinner: true }; 
     }
     case TransactionActionTypes.CREATE_TRANSACTION_SUCCESS: {
       let trans = action.payload as Transaction;
@@ -81,12 +85,12 @@ export const transactionsReducer = (state: TransactionsState, action: ActionWith
       if (!trans.id) throw new Error("An id must be assigned to the transaction");
       const transactions = state.transactions.map(t => t.id === 0 ? trans : t);
       if (!transactions.includes(trans)) throw new Error("Unable to locate transaction that was saved")
-      const localState: TransactionsState = { ...newState, currentTransaction: newTransaction, backupTransaction: undefined, transactions, alert: API_CREATE_TRANSACTION_SUCCESS_ALERT, showAppSpinner: false, showApiSpinner: false };
+      const localState: TransactionsState = { ...newState, currentTransaction: newDebitTransaction, backupTransaction: undefined, transactions, alert: API_CREATE_TRANSACTION_SUCCESS_ALERT, showAppSpinner: false, showApiSpinner: false };
       return { ...localState, ...filterTransactions(localState)}; 
     }
     case TransactionActionTypes.CREATE_TRANSACTION_FAILURE: {
       const transactions = state.transactions.filter(t => t.id !== 0);
-      const localState: TransactionsState = { ...newState, currentTransaction: newTransaction, backupTransaction: undefined, transactions, alert: API_CREATE_TRANSACTION_FAILURE_ALERT, showAppSpinner: false, showApiSpinner: false }; 
+      const localState: TransactionsState = { ...newState, currentTransaction: newDebitTransaction, backupTransaction: undefined, transactions, alert: API_CREATE_TRANSACTION_FAILURE_ALERT, showAppSpinner: false, showApiSpinner: false }; 
       return { ...localState, ...filterTransactions(localState)}
     }
     case TransactionActionTypes.UPDATE_TRANSACTION_INIT: {
@@ -95,15 +99,15 @@ export const transactionsReducer = (state: TransactionsState, action: ActionWith
       if (!transId) throw new Error("Transaction id must be set to update");
       const backupTransaction = newState.transactions.find(t => t.id === transId);
       const transactions = newState.transactions.map(t => t.id === transId ? trans : t);
-      return { ...newState, backupTransaction, currentTransaction: newTransaction, transactions, modal: "None", showAppSpinner: false, showApiSpinner: true }; 
+      return { ...newState, backupTransaction, currentTransaction: newDebitTransaction, transactions, modal: "None", showAppSpinner: false, showApiSpinner: true }; 
     }
     case TransactionActionTypes.UPDATE_TRANSACTION_SUCCESS: {
-      const localState: TransactionsState = { ...newState, currentTransaction: newTransaction, backupTransaction: undefined, alert: API_UPDATE_TRANSACTION_SUCCESS_ALERT, showApiSpinner: false }; 
+      const localState: TransactionsState = { ...newState, currentTransaction: newDebitTransaction, backupTransaction: undefined, alert: API_UPDATE_TRANSACTION_SUCCESS_ALERT, showApiSpinner: false }; 
       return { ...localState, ...filterTransactions(localState)}
     }
     case TransactionActionTypes.UPDATE_TRANSACTION_FAILURE: {
       const transactions = state.transactions.map(t => t.id === state.backupTransaction?.id ? state.backupTransaction as Transaction : t)
-      const localState: TransactionsState = { ...newState, currentTransaction: newTransaction, backupTransaction: undefined, transactions, alert: API_UPDATE_TRANSACTION_FAILURE_ALERT, showApiSpinner: false }; 
+      const localState: TransactionsState = { ...newState, currentTransaction: newDebitTransaction, backupTransaction: undefined, transactions, alert: API_UPDATE_TRANSACTION_FAILURE_ALERT, showApiSpinner: false }; 
       return { ...localState, ...filterTransactions(localState)}
     }
     case TransactionActionTypes.DELETE_TRANSACTION_INIT: {
@@ -159,7 +163,12 @@ export const transactionsReducer = (state: TransactionsState, action: ActionWith
      return {...newState, showAppSpinner: true }; 
     }
     case TransactionActionTypes.LOAD_TRANSACTIONS_SUCCESS: {
-      const transactions = (action.payload as Array<Transaction>).map(t => ({ ...t, date: new Date(t.date)}));
+      const transactions = (action.payload as Array<Transaction>).map(t => ({ 
+        ...t, 
+        date: new Date(t.date),
+        merchantName: t.merchant ? t.merchant.name : "",
+        categoryName: t.category ? t.category.name : ""
+      }));
       const localState = { ...newState, transactions: transactions, showAppSpinner: false };
       return { ...localState, ...filterTransactions(localState) };
     }

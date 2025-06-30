@@ -48,8 +48,8 @@ function TransactionTableHeader({ onSort, sort }: TransactionTableHeaderProps) {
 
   const columns: ColumnType[] = [ 
     { column: "date", header: "Date", dir: getSortDir("date", sort) }, 
-    { column: "category", header: "Category", dir: getSortDir("category", sort) },
-    { column: "merchant", header: "Merchant", dir: getSortDir("merchant", sort) },
+    { column: "categoryName", header: "Category", dir: getSortDir("categoryName", sort) },
+    { column: "merchantName", header: "Merchant", dir: getSortDir("merchantName", sort) },
     { column: "amount", header: "Amount", dir: getSortDir("amount", sort) },
     { column: "runningBalance", header: "Running Balance", dir: getSortDir("runningBalance", sort) },
     { column: "comments", header: "Comments", dir: getSortDir("comments", sort) },

@@ -10,7 +10,7 @@ import TransactionSearchSummary from './TransactionSummarySummary';
 import { transactionsReducer } from '../reducers/transactionsReducer';
 import { transactionStateInitialValue } from '../types/TransactionsState';
 import { useEffect} from 'react';
-import type { ModalType } from '../types/unionTypes';
+import type { CreditCardTransactionType, ModalType } from '../types/unionTypes';
 import { AddTransactionAction, ClearCurrentTransactionAction, CreateTransactionInitAction, DeleteTransactionInitAction, EditTransactionAction, HideAlertAction, LoadTransactionsInitAction, RemoveColumnFilterAction, SetCurrentTransactionAction, SetModalAction, SetSearchFilterAction, SetSortAction, UpdatePageNumberAction, UpdateTransactionAction, UpdateTransactionInitAction } from '../actions/TransactionActions';
 import type { TransactionSearchFilterType } from '../types/TransactionSeachFilterType';
 import type { ActionWithPayload } from '../actions/ActionWithPayload';
@@ -46,7 +46,7 @@ export function Transactions( { merchants, categories }: TransactionsProps) {
         pageNumber: (pageNumber: number) => {
           dispatch(new UpdatePageNumberAction(pageNumber));
         },
-        addTransaction: () => dispatch(new AddTransactionAction()),
+        addTransaction: (type: CreditCardTransactionType) => dispatch(new AddTransactionAction(type)),
         update: (transaction: Transaction) => {
           dispatch(new UpdateTransactionAction(transaction));
         },
@@ -98,7 +98,7 @@ export function Transactions( { merchants, categories }: TransactionsProps) {
         <Modal show={state.modal==="Edit"} onHide={() => handlers.setModal("None")} role="transaction-form">
           <ModalHeader closeButton>
             <Modal.Title>
-              { state.currentTransaction?.id ? 'Edit Transaction' : 'Add Transaction' }
+              { state.currentTransaction?.id ? `Edit ${state.currentTransaction?.type} Transaction` : `Add ${state.currentTransaction?.type} Transaction` }
             </Modal.Title>
           </ModalHeader>
           <ModalBody>
@@ -122,10 +122,13 @@ export function Transactions( { merchants, categories }: TransactionsProps) {
           summary={state.summary}
           onPageNumberChange={handlers.pageNumber}
           currentSort={state.sort}>
-            <Button variant="primary" onClick={handlers.addTransaction} role="add-transaction" className='mx-3'>
-              Add Transaction
+            <Button variant="primary" onClick={() => handlers.addTransaction("Debit")} role="add-transaction" className='m-1'>
+              Add Debit
             </Button>          
-            <Button role="search-button" variant="secondary" onClick={()=>handlers.setModal("Search")}>
+            <Button variant="primary" onClick={() => handlers.addTransaction("Credit")} role="add-transaction" className='m-1'>
+              Add Credit
+            </Button>          
+            <Button role="search-button" variant="secondary" onClick={()=>handlers.setModal("Search")} className='m-1'>
                   Filter
             </Button>
           </TransactionTable>

@@ -31,7 +31,10 @@ describe("merchantReucer", () => {
       const sort: SortType = { column: "name", direction: "asc" };
       const initialState: MerchantsState = { ...InitialMerchantState, apiStatus: "RUNNING", sort };
        
-      const expectedState: MerchantsState = { ...initialState, apiStatus: "NOT_RUNNING", merchants: sortObjectsArray<Merchant>(merchants, sort), lastAction: action };
+      const expectedState: MerchantsState = { 
+        ...initialState, apiStatus: "NOT_RUNNING", 
+        merchants: sortObjectsArray(merchants, sort) as Merchant[], 
+        lastAction: action };
 
       const actualState = merchantsReducer(initialState, action);
 
@@ -60,7 +63,11 @@ describe("merchantReucer", () => {
       const initialState: MerchantsState = { ...InitialMerchantState, merchants, sort };
       const action = new SortMerchantsAction("name");
       const newSort: SortType = { column: "name", direction: "asc" };
-      const expectedState: MerchantsState = { ...initialState, merchants: sortObjectsArray(merchants, newSort), lastAction: action, sort: newSort }
+      const expectedState: MerchantsState = { 
+        ...initialState, 
+        merchants: sortObjectsArray(merchants, newSort) as Merchant[], 
+        lastAction: action, sort: newSort 
+      };
       const actualState = merchantsReducer(initialState, action);
 
       expect(actualState).toEqual(expectedState);
