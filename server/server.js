@@ -186,14 +186,14 @@ app.get("/api/v1/budget/:year/:month", async (req, res) => {
 
   const filteredTrans = transactions.filter(t => {
     const date = new Date(t.date);
-    return date.getFullYear() === year && (date.getMonth() - 1) === month;
+    return date.getFullYear() === year && (date.getMonth() - 1) === month && t.type === "Debit";
   });
 
   const budgetTotals = filteredTrans.reduce((acc, trans) => {
-    const catTotals = acc[trans.category] ?? { transactions: 0, actual: 0 }
+    const catTotals = acc[trans.category.name] ?? { transactions: 0, actual: 0 }
     return {
       ...acc,
-      [trans.category]: { transactions: catTotals.transactions + 1, actual: catTotals.actual + trans.amount }
+      [trans.category.name]: { transactions: catTotals.transactions + 1, actual: catTotals.actual + trans.amount }
     }
   }, {});
 
@@ -289,7 +289,7 @@ app.get("/api/v1/budget/daily/:year/:month", async (req, res) => {
   const month = parseInt(req.params.month);
 
   // grab all transactions for the request month regardless of year
-  const ymTrans = transactions.filter(t => t.month === month);
+  const ymTrans = transactions.filter(t => t.month === month && t.type === 'Debit');
 
   // sum amounts by day for request year and over all by day
   const { reqYear, totals } = ymTrans.reduce((a, t) => {
