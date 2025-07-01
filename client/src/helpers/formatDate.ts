@@ -1,8 +1,9 @@
 export const formatDate = (date: Date, formatString: 'mm/dd/yyyy' | 'mmmm yyyy' = "mm/dd/yyyy") => {
-  if (formatString === 'mm/dd/yyyy') return date.toLocaleDateString();
-  const options: Intl.DateTimeFormatOptions  = { month: 'long', year: 'numeric' };
-  const formattedDate = new Intl.DateTimeFormat('en-US', options).format(date);
-  return formattedDate;
+  let options: Intl.DateTimeFormatOptions = { month: 'numeric', year: 'numeric', day: 'numeric'};
+  if (formatString === 'mmmm yyyy') {
+    options =  { month: 'long', year: 'numeric' };
+  }
+  return new Intl.DateTimeFormat('en-US', options).format(date);
 }
 
 export const formatMonthYear = (my: { month: number, year: number }): string => {

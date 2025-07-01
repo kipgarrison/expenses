@@ -13,6 +13,7 @@ import type { SortType } from "../types/TransactionsState";
 import type { ReactNode } from "react";
 import { elipsis } from "../helpers/elipsis";
 import type { ColumnType } from "../types/ColumnType";
+import { formatDate } from "../helpers/formatDate";
 
 export default function TransactionTable(props: TransactionTableProps) {
   const { transactions, pageNumber, onDelete, onEdit, onView, onPageNumberChange, summary, onSort, currentSort, children } = props;
@@ -98,7 +99,7 @@ function TransactionTableRow({ transaction, onDelete, onEdit, onView}: Transacti
           <EditIcon onAction={onEdit} item={transaction} />
         </td>
         <td>
-          {transaction.date.toLocaleDateString()}
+          {formatDate(transaction.date)}
         </td>
         <td>
           {transaction.category.name}

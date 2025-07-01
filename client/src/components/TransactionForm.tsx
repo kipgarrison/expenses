@@ -3,8 +3,11 @@ import './TransactionForm.css';
 
 export default function TransactionForm({ transaction, merchants, categories, onChange, onSave }: TransactionFormProps) {
   function setField(field: string, value: string|boolean) {
+    
     if (field === "date") {
-      onChange({ ...transaction, date: new Date(value as string) });
+      const dateParts = (value as string).split("-");
+      const newDate = `${dateParts[1]}/${dateParts[2]}/${dateParts[0]}`;
+      onChange({ ...transaction, date: new Date(newDate) });
     } else if (field === "amount") {
       onChange({ ...transaction, amount: parseFloat(value as string) });
     } else if (field === "hasReceipt") {
