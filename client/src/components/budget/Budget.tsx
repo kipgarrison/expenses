@@ -6,12 +6,14 @@ import { Card, Table } from "react-bootstrap";
 import { formatCurrency } from "../../helpers/currencyFormatter";
 import { formatMonthYear } from "../../helpers/formatDate";
 import "./Budget.css";
-import { ApiSpinner } from "../ApiSpinner";
 import { CartesianGrid, Legend, Line, LineChart, XAxis, YAxis } from "recharts";
-import { getBudgetEffect } from "../effects/budget/getBudgetEffect";
-import { getBudgetSummaryEffect } from "../effects/budget/getBudgetSummary";
-import { getMonthYearsEffect } from "../effects/budget/getMonthYearsEffect";
+import { getBudgetEffect } from "../../effects/budget/getBudgetEffect";
+import { getBudgetSummaryEffect } from "../../effects/budget/getBudgetSummary";
+import { getMonthYearsEffect } from "../../effects/budget/getMonthYearsEffect";
 import { LoadBudgetInitAction, LoadMonthYearsInitAction, LoadSummaryInitAction } from "../../actions/budget/BudgetActions";
+import { AppCrash } from "../errors/AppCrash";
+import { ApiSpinner } from "../shared/ApiSpinner";
+
 
 export default function Budget() {
   const [ state, dispatch ] = useReducer(budgetReducer, InitialBudgetState);
@@ -26,71 +28,7 @@ export default function Budget() {
   useEffect(() => getBudgetSummaryEffect(state.lastActions, dispatch), [state.lastActions]);
   useEffect(() => getMonthYearsEffect(state.lastActions, dispatch), [state.lastActions]);
 
-  // useEffect(() => {
-  //   const budgetInit = state.lastActions.find(a => a.type === BudgetActionTypes.LOAD_BUDGET_INIT);
-  //   if (budgetInit) {
-  //     executeLoad(budgetInit.payload as { month: number, year: number });
-  //   }
-    
-  //   async function executeLoad(monthYear?: { month: number, year: number}) {
-  //     const date = new Date();
-  //     const month = monthYear?.month ?? date.getMonth();
-  //     const year = monthYear?.year ?? date.getFullYear();
-
-  //     const url = `http://localhost:3000/api/v1/budget/${year}/${month}` 
-  //     try {
-  //       const result = await axios.get(url);
-  //       dispatch(new LoadBudgetSuccessAction(result.data));
-  //     }
-  //     catch {
-  //       dispatch(new LoadBudgetFailureAction());
-  //     }
-  //   }
-  // }, [state.lastActions]); 
-
-  // useEffect(() => {
-  //   const monthYearsAction = state.lastActions.find(a => a.type === BudgetActionTypes.LOAD_MONTH_YEARS_INIT);
-  //   if (monthYearsAction) {
-  //     executeLoad();
-  //   }
-    
-  //   async function executeLoad() {
-  //     const url = `http://localhost:3000/api/v1/budget/months` 
-  //     try {
-  //       const result = await axios.get(url);
-  //       dispatch(new LoadMonthYearsSuccessAction(result.data));
-  //     }
-  //     catch {
-  //       dispatch(new LoadMonthYearsFailureAction());
-  //     }
-  //   }
-  // }, [state.lastActions]); 
-
-
-
-  //   const summaryAction = state.lastActions.find(a => a.type === BudgetActionTypes.LOAD_SUMMARY_INIT);
-  //   if (summaryAction) {
-  //     executeLoad(summaryAction.payload as { month: number, year: number });
-  //   }
-    
-  //   async function executeLoad(monthYear?: { month: number, year: number}) {
-  //     const date = new Date();
-  //     const month = monthYear?.month ?? date.getMonth();
-  //     const year = monthYear?.year ?? date.getFullYear();
-
-  //     const url = `http://localhost:3000/api/v1/budget/daily/${year}/${month}` 
-  //     try {
-  //       const result = await axios.get(url);
-  //       dispatch(new LoadSummarySuccessAction(result.data));
-  //     }
-  //     catch {
-  //       dispatch(new LoadDailySummaryFailureAction());
-  //     }
-  //   }
-  // }, [state.lastActions]); 
-
-  
-  const handleMonthYearSelection = (e) => {
+  const handleMonthYearSelection = (e: { target: { value: string | number | Date } }) => {
     const d = new Date(e.target.value);
     const monthYear = { month: d.getMonth()+1, year: d.getFullYear() };
     dispatch(new LoadBudgetInitAction(monthYear))
@@ -101,6 +39,7 @@ export default function Budget() {
 
   return (
     <>
+    <AppCrash show={state.showFailureMessage}/>
     <h5>
       Budget for 
       <select id="merchant" name="merchant" role="merchant-name" data-testid="budget-months" 
@@ -197,12 +136,8 @@ export default function Budget() {
             </LineChart>
           </Card.Body>
         </Card>
-        
       </div>
-    </div>
-    
-
-    
+    </div>    
     </>
   )
 }

@@ -1,0 +1,17 @@
+.app-error-message {
+  width: 100%;
+  height: 100%;
+  background-color: #bbb;
+  padding: 0.5rem;
+}
+.app-error-message > h4 {
+  line-height: 50px;
+  float:left;
+}
+.app-error-message > svg {
+  float: left;
+  color: red;
+}
+.app-error-message > p {
+  clear: both;
+}

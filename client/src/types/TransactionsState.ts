@@ -19,6 +19,7 @@ export type TransactionsState = {
   alert?: AlertType, 
   showAppSpinner: boolean;
   showApiSpinner: boolean;
+  showFailureMessage?: boolean
 }
 
 export type TranactionsSummaryType = {

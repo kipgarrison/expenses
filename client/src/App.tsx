@@ -1,7 +1,5 @@
 import "./App.css";
-import { NavigationTabs, type TabType } from "./components/NavigationTabs";
 import { Merchants } from "./components/merchants/merchants";
-import { Transactions } from './components/Transactions';
 import Budget from "./components/budget/Budget";
 import { useEffect } from "react";
 import { AppReducer } from "./reducers/AppReducer";
@@ -10,15 +8,38 @@ import axios from "axios";
 import type { ReferenceData } from "./types/app/ReferenceData";
 import { LoadReferenceDataFailureAction, LoadReferenceDataInitAction, LoadReferenceDataSuccessAction } from "./actions/app/AppActions";
 import React from "react";
+import ErrorBoundry from "./components/shared/ErrorBoundary";
+import { Transactions } from "./components/transactions/Transactions";
+import AppError from "./components/errors/AppError";
+import { NavigationTabs, type TabType } from "./components/shared/NavigationTabs";
+
 
 function App() {   
   const [state, dispatch] = React.useReducer(AppReducer, InitialAppState);
 
+  const transactions = (
+    <ErrorBoundry fallback={<AppError area="Transactions" message="An error occured while processing your request" />}>
+      <Transactions merchants={state.merchants} categories={state.categories}/>
+    </ErrorBoundry>
+  );
+  
+  const merchants = (
+    <ErrorBoundry fallback={<AppError area="Merchants" message="An error occured while processing your request" />}>
+      <Merchants />
+    </ErrorBoundry>
+  );
+
+  const budget = (
+    <ErrorBoundry fallback={<AppError area="Budget" message="An error occured while processing your request" />}>
+      <Budget />
+    </ErrorBoundry>
+  );
+  
   const tabs: TabType[] = [ 
-    { title: "Transactions", content: <Transactions merchants={state.merchants} categories={state.categories}/>, isActive: true },
-    { title: "Merchants", content: <Merchants />, isActive: false },
-    { title: "Budget", content: <Budget />, isActive: false}
-  ]
+    { title: "Transactions", content: transactions, isActive: true },
+    { title: "Merchants", content: merchants, isActive: false },
+    { title: "Budget", content: budget, isActive: false}
+  ];
 
   // Load Reference data
   useEffect(() => {
