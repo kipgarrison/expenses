@@ -61,29 +61,29 @@ export default function TransactionSearchForm({ show, filter, merchants, categor
   const categoryGroupings = getFieldGroupings(categories);
 
 
-  const merchantFields = merchantGroupings.map((mg, i) => (
+  const merchantFields = merchantGroupings.map((mg) => (
     <Form.Group as={Col}>
-       { mg.map((merchant, j) => (
+       { mg.filter(mg => mg.name !== "N/A").map((merchant) => (
          <Form.Check
           key = {merchant.id}
           label = {merchant.name}
-          type="checkbox"
-          id={`merchants-${i}-${j}`}
+          type="switch"
+          id={`merchants-${merchant.id}`}
           checked={ localFilter.merchants.includes(merchant) }
           onChange={() => handleFieldChange('merchants', merchant)}
         />))}
       </Form.Group>
   ));
 
-  const categoryFields = categoryGroupings.map((cg, index) => (
+  const categoryFields = categoryGroupings.map((cg) => (
     <Form.Group as={Col}>
-       { cg.map(category => (
+       { cg.map((category)  => (
          <Form.Check
           key={category.id}
           label = {category.name}
-          type="checkbox"
+          type="switch"
           checked={ localFilter.categories.includes(category) }
-          id= {`types-${index}`}
+          id= {`category-${category.id}`}
           onChange={() => handleFieldChange('categories', category)}
         />))}
       </Form.Group>

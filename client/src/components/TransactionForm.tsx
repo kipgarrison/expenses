@@ -1,7 +1,7 @@
 import { useRef } from "react";
 import type { TransactionFormProps } from "../types/TransactionFormProps";
 import './TransactionForm.css';
-import { Button, Modal, ModalBody, ModalFooter, ModalHeader } from "react-bootstrap";
+import { Button, Form, Modal, ModalBody, ModalFooter, ModalHeader } from "react-bootstrap";
 import { newDebitTransaction } from "../types/Transaction";
 
 export default function TransactionForm({ transaction, merchants, categories, show, onHide, onChange, onSave }: TransactionFormProps) {
@@ -92,11 +92,14 @@ export default function TransactionForm({ transaction, merchants, categories, sh
                   onChange={(e) => setField("comments", e.target.value)} />
               </div>
               {transaction.type === 'Debit' && 
-                <div className="form-group form-check">
-                  <input type="checkbox" className="form-check-input" id="hasReceipt" name="hasReceipt" data-testid="hasReceipt" 
+                <div className="form-group mt-2">
+                  <Form.Check
+                    label="Has Receipt"
+                    type="switch"
                     checked={transaction.hasReceipt}
-                    onChange={(e) => setField("hasReceipt", e.target.checked)}/>
-                  <label className="form-check-label" htmlFor="hasReceipt">Has Receipt</label>
+                    id="hasReceipt"
+                     onChange={(e) => setField("hasReceipt", e.target.checked)}
+                  />
                 </div>
               }
               <div className="form-group mt-4 d-flex justify-content-end">
