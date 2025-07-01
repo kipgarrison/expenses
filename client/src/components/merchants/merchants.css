@@ -2,3 +2,6 @@ th {
   text-align: center;
   padding: 5px;
 }
+.range-select {
+  width: 10em;
+}

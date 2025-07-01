@@ -3,8 +3,8 @@ import { ActionWithPayload } from "../ActionWithPayload";
 import { MerchantActionTypes } from "./MerchantActionTypes";
 
 export class LoadMerchantsInitAction extends ActionWithPayload {
-  constructor() {
-    super(MerchantActionTypes.LOAD_MERCHANTS_INIT);
+  constructor(range?: number) {
+    super(MerchantActionTypes.LOAD_MERCHANTS_INIT, range ??  0);
   }
 }
 
