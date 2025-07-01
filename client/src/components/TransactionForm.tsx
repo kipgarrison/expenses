@@ -5,6 +5,8 @@ export default function TransactionForm({ transaction, merchants, categories, on
   function setField(field: string, value: string|boolean) {
     
     if (field === "date") {
+      const date = new Date(value as string);
+      if (isNaN(date.valueOf())) return;
       const dateParts = (value as string).split("-");
       const newDate = `${dateParts[1]}/${dateParts[2]}/${dateParts[0]}`;
       onChange({ ...transaction, date: new Date(newDate) });
