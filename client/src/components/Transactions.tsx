@@ -112,7 +112,6 @@ export function Transactions( { merchants, categories }: TransactionsProps) {
         </Modal>
         <ApiSpinner show={state.showApiSpinner} />
         <AppToast alert={state?.alert} onClose={closeAlert} />
-        <TransactionSearchSummary {...filterSummaryProps} />
         <TransactionTable 
           transactions={state.transactionPage} 
           onDelete={handlers.startDelete} 
@@ -132,6 +131,8 @@ export function Transactions( { merchants, categories }: TransactionsProps) {
                   Filter
             </Button>
           </TransactionTable>
+          <TransactionSearchSummary {...filterSummaryProps} />
+        
         <Modal data-testid="confirm-delete" show={state.modal === "ConfirmDelete"} onHide={()=>handlers.setModal("None")}>
           <Modal.Header closeButton>
             <Modal.Title>Confirm Deletion</Modal.Title>

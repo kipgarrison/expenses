@@ -12,7 +12,7 @@ export type Transaction = {
   hasReceipt?: boolean,
   runningBalance: number,
   category: ReferenceData,
-  categoryName?: string
+  categoryName?: string,
 }
 
 export const newDebitTransaction: Transaction = {
@@ -26,7 +26,7 @@ export const newDebitTransaction: Transaction = {
   hasReceipt: false,
   runningBalance: 0,
   category: { id: 0, name: "" },
-  categoryName: ""
+  categoryName: "",
 }
 
 export const newCreditTransaction: Transaction = {
