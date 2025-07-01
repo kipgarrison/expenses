@@ -16,6 +16,7 @@ export type MerchantsState = {
   alert?: AlertType,
   sort: SortType,
   modal: ModalType,
+  showFailureMessage?: boolean
 }
 
 export const InitialMerchantState: MerchantsState = {

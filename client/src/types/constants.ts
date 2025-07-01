@@ -62,5 +62,10 @@ export const API_LOAD_REFERENCE_LIST_FAILURE_ALERT: AlertType = {
   message: 'An error occured when attempting to load reference data'
 }
 
+export const API_CRITICAL_LOAD_FAILURE_ALERT: AlertType = {
+  type: 'failure',
+  message: 'Unable to load critical applicaion.  Please try again later.'
+}
+
 export const BASE_API_URL = "http://localhost:3000/api/v1";  
 export const DELETE_URL = `${BASE_API_URL}/transactions` 

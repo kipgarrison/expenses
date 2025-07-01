@@ -10,6 +10,7 @@ import type { TranactionsSummaryType, TransactionsState } from "../types/Transac
 import type { CreditCardTransactionType, ModalType } from "../types/unionTypes";
 
 export function filterTransactions({ transactions, pageNumber, pageSize, sort, filter }: TransactionsState): { transactions: Transaction[], transactionPage: Transaction[], summary: TranactionsSummaryType } {
+  throw new Error("Whoops");
   if (!transactions) return { transactions, transactionPage: [], summary: { numPages: 0, totalDebitAmount: 0, totalCreditAmount: 0, transactionsCount: 0}};
   const updatedTransactions = addRunningBalance([...transactions]);
   let localTrans = sortObjectsArray([ ...updatedTransactions ], sort, "id") as Array<Transaction>;
@@ -178,7 +179,7 @@ export const transactionsReducer = (state: TransactionsState, action: ActionWith
       return { ...localState, ...filterTransactions(localState) };
     }
     case TransactionActionTypes.LOAD_TRANSACTIONS_FAILURE: {
-      return { ...newState, showAppSpinner: false };
+      return { ...newState, showAppSpinner: false, showFailureMessage: true };
     }
     case TransactionActionTypes.HIDE_ALERT: {
       return { ...newState, alert: undefined };

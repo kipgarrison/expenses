@@ -17,7 +17,8 @@ export type BudgetState = {
   alert?: AlertType,
   sort: SortType,
   modal: ModalType,
-  selectedMonthYear: { month: number, year: number }
+  selectedMonthYear: { month: number, year: number },
+  showFailureMessage? : boolean
 }
 
 

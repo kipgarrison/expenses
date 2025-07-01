@@ -5,34 +5,19 @@ import { InitialMerchantState } from "../../types/merchants/MerchantState";
 import { formatCurrency } from "../../helpers/currencyFormatter";
 import { Table } from 'react-bootstrap';
 import type { ColumnType } from "../../types/ColumnType";
-import { SortButton } from "../SortButton";
 import { LoadMerchantsInitAction, SortMerchants } from "../../actions/merchants/MerchantActions";
 import type { SortType } from "../../types/TransactionsState";
 import type { ActionWithPayload } from "../../actions/ActionWithPayload";
-import { loadMerchantsEffect } from "../effects/merchants/loadMerchantsEffect";
+import { loadMerchantsEffect } from "../../effects/merchants/loadMerchantsEffect";
+import { SortButton } from "../icons/SortButton";
+import { AppCrash } from "../errors/AppCrash";
 
 export function Merchants() {
   const [ state, dispatch ] = useReducer(merchantsReducer, InitialMerchantState);
   
   useEffect(() => dispatch(new LoadMerchantsInitAction()), []);
-
   useEffect(() => loadMerchantsEffect(state.lastAction as ActionWithPayload, dispatch), [state.lastAction]);
-  // useEffect(() => {
-  //   if (state.lastAction?.type === MerchantActionTypes.LOAD_MERCHANTS_INIT) {
-  //     executeLoad();
-  //   }
-    
-  //   async function executeLoad() {
-  //     const url = `http://localhost:3000/api/v1/merchants` 
-  //     try {
-  //       const result = await axios.get(url);
-  //       dispatch(new LoadMerchantsSuccessAction(result.data));
-  //     }
-  //     catch {
-  //       dispatch(new LoadMerchantsFailureAction());
-  //     }
-  //   }
-  //}, [state.lastAction?.type]); 
+
 
   const getSortDir = (col: string, sort: SortType): "asc" | "desc" | "none" => {
     if (sort?.column !== col) return "none";
@@ -66,6 +51,8 @@ export function Merchants() {
   ));
 
   return (
+      <>
+      <AppCrash show={state.showFailureMessage} />
       <Table striped bordered hover variant="dark">  
         <thead>
           <tr>
@@ -110,6 +97,7 @@ export function Merchants() {
           ))}
         </tbody>      
       </Table>
+      </>
     )
 }
 
