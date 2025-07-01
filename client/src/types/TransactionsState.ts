@@ -36,7 +36,7 @@ export const transactionStateInitialValue: TransactionsState = {
   transactionPage: [],
   filter: { merchants: [], categories: [] },
   modal: "None",
-  summary: { numPages: 0, transactionsCount: 0, totalAmount: 0},
+  summary: { numPages: 0, transactionsCount: 0, totalCreditAmount: 0, totalDebitAmount: 0},
   showAppSpinner: false,
   showApiSpinner: false,
   lastAction: new NullAction()

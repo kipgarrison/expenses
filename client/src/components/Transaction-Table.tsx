@@ -18,7 +18,7 @@ export default function TransactionTable(props: TransactionTableProps) {
   const { transactions, pageNumber, onDelete, onEdit, onView, onPageNumberChange, summary, onSort, currentSort, children } = props;
   const view = onView ?? (t => alert('Hello ' + t.merchant));
   const handleSort = onSort ?? (()=> {});
-  
+  const balance = Math.round((summary.totalDebitAmount - summary.totalCreditAmount) * 100) / 100;
   return (
     <>
     <div className="row mb-2">
@@ -32,7 +32,7 @@ export default function TransactionTable(props: TransactionTableProps) {
         <strong className="me-1">Total Credits:</strong> {formatCurrency(summary.totalCreditAmount)}
       </div>
       <div className="col-3 text-center">
-        <strong className="me-1">Current Balance:</strong> {formatCurrency(summary.totalCreditAmount - summary.totalDebitAmount)}
+        <strong className="me-1">Current Balance:</strong> {formatCurrency(balance)}
       </div>
       
     </div> 

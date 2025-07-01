@@ -11,10 +11,10 @@ export default function TransactionForm({ transaction, merchants, categories, on
       onChange({ ...transaction, hasReceipt: value as boolean });
     } else if (field === "merchant") {
       const merchant = merchants.find(m => m.name === value) ?? { id: 0, name: "" };
-      onChange({ ...transaction, merchant })
+      onChange({ ...transaction, merchant, merchantName: value as string })
     } else if (field === "category") {
       const category = categories.find(c => c.name === value) ?? { id: 0, name: "" };
-      onChange({ ...transaction, category })
+      onChange({ ...transaction, category, categoryName: value as string })
     } else {
       onChange({ ...transaction, [field]: value });
     }
