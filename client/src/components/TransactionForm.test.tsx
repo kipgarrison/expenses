@@ -12,7 +12,7 @@ describe("TransactionForm", () => {
     const save = vi.fn();
     const change = vi.fn();
     const transaction = newDebitTransaction;
-    render(<TransactionForm merchants={merchants} categories={categories} onSave={save} onChange={change} transaction={transaction} />);
+    render(<TransactionForm merchants={merchants} categories={categories} onSave={save} onChange={change} transaction={transaction} onHide={() => {}} show={true} />);
     const merchantsList = await waitFor(() => screen.getByTestId("merchants") as HTMLSelectElement);
     const categoriesList = await waitFor(() => screen.getByTestId("categories") as HTMLSelectElement);
     expect(merchantsList).toBeInTheDocument();
@@ -32,7 +32,7 @@ describe("TransactionForm", () => {
     const save = vi.fn();
     const change = vi.fn();
     const transaction: Transaction = { id: 1, amount: 10, comments: "comments", date: new Date(2025, 0, 1), merchant: merchants[0], category: categories[1], runningBalance: 0, hasReceipt: true , type: "Debit"};
-    render(<TransactionForm merchants={merchants} categories={categories} onSave={save} onChange={change} transaction={transaction} />);
+    render(<TransactionForm merchants={merchants} categories={categories} onSave={save} onChange={change} transaction={transaction} onHide={() => {}} show={true}/>);
     const merchantsList = await waitFor(() => screen.getByTestId("merchants") as HTMLSelectElement);
     const categoriesList = await waitFor(() => screen.getByTestId("categories") as HTMLSelectElement);
     const amount = await waitFor(() => screen.getByTestId("amount") as HTMLInputElement);
@@ -60,7 +60,7 @@ describe("TransactionForm", () => {
     const updateTrans = { ...transaction, comments: "commentsa" };
     const change = vi.fn();
 
-    render(<TransactionForm merchants={merchants} categories={categories} onSave={save} onChange={change} transaction={transaction} />);
+    render(<TransactionForm merchants={merchants} categories={categories} onSave={save} onChange={change} transaction={transaction} onHide={() => {}} show={true} />);
     const comments = await waitFor(() => screen.getByTestId("comments") as HTMLInputElement);
     expect(comments).toBeInTheDocument();
     await userEvent.click(comments);
@@ -78,7 +78,7 @@ describe("TransactionForm", () => {
     const updateTrans = { ...transaction, comments: "commentsa" };
     const change = vi.fn().mockImplementation(t => transaction = t);
 
-    render(<TransactionForm merchants={merchants} categories={categories} onSave={save} onChange={change} transaction={transaction} />);
+    render(<TransactionForm merchants={merchants} categories={categories} onSave={save} onChange={change} transaction={transaction} onHide={() => {}} show={true} />);
     const comments = await waitFor(() => screen.getByTestId("comments") as HTMLInputElement);
     const saveBtn = await waitFor(() => screen.getByTestId("submit"));
     expect(comments).toBeInTheDocument();
