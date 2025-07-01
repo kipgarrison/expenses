@@ -75,12 +75,14 @@ export default function TransactionForm({ transaction, merchants, categories, on
           value={transaction.comments}
           onChange={(e) => setField("comments", e.target.value)} />
       </div>
-      <div className="form-group form-check">
-        <input type="checkbox" className="form-check-input" id="hasReceipt" name="hasReceipt" data-testid="hasReceipt" 
-          checked={transaction.hasReceipt}
-          onChange={(e) => setField("hasReceipt", e.target.checked)}/>
-        <label className="form-check-label" htmlFor="hasReceipt">Has Receipt</label>
-      </div>
+      {transaction.type === 'Debit' && 
+        <div className="form-group form-check">
+          <input type="checkbox" className="form-check-input" id="hasReceipt" name="hasReceipt" data-testid="hasReceipt" 
+            checked={transaction.hasReceipt}
+            onChange={(e) => setField("hasReceipt", e.target.checked)}/>
+          <label className="form-check-label" htmlFor="hasReceipt">Has Receipt</label>
+        </div>
+      }
       <button type="submit" className="btn btn-primary" data-testid="submit">Submit</button>
     </form>);
 }
