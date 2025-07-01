@@ -109,8 +109,15 @@ app.post("/api/v1/transactions", async (req, res) => {
   }, 2000)
 });
 
-app.get('/api/v1/merchants', async (req, res) => {
-  const summary = transactions.reduce((accumulator, trans) => {
+app.get('/api/v1/merchants/:range', async (req, res) => {
+  const upperLimit = new Date();
+  const range = parseInt(req.params.range);
+  const lowerLimit = isNaN(range) || !range ? new Date(1970, 1, 1) : new Date(upperLimit.getFullYear(), upperLimit.getMonth(), upperLimit.getDate() - range);
+  const upperStr = upperLimit.toISOString();
+  const lowerStr = lowerLimit.toISOString();
+  const filterTrans = transactions.filter(t => t.date <= upperStr && t.date >= lowerStr);
+
+  const summary = filterTrans.reduce((accumulator, trans) => {
     let { merchants, totCount, totAmount } = accumulator;
     totCount += 1;
     totAmount = totAmount + trans.amount;
@@ -163,6 +170,8 @@ app.get('/api/v1/merchants', async (req, res) => {
   await setTimeout(() => res.json(response), 5000);
 
 })
+
+
 
 app.get("/api/v1/budget/months", async (req, res) => {
   const minYear = transactions.reduce((a, t) => Math.min(a, new Date(t.date).getFullYear()), 20000);

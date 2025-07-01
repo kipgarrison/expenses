@@ -16,8 +16,18 @@ export type MerchantsState = {
   alert?: AlertType,
   sort: SortType,
   modal: ModalType,
-  showFailureMessage?: boolean
-}
+  showFailureMessage?: boolean,
+  filterRange: number
+ }
+
+ export const filterRangeValues: Record<string, number> = {
+  'All Time': 0,
+  'Last 7 Days': 7,
+  'Last 30 Days': 30,
+  'Last 90 Days': 90,
+  'Last 180 Days': 180,
+  'Last 365 Days': 365
+ };
 
 export const InitialMerchantState: MerchantsState = {
   merchants: [],
@@ -27,5 +37,6 @@ export const InitialMerchantState: MerchantsState = {
   apiStatus: "INITIAL",
   sort: { column: "name", direction: "asc" },
   modal: 'None',
-  lastAction: new NullAction()
+  lastAction: new NullAction(),
+  filterRange: 0
 };

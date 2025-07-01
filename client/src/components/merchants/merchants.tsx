@@ -1,7 +1,7 @@
 import { useEffect, useReducer } from "react";
 import { merchantsReducer } from "../../reducers/merchantReducer";
 import "./merchants.css";
-import { InitialMerchantState } from "../../types/merchants/MerchantState";
+import { filterRangeValues, InitialMerchantState } from "../../types/merchants/MerchantState";
 import { formatCurrency } from "../../helpers/currencyFormatter";
 import { Table } from 'react-bootstrap';
 import type { ColumnType } from "../../types/ColumnType";
@@ -11,13 +11,13 @@ import type { ActionWithPayload } from "../../actions/ActionWithPayload";
 import { loadMerchantsEffect } from "../../effects/merchants/loadMerchantsEffect";
 import { SortButton } from "../icons/SortButton";
 import { AppCrash } from "../errors/AppCrash";
+import { ApiSpinner } from "../shared/ApiSpinner";
 
 export function Merchants() {
   const [ state, dispatch ] = useReducer(merchantsReducer, InitialMerchantState);
   
   useEffect(() => dispatch(new LoadMerchantsInitAction()), []);
   useEffect(() => loadMerchantsEffect(state.lastAction as ActionWithPayload, dispatch), [state.lastAction]);
-
 
   const getSortDir = (col: string, sort: SortType): "asc" | "desc" | "none" => {
     if (sort?.column !== col) return "none";
@@ -50,9 +50,29 @@ export function Merchants() {
     </th>
   ));
 
+  const setRange = (value: string) => {
+    dispatch(new LoadMerchantsInitAction(parseInt(value)));
+  } 
+
+  const showSpinner = state.apiStatus === "RUNNING";
+
   return (
       <>
       <AppCrash show={state.showFailureMessage} />
+
+      <h5>
+          View
+          <select id="view-range" name="view-range" data-testid="view-range" 
+            value={state.filterRange}
+            onChange={(e) => setRange(e.target.value)} required
+            className="from-control range-select mx-2">
+            {Object.keys(filterRangeValues).map(k => (
+              <option key={filterRangeValues[k]} value={filterRangeValues[k]}>{k}</option>
+            ))}
+          </select>
+          
+          <ApiSpinner show={showSpinner} />
+      </h5>
       <Table striped bordered hover variant="dark">  
         <thead>
           <tr>

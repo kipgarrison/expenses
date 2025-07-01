@@ -21,7 +21,7 @@ export const merchantsReducer = (state: MerchantsState, action: ActionWithPayloa
   console.log("Merchant Reducer*********************>" + action.type, action);
   switch (action.type) {
     case MerchantActionTypes.LOAD_MERCHANTS_INIT: {
-      return { ...newState, apiStatus: "RUNNING" };
+      return { ...newState, apiStatus: "RUNNING", filterRange: action.payload as number, merchants: [] };
     }
     case MerchantActionTypes.LOAD_MERCHANTS_SUCCESS: {
       const merchants = (action.payload as Merchant[]).map(m => ({ ...m, firstDate: new Date(m.firstDate), lastDate: new Date(m.lastDate)}));
