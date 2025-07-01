@@ -33,10 +33,12 @@ export const newCreditTransaction: Transaction = {
   id: 0,
   type: "Credit",
   date: new Date(),
-  merchant: { id: 0, name: ""},
+  merchant: { id: 0, name: "N/A"},
+  merchantName: "N/A",
   amount: 0,
   comments: "",
   hasReceipt: false,
   runningBalance: 0,
-  category: { id: 0, name: "" },
+  category: { id: 0, name: "Payment" },
+  categoryName: "Payment"
 }

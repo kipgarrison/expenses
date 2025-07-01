@@ -22,7 +22,7 @@ describe.only("Transactions", () => {
     pageNumber: 1,
     pageSize: 2,
     transactionPage: transactions.slice(0,  2),
-    summary: { numPages: 3, totalAmount: 500, transactionsCount: 5 }
+    summary: { numPages: 3, totalCreditAmount: 500, totalDebitAmount: 100,  transactionsCount: 5 }
   }
 
   const merchants = [ {id: 1, name: "Wal-Mart"}, { id: 2, name: "Target"}, { id: 3, name: "Schnucks"}, {id: 4, name: "Wal-Greens"}, {id: 5, name: "Amazon" }];
@@ -147,7 +147,7 @@ describe.only("Transactions", () => {
   });
 
   it("should display '...' at end of paging control if more than displayable number of pages  exist", async () => {
-    const newState: TransactionsState = { ...mockState, summary: {numPages: 20, totalAmount: 1000, transactionsCount: 1000 } }
+    const newState: TransactionsState = { ...mockState, summary: {numPages: 20, totalCreditAmount: 1000, totalDebitAmount: 100, transactionsCount: 1000 } }
     const mockUseReducer = vi.fn().mockImplementation(() => [newState , mockDispatch]);
     vi.spyOn(React, 'useReducer').mockImplementation(mockUseReducer);
     render(<Transactions merchants={merchants} categories={categories} />);
@@ -156,7 +156,7 @@ describe.only("Transactions", () => {
   })
 
   it("should display '...' at start of paging control if # pages - currentPage is too large to display all  links", async () => {
-    const newState: TransactionsState = { ...mockState, pageNumber: 20,  summary: {numPages: 25, totalAmount: 1000, transactionsCount: 1000 } }
+    const newState: TransactionsState = { ...mockState, pageNumber: 20,  summary: {numPages: 25, totalCreditAmount: 1000, totalDebitAmount: 100, transactionsCount: 1000 } }
     const mockUseReducer = vi.fn().mockImplementation(() => [newState , mockDispatch]);
     vi.spyOn(React, 'useReducer').mockImplementation(mockUseReducer);
     render(<Transactions merchants={merchants} categories={categories} />);

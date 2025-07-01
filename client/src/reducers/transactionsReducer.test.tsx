@@ -124,7 +124,7 @@ describe("TransactionsReducer", () => {
         currentTransaction: newDebitTransaction, 
         transactions: [...transactions, transSaved], 
         backupTransaction: undefined, lastAction: action,
-        summary: { numPages: 3, totalAmount: 1100, transactionsCount: 5 },
+        summary: { numPages: 3, totalDebitAmount: 1100, totalCreditAmount: 0, transactionsCount: 5 },
         transactionPage:  transactions.slice(0, 2)};
       
       const newState = reducer(initial, action);
@@ -163,7 +163,7 @@ describe("TransactionsReducer", () => {
       const expected: TransactionsState = { 
         ...initial, 
         currentTransaction: newDebitTransaction, 
-        transactions: transactions, summary: { numPages: 2, totalAmount: 1000, transactionsCount: 4 },
+        transactions: transactions, summary: { numPages: 2, totalDebitAmount: 1000, totalCreditAmount: 0, transactionsCount: 4 },
         modal: "None", backupTransaction: undefined, lastAction: action,
         transactionPage: transactions.slice(0, 2), showApiSpinner: false,  alert:  API_CREATE_TRANSACTION_FAILURE_ALERT };
       
@@ -217,7 +217,7 @@ describe("TransactionsReducer", () => {
         currentTransaction: newDebitTransaction, 
         transactions: newTrans, 
         backupTransaction: undefined, lastAction: action,
-        summary: { numPages: 2, totalAmount: 1100, transactionsCount: 4 },
+        summary: { numPages: 2, totalDebitAmount: 1100, totalCreditAmount: 0, transactionsCount: 4 },
         transactionPage: newTrans.slice(0, 2)
         };
       
@@ -244,7 +244,7 @@ describe("TransactionsReducer", () => {
         ...initial, 
         currentTransaction: newDebitTransaction, 
         transactions: transactions, 
-        summary: { numPages: 2, totalAmount: 1000, transactionsCount: 4 },
+        summary: { numPages: 2, totalDebitAmount: 1000, totalCreditAmount: 0,  transactionsCount: 4 },
         modal: "None", backupTransaction: undefined, lastAction: action,
         showApiSpinner: false, alert:  API_UPDATE_TRANSACTION_FAILURE_ALERT,
         transactionPage: transactions.slice(0, 2) };
@@ -266,7 +266,7 @@ describe("TransactionsReducer", () => {
         ...initial, 
         transactions: remaining, 
         modal: "None", backupTransaction: transToUpdate, lastAction: action,  showApiSpinner: true,
-        summary: { numPages: 2, totalAmount: 900, transactionsCount: 3}, transactionPage: remaining.slice(0, 2) };
+        summary: { numPages: 2, totalDebitAmount: 900, totalCreditAmount: 0, transactionsCount: 3}, transactionPage: remaining.slice(0, 2) };
       
       const newState = reducer(initial, action);
 
@@ -293,13 +293,13 @@ describe("TransactionsReducer", () => {
         ...initialTransactionState, 
         transactions: remaining, 
         modal: "None",
-        summary: { numPages: 2, totalAmount: 900, transactionsCount: 3 },  
+        summary: { numPages: 2, totalDebitAmount: 900, totalCreditAmount: 0, transactionsCount: 3 },  
         transactionPage: remaining.slice(0, 2)
       };
       const expected: TransactionsState = { 
         ...initial, 
         transactions: remaining, 
-        summary: { numPages: 2, totalAmount: 900, transactionsCount: 3 },
+        summary: { numPages: 2, totalDebitAmount: 900, totalCreditAmount: 0,  transactionsCount: 3 },
         showApiSpinner: false, alert:   API_DELETE_TRANSACTION_SUCESS_ALERT,
         transactionPage: remaining.slice(0, 2),
         backupTransaction: undefined,  lastAction: action
@@ -325,7 +325,7 @@ describe("TransactionsReducer", () => {
       const expected: TransactionsState = { 
         ...initial, 
         transactions: [...remaining, transactions[0]], 
-        summary: { numPages: 2, totalAmount: 1000, transactionsCount: 4 },
+        summary: { numPages: 2, totalDebitAmount: 1000, totalCreditAmount: 0, transactionsCount: 4 },
         modal: "None", backupTransaction: undefined, lastAction: action,
         showApiSpinner:  false, alert:  API_DELETE_TRANSACTION_FAILURE_ALERT,
         transactionPage: transactions.slice(0, 2),
@@ -372,7 +372,7 @@ describe("TransactionsReducer", () => {
         ...initial, 
         transactionPage: [ transactions[3], transactions[2] ], 
         sort: { column: "merchant", direction: "asc"},
-        summary: { numPages: 2, totalAmount: 1000, transactionsCount: 4 },
+        summary: { numPages: 2, totalDebitAmount: 1000, totalCreditAmount: 0, transactionsCount: 4 },
         lastAction: action  }
       
       const actual =  reducer(initial, action);
@@ -387,7 +387,7 @@ describe("TransactionsReducer", () => {
         ...initial, 
         transactionPage: transactions.slice(0, 2),
         sort: { column: "merchant", direction: "desc"},
-        summary: { numPages: 2, totalAmount: 1000, transactionsCount: 4 },
+        summary: { numPages: 2, totalDebitAmount: 1000, totalCreditAmount: 0, transactionsCount: 4 },
         lastAction: action  }
       
       const first =  reducer(initial, action);
@@ -422,7 +422,7 @@ describe("TransactionsReducer", () => {
         lastAction: action, 
         transactionPage: [ transactions[0] ],  
         filter, 
-        summary: { numPages: 1, totalAmount: 100, transactionsCount: 1 }
+        summary: { numPages: 1, totalDebitAmount: 100, totalCreditAmount: 0,  transactionsCount: 1 }
       };
       
       const actual = reducer(initialTransactionState, action);
@@ -444,7 +444,7 @@ describe("TransactionsReducer", () => {
         lastAction: action, 
         transactionPage: [ transactions[3] ],  
         filter, 
-        summary: { numPages: 1, totalAmount: 400, transactionsCount: 1 }
+        summary: { numPages: 1, totalDebitAmount: 400, totalCreditAmount: 0, transactionsCount: 1 }
       };
       
       const actual = reducer(initialTransactionState, action);
@@ -465,7 +465,7 @@ describe("TransactionsReducer", () => {
         lastAction: action, 
         transactionPage: [ transactions[0], transactions[3] ],  
         filter, 
-        summary: { numPages: 1, totalAmount: 500, transactionsCount: 2 }
+        summary: { numPages: 1, totalDebitAmount: 500, totalCreditAmount: 0, transactionsCount: 2 }
       };
       
       
@@ -486,7 +486,7 @@ describe("TransactionsReducer", () => {
         lastAction: action, 
         transactionPage: [ transactions[1], transactions[2] ],  
         filter, 
-        summary: { numPages: 1, totalAmount: 500, transactionsCount: 2 }
+        summary: { numPages: 1, totalCreditAmount: 500, totalDebitAmount: 0, transactionsCount: 2 }
       };
       
       const actual = reducer(initialTransactionState, action);
@@ -506,7 +506,7 @@ describe("TransactionsReducer", () => {
         lastAction: action, 
         transactionPage: [ transactions[0], transactions[1] ],  
         filter, 
-        summary: { numPages: 1, totalAmount: 300, transactionsCount: 2 }
+        summary: { numPages: 1, totalCreditAmount: 300, totalDebitAmount: 0,  transactionsCount: 2 }
       };
       
       const actual = reducer(initialTransactionState, action);
@@ -548,7 +548,7 @@ describe("TransactionsReducer", () => {
         lastAction: action,
         transactions: transactions,
         transactionPage: transactions.slice(0, 2),
-        summary: { numPages: 2, transactionsCount: 3, totalAmount: 600 }
+        summary: { numPages: 2, transactionsCount: 3, totalDebitAmount: 600, totalCreditAmount: 0 }
       };
       
       const newState = reducer(initial, action);

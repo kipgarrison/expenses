@@ -78,7 +78,7 @@ app.get('/api/v1/transactions', async (req, res) => {
 app.delete("/api/v1/transactions/:id", async (req, res) => {
   await setTimeout(() => {
     transactions = transactions.filter(t => t.id !== parseInt(req.params["id"]))
-    addRunningTotal(transactions);
+    transactions = addRunningTotal(transactions);
     res.sendStatus(204);
   }, 2000);
 });
@@ -92,7 +92,7 @@ app.put("/api/v1/transactions/:id", async (req, res) => {
       return res.sendStatus(400).send("Invalid id");
     }
     transactions = transactions.map(t => t.id === tId ? trans : t);
-    addRunningTotal(transactions);
+    transactions = addRunningTotal(transactions);
     res.sendStatus(204);
   }, 2000)
 
@@ -104,7 +104,7 @@ app.post("/api/v1/transactions", async (req, res) => {
     if (req.body.id !== 0) return res.status(400).send("bad request id is set");
     trans.id = transactions.length + 1;
     transactions = [trans, ...transactions]
-    addRunningTotal(transactions);
+    transactions = addRunningTotal(transactions);
     res.status(201).json(transactions.find(t => t.id === trans.id));
   }, 2000)
 });

@@ -16,8 +16,8 @@ export function createTransaction(action: ActionWithPayload, dispatch: (action: 
     const url = "http://localhost:3000/api/v1/transactions";
     try {
       const response = await axios.post<Transaction>(url, transaction)
-      const trans = { ...transaction, id: response.data.id };
-      dispatch(new CreateTransactionSuccessAction(trans));
+      //const trans = { ...transaction, id: response.data.id };
+      dispatch(new CreateTransactionSuccessAction(response.data));
     }
     catch {
       dispatch(new CreateTransactionFailureAction());

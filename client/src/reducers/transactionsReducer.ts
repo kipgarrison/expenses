@@ -9,9 +9,10 @@ import { emptyFilter, maxFilter, type TransactionSearchFilterType } from "../typ
 import type { TranactionsSummaryType, TransactionsState } from "../types/TransactionsState";
 import type { CreditCardTransactionType, ModalType } from "../types/unionTypes";
 
-export function filterTransactions({ transactions, pageNumber, pageSize, sort, filter }: TransactionsState): { transactionPage: Transaction[], summary: TranactionsSummaryType } {
-  if (!transactions) return { transactionPage: [], summary: { numPages: 0, totalAmount: 0, transactionsCount: 0}};
-  let localTrans = sortObjectsArray([ ...transactions ], sort, "id") as Array<Transaction>;
+export function filterTransactions({ transactions, pageNumber, pageSize, sort, filter }: TransactionsState): { transactions: Transaction[], transactionPage: Transaction[], summary: TranactionsSummaryType } {
+  if (!transactions) return { transactions, transactionPage: [], summary: { numPages: 0, totalDebitAmount: 0, totalCreditAmount: 0, transactionsCount: 0}};
+  const updatedTransactions = addRunningBalance([...transactions]);
+  let localTrans = sortObjectsArray([ ...updatedTransactions ], sort, "id") as Array<Transaction>;
   const localFilter = { ...maxFilter, ...filter};
   localTrans = localTrans.filter(t => 
       t.amount >= (localFilter.fromAmount ?? 0) &&
@@ -31,7 +32,16 @@ export function filterTransactions({ transactions, pageNumber, pageSize, sort, f
   const endNumber = startNumber + pageSize;
   const transactionPage = localTrans.slice(startNumber, endNumber);
   console.log("Sorted ", localTrans);
-  return { transactionPage, summary: getTransactionsSummary(localTrans, pageSize) }
+  return { transactions: updatedTransactions, transactionPage, summary: getTransactionsSummary(localTrans, pageSize) }
+}
+
+function addRunningBalance(transactions: Transaction[]): Transaction[] {
+  const localTrans = sortObjectsArray(transactions, { column: "date", direction: "asc"}, "id") as Transaction[];
+  let runningBalance = 0;
+  return localTrans.map((lt => {
+     runningBalance += (lt.type === "Credit" ? (-1*lt.amount) : lt.amount);
+     return { ...lt, runningBalance };
+  }));
 }
 
 function getTransactionsSummary(transactions: Transaction[], pageSize: number): TranactionsSummaryType {
@@ -77,7 +87,8 @@ export const transactionsReducer = (state: TransactionsState, action: ActionWith
       let trans = action.payload as Transaction;
       trans = { ...trans, date: new Date(trans.date) };
       if (!trans.id) throw new Error("An id must be assigned to the transaction");
-      const transactions = state.transactions.map(t => t.id === 0 ? trans : t);
+      //const transactions = state.transactions.map(t => t.id === 0 ? trans : t);
+      const transactions = [ ...state.transactions, trans]
       if (!transactions.includes(trans)) throw new Error("Unable to locate transaction that was saved")
       const localState: TransactionsState = { ...newState, currentTransaction: newDebitTransaction, backupTransaction: undefined, transactions, alert: API_CREATE_TRANSACTION_SUCCESS_ALERT, showAppSpinner: false, showApiSpinner: false };
       return { ...localState, ...filterTransactions(localState)}; 
