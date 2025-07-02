@@ -1,4 +1,4 @@
-import "./Transaction-Table.css";
+import Styles from "./TransactionTable.module.css";
 import { Pagination, Table } from "react-bootstrap";
 import type { ReactNode } from "react";
 import { formatCurrency } from "../../helpers/currencyFormatter";
@@ -92,32 +92,35 @@ function TransactionTableHeader({ onSort, sort }: TransactionTableHeaderProps) {
 function TransactionTableRow({ transaction, onDelete, onEdit, onView}: TransactionTableRowProps) {
   const elidedComments = elipsis(transaction.comments, 50);
   const comments = elidedComments === transaction.comments ? transaction.comments : <span title={transaction.comments}>{elidedComments}</span>;
-
+  const rowClasses = transaction.type === "Credit" ? `${Styles.transactionRow} ${Styles.credit}` : "${Styles.transactionRow";
+  const amount = transaction.type === "Credit" ? `(${formatCurrency(transaction.amount)})` : formatCurrency(transaction.amount);
+  const style=  transaction.type === "Credit" ? { backgroundColor: 'rgba(39, 134, 139, .8)' } : {};
+  
   return (
-      <tr data-testid="transaction-row">
-        <td>
+      <tr data-testid={rowClasses}>
+        <td style={style}>
           <DeleteIcon onAction={onDelete} item={transaction}/>
           <EditIcon onAction={onEdit} item={transaction} />
         </td>
-        <td>
+        <td style={style}>
           {formatDate(transaction.date)}
         </td>
-        <td>
+        <td style={style}>
           {transaction.category.name}
         </td>
-        <td>
+        <td style={style}>
           {transaction.merchant.name}
         </td>
-        <td>
-          {formatCurrency(transaction.amount)}
+        <td style={style}>
+          {amount}
         </td>
-        <td>
+        <td style={style}>
           {formatCurrency(transaction.runningBalance as number)}
         </td>
-        <td>
+        <td style={style}>
           {comments} - {transaction.id}
         </td>
-        <td>
+        <td style={style}>
           {transaction.hasReceipt &&
             <AttachmentIcon onAction={onView} item={transaction} />
           }

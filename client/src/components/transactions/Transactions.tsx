@@ -1,6 +1,6 @@
 import Modal from 'react-bootstrap/modal';
 import Button from 'react-bootstrap/button';
-import TransactionTable from './Transaction-Table';
+import TransactionTable from './TransactionTable';
 import TransactionSearchForm from './TransactionSearchForm';
 import TransactionForm from './TransactionForm';
 import TransactionSearchSummary from './TransactionSummarySummary';

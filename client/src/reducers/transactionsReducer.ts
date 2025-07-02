@@ -1,6 +1,7 @@
 import { ActionWithPayload } from "../actions/ActionWithPayload";
 import { TransactionActionTypes } from "../actions/TransactionActionTypes";
 import { midnightToday } from "../helpers/midnightToday";
+import { roundCurrency } from "../helpers/roundCurrency";
 import { sortObjectsArray } from "../helpers/sortObjectsArray";
 import { API_CREATE_TRANSACTION_FAILURE_ALERT, API_CREATE_TRANSACTION_SUCCESS_ALERT, API_DELETE_TRANSACTION_FAILURE_ALERT, API_DELETE_TRANSACTION_SUCESS_ALERT, API_UPDATE_TRANSACTION_FAILURE_ALERT, API_UPDATE_TRANSACTION_SUCCESS_ALERT } from "../types/constants";
 import type { Indexable } from "../types/Indexable";
@@ -39,7 +40,7 @@ function addRunningBalance(transactions: Transaction[]): Transaction[] {
   const localTrans = sortObjectsArray(transactions, { column: "date", direction: "asc"}, "id") as Transaction[];
   let runningBalance = 0;
   return localTrans.map((lt => {
-     runningBalance += (lt.type === "Credit" ? (-1*lt.amount) : lt.amount);
+     runningBalance += (lt.type === "Credit" ? roundCurrency(-1*lt.amount) : roundCurrency(lt.amount));
      return { ...lt, runningBalance };
   }));
 }
