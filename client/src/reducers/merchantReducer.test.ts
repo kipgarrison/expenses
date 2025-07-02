@@ -1,6 +1,5 @@
 import { LoadMerchantsFailureAction, LoadMerchantsInitAction, LoadMerchantsSuccessAction, SortMerchants as SortMerchantsAction } from "../actions/merchants/MerchantActions"
 import { sortObjectsArray } from "../helpers/sortObjectsArray";
-import { API_LOAD_MERCHANTS_FAILURE_ALERT } from "../types/constants";
 import type { Merchant } from "../types/merchants/Merchant";
 import { InitialMerchantState, type MerchantsState } from "../types/merchants/MerchantState";
 import type { SortType } from "../types/TransactionsState";

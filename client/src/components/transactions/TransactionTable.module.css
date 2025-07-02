@@ -12,3 +12,6 @@ table tr th button {
 .hide {
   display: none;
 }
+.credit td {
+  background-color: rgba(1, 255, 1, .1);
+}

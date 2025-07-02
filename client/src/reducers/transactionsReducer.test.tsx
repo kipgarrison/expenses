@@ -289,7 +289,6 @@ describe("TransactionsReducer", () => {
 
   describe("DELETE_TRANSACTION_SUCCESS", () => {
     it("should setup state to hide api spinner and set the correct alert", () => {
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       const [ removed, ...remaining ]: Transaction[] = transactions;
       const updatedRemaining = remaining.map(t => ({ ...t, runningBalance: t.runningBalance - removed.amount }))
       const action = new DeleteTransactionSuccessAction();
