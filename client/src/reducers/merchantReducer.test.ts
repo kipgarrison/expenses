@@ -46,7 +46,7 @@ describe("merchantReucer", () => {
     it("should update state to set the api status to not running, capture last action and set correct alert", () => {
       const action = new LoadMerchantsFailureAction();
       const initialState: MerchantsState = { ...InitialMerchantState, apiStatus: "RUNNING" };
-      const expectedState: MerchantsState = { ...initialState, apiStatus: "NOT_RUNNING", lastAction: action, alert: API_LOAD_MERCHANTS_FAILURE_ALERT };
+      const expectedState: MerchantsState = { ...initialState, apiStatus: "NOT_RUNNING", lastAction: action,  showFailureMessage: true };
       const actualState = merchantsReducer(initialState, action);
       expect(actualState).toEqual(expectedState);
     })

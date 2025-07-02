@@ -10,7 +10,7 @@ describe("filterToStrings", () => {
     };
   
     const actual = filterToStrings(filter);
-    const expected = [ { columns: [ 'fromDate' ], message: "Date after 1/1/2025" }];
+    const expected = [ { columns: [ 'fromDate' ], message: "Date after 01/01/2025" }];
     expect(actual).toEqual(expected);
 
   })
@@ -37,7 +37,7 @@ describe("filterToStrings", () => {
     };
       
     const actual = filterToStrings(filter);
-    const expected = [ { columns: [ 'fromDate', 'toDate' ], message: "Date between 1/1/2025 and 12/31/2025" }];
+    const expected = [ { columns: [ 'fromDate', 'toDate' ], message: "Date between 01/01/2025 and 12/31/2025" }];
     expect(actual).toEqual(expected);
   })
 
@@ -170,7 +170,7 @@ describe("filterToStrings", () => {
       
     const actual = filterToStrings(filter);
     const expected = [ 
-      { columns: [ 'fromDate', 'toDate' ], message: "Date between 1/1/2025 and 12/31/2025" },
+      { columns: [ 'fromDate', 'toDate' ], message: "Date between 01/01/2025 and 12/31/2025" },
       { columns: [ 'fromAmount', 'toAmount' ], message: "Amount between $100.00 and $1,000.00" },
       { columns: [ 'comments' ], message: "Comments contains testing" },
       { columns: [ 'merchants' ], message: "Merchants are Exxon, Wal-Mart" },

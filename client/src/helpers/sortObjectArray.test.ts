@@ -71,9 +71,9 @@ describe("sortObjectArray", () => {
     expect(actual).toEqual(expected);
 
     const appData = [
-      { id: 1683, date: new Date("2019-12-31T06:00:00.000Z") },
-      { id: 932, date: new Date("2019-12-31T06:00:00.000Z") },
       { id: 658, date: new Date("2019-12-31T06:00:00.000Z") },
+      { id: 932, date: new Date("2019-12-31T06:00:00.000Z") },
+      { id: 1683, date: new Date("2019-12-31T06:00:00.000Z") },
     ]
 
     const sortedAppData = sortObjectsArray(appData, { column: "date", direction: "asc"}, "id");

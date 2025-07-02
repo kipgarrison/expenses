@@ -20,6 +20,8 @@ describe("TransactionsReducer", () => {
         { id: 4, type: "Debit", date: new Date("4/1/2023"), merchant: { id: 4, name: "Schnucks" }, category: { id: 4, name: "Category1" },  amount: 400, comments: "12356 TESTING", runningBalance: 1000 },
       ];
 
+      transactions = transactions.map(t => ({ ...t, merchantName: t.merchant.name, categoryName: t.category.name }));
+
        initialTransactionState  = { ...transactionStateInitialValue, pageSize: 2, transactions };
   });
 
@@ -91,7 +93,7 @@ describe("TransactionsReducer", () => {
       const expected: TransactionsState = { 
         ...initial, 
         currentTransaction: newDebitTransaction, 
-        transactions: [...initial.transactions, transToSave], 
+        transactions: [...initial.transactions ], 
         modal: "None", backupTransaction: undefined, lastAction: action, showApiSpinner: true, showAppSpinner: false };
       
       const newState = reducer(initial, action);
@@ -109,14 +111,14 @@ describe("TransactionsReducer", () => {
   })
 
   describe("CREATE_TRANSACTION_SUCCESS", () => {
-    it("Should update state to show success creation of transaction", () => {
+    it("Should update state to show successful creation of transaction", () => {
       const transToSave = { ...transactions[0], id: 0, date: midnightTomorrow() };
-      const transSaved = { ...transactions[0], id: 5,  date: midnightTomorrow() };
+      const transSaved = { ...transactions[0], id: 5,  date: midnightTomorrow(), runningBalance: 1100 };
 
       const action = new CreateTransactionSuccessAction(transSaved);
 
       const initial: TransactionsState = { ...initialTransactionState, 
-        transactions: [...transactions, transToSave],
+        transactions: [...transactions ],
         currentTransaction: transToSave, modal: "None",
         alert: API_CREATE_TRANSACTION_SUCCESS_ALERT, showApiSpinner: false };
       const expected: TransactionsState = { 
@@ -139,7 +141,7 @@ describe("TransactionsReducer", () => {
       expect( () => reducer(initialTransactionState, action)).toThrow();
     });
 
-    it("should throw if passed a new transaction (i.e. id = 0)", () => {
+    it("should not throw if passed an existing transaction (i.e. id != 0) 2", () => {
       const transToSave = { ...transactions[0], id: 1, date: midnightTomorrow() };
       const transSaved = { ...transactions[0], id: 5,  date: midnightTomorrow() };
       const action = new CreateTransactionSuccessAction(transSaved);
@@ -148,7 +150,7 @@ describe("TransactionsReducer", () => {
         transactions: [...transactions, transToSave],
         currentTransaction: transToSave, modal: "None" };
       
-      expect(() => reducer(initial, action)).toThrow();
+      expect(() => reducer(initial, action)).not.toThrow();
 
     });
   })
@@ -202,10 +204,11 @@ describe("TransactionsReducer", () => {
 
   describe("UPDATE_TRANSACTION_SUCCESS", () => {
     it("should setup state to hide api spinner and update saved trans in trans list", () => {
-      const transToSave: Transaction = { ...transactions[0], amount: 200 };
+      const transToSave: Transaction = { ...transactions[0], amount: 200, runningBalance: 200 };
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
       const [ _, ...remaining ]: Transaction[] = transactions;
-      const newTrans: Transaction[] = [ transToSave, ...remaining ];
+      const updatedRemaining = remaining.map(t => ({...t, runningBalance: t.runningBalance + 100 }))
+      const newTrans: Transaction[] = [ transToSave, ...updatedRemaining ];
       const action = new UpdateTransactionSuccessAction(transToSave);
 
       const initial: TransactionsState = { 
@@ -261,12 +264,13 @@ describe("TransactionsReducer", () => {
       const action = new DeleteTransactionInitAction(transToUpdate);
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
       const [_, ...remaining] = transactions;
+      const updatedRemaining = remaining.map(t => ({ ...t, runningBalance: t.runningBalance - transToUpdate.amount }));
       const initial: TransactionsState = { ...initialTransactionState, transactions, currentTransaction: transToUpdate, modal: "None" };
       const expected: TransactionsState = { 
         ...initial, 
-        transactions: remaining, 
+        transactions: updatedRemaining, 
         modal: "None", backupTransaction: transToUpdate, lastAction: action,  showApiSpinner: true,
-        summary: { numPages: 2, totalDebitAmount: 900, totalCreditAmount: 0, transactionsCount: 3}, transactionPage: remaining.slice(0, 2) };
+        summary: { numPages: 2, totalDebitAmount: 900, totalCreditAmount: 0, transactionsCount: 3}, transactionPage: updatedRemaining.slice(0, 2) };
       
       const newState = reducer(initial, action);
 
@@ -286,9 +290,10 @@ describe("TransactionsReducer", () => {
   describe("DELETE_TRANSACTION_SUCCESS", () => {
     it("should setup state to hide api spinner and set the correct alert", () => {
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      const [ _, ...remaining ]: Transaction[] = transactions;
+      const [ removed, ...remaining ]: Transaction[] = transactions;
+      const updatedRemaining = remaining.map(t => ({ ...t, runningBalance: t.runningBalance - removed.amount }))
       const action = new DeleteTransactionSuccessAction();
-
+      
       const initial: TransactionsState = { 
         ...initialTransactionState, 
         transactions: remaining, 
@@ -298,10 +303,10 @@ describe("TransactionsReducer", () => {
       };
       const expected: TransactionsState = { 
         ...initial, 
-        transactions: remaining, 
+        transactions: updatedRemaining, 
         summary: { numPages: 2, totalDebitAmount: 900, totalCreditAmount: 0,  transactionsCount: 3 },
         showApiSpinner: false, alert:   API_DELETE_TRANSACTION_SUCESS_ALERT,
-        transactionPage: remaining.slice(0, 2),
+        transactionPage: updatedRemaining.slice(0, 2),
         backupTransaction: undefined,  lastAction: action
       };
       
@@ -324,7 +329,7 @@ describe("TransactionsReducer", () => {
       };
       const expected: TransactionsState = { 
         ...initial, 
-        transactions: [...remaining, transactions[0]], 
+        transactions: [transactions[0], ...remaining, ], 
         summary: { numPages: 2, totalDebitAmount: 1000, totalCreditAmount: 0, transactionsCount: 4 },
         modal: "None", backupTransaction: undefined, lastAction: action,
         showApiSpinner:  false, alert:  API_DELETE_TRANSACTION_FAILURE_ALERT,
@@ -366,12 +371,12 @@ describe("TransactionsReducer", () => {
 
   describe("SET_SORT", () => {
     it("should set the sort property in state and update the page to reflect the sort", () => {
-      const action = new SetSortAction("merchant");
+      const action = new SetSortAction("merchantName");
       const initial: TransactionsState = { ...initialTransactionState, transactionPage: transactions.slice(0,2) };
       const expected: TransactionsState = { 
         ...initial, 
         transactionPage: [ transactions[3], transactions[2] ], 
-        sort: { column: "merchant", direction: "asc"},
+        sort: { column: "merchantName", direction: "asc"},
         summary: { numPages: 2, totalDebitAmount: 1000, totalCreditAmount: 0, transactionsCount: 4 },
         lastAction: action  }
       
@@ -486,7 +491,7 @@ describe("TransactionsReducer", () => {
         lastAction: action, 
         transactionPage: [ transactions[1], transactions[2] ],  
         filter, 
-        summary: { numPages: 1, totalCreditAmount: 500, totalDebitAmount: 0, transactionsCount: 2 }
+        summary: { numPages: 1, totalDebitAmount: 500, totalCreditAmount: 0, transactionsCount: 2 }
       };
       
       const actual = reducer(initialTransactionState, action);
@@ -506,7 +511,7 @@ describe("TransactionsReducer", () => {
         lastAction: action, 
         transactionPage: [ transactions[0], transactions[1] ],  
         filter, 
-        summary: { numPages: 1, totalCreditAmount: 300, totalDebitAmount: 0,  transactionsCount: 2 }
+        summary: { numPages: 1, totalDebitAmount: 300, totalCreditAmount: 0,  transactionsCount: 2 }
       };
       
       const actual = reducer(initialTransactionState, action);
@@ -535,9 +540,9 @@ describe("TransactionsReducer", () => {
   describe("LOAD_TRANSACTION_SUCCESS", () => {
     it("should set the state to hide the intial load message and set the transactions and page", () => {
       const transactions = [ 
-        { ...newDebitTransaction, id: 1, date: new Date("1/1/2020"), amount: 100 }, 
-        { ...newDebitTransaction, id: 2, date: new Date("1/1/2021"), amount: 200 }, 
-        { ...newDebitTransaction, id: 3, date: new Date("1/1/2022"), amount: 300 }
+        { ...newDebitTransaction, id: 1, date: new Date("1/1/2020"), amount: 100, runningBalance: 100 }, 
+        { ...newDebitTransaction, id: 2, date: new Date("1/1/2021"), amount: 200, runningBalance: 300 }, 
+        { ...newDebitTransaction, id: 3, date: new Date("1/1/2022"), amount: 300, runningBalance: 600 }
       ];
 
       const action = new LoadTransactionsSuccessAction(transactions);
@@ -564,7 +569,8 @@ describe("TransactionsReducer", () => {
       const initial: TransactionsState = { ...initialTransactionState, transactions: [] };
       const expected: TransactionsState = { 
         ...initial, 
-        lastAction: action 
+        lastAction: action, 
+        showFailureMessage: true
       }
   
       

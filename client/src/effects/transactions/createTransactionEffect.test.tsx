@@ -29,7 +29,7 @@ describe("CreateTransactionEffect", () => {
   it("should call dispatch with failure action when call fails", async () => {
     const createAction = new CreateTransactionInitAction(newDebitTransaction);
     const expectedAction = new CreateTransactionFailureAction();
-    vi.mocked(axios.post).mockResolvedValue({})
+    vi.mocked(axios.post).mockRejectedValue({});
     await createTransaction(createAction, dispatch);
     expect(dispatch).toHaveBeenCalledWith(expectedAction);
   });
