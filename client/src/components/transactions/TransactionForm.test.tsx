@@ -17,11 +17,11 @@ describe("TransactionForm", () => {
     const categoriesList = await waitFor(() => screen.getByTestId("categories") as HTMLSelectElement);
     expect(merchantsList).toBeInTheDocument();
     expect(merchantsList.options.length).toBe(4);
-    expect(merchantsList.options[0].textContent).toBe('');
+    expect(merchantsList.options[0].textContent).toBe('Select a merchant');
     merchants.forEach((m, i) => expect(merchantsList.options[i+1].textContent).toBe(m.name));
     expect(categoriesList).toBeInTheDocument();
     expect(categoriesList.options.length).toBe(3);
-    expect(categoriesList.options[0].textContent).toBe('');
+    expect(categoriesList.options[0].textContent).toBe('Select a category');
     categories.forEach((c, i) => expect(categoriesList.options[i+1].textContent).toBe(c.name));
   })
 
