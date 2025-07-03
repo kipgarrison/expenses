@@ -40,7 +40,7 @@ function addRunningBalance(transactions: Transaction[]): Transaction[] {
   const localTrans = sortObjectsArray(transactions, { column: "date", direction: "asc"}, "id") as Transaction[];
   let runningBalance = 0;
   return localTrans.map((lt => {
-     runningBalance += (lt.type === "Credit" ? roundCurrency(-1*lt.amount) : roundCurrency(lt.amount));
+     runningBalance += (lt.type === "Credit" ? (-1*lt.amount) : lt.amount);
      return { ...lt, runningBalance };
   }));
 }

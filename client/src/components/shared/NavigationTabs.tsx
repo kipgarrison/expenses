@@ -8,18 +8,22 @@ export type TabType = {
   isActive: boolean
 };
 
-export function NavigationTabs({ tabs}: { tabs: TabType[]}) {
+export function NavigationTabs({ tabs, onChanged }: { tabs: TabType[], onChanged: (tab: string) => void }) {
   const tab = tabs.find(t=>t.isActive) ?? tabs[0];
 
   const [key, setKey] = useState(tab.title) ;
 
+  function handleTabSelected(tab: string) {
+    setKey(tab);
+    onChanged(tab);
+  }
+
   return (
     <>
-        <h3>Expenses</h3>
         <Tabs
           data-testid="app-tabs"
           activeKey={key}
-          onSelect={(k) => { setKey(k??"")}}
+          onSelect={(k) => { handleTabSelected(k??"")}}
           className="mb-3">
           {tabs.map(tab => ( 
             <Tab key={tab.title} eventKey={tab.title} title={tab.title}>

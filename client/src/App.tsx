@@ -15,8 +15,9 @@ import { NavigationTabs, type TabType } from "./components/shared/NavigationTabs
 
 
 function App() {   
-  const [state, dispatch] = React.useReducer(AppReducer, InitialAppState);
 
+  const [state, dispatch] = React.useReducer(AppReducer, InitialAppState);
+  
   const transactions = (
     <ErrorBoundry fallback={<AppError area="Transactions" message="An error occured while processing your request" />}>
       <Transactions merchants={state.merchants} categories={state.categories}/>
@@ -34,12 +35,14 @@ function App() {
       <Budget />
     </ErrorBoundry>
   );
-  
+
   const tabs: TabType[] = [ 
     { title: "Transactions", content: transactions, isActive: true },
     { title: "Merchants", content: merchants, isActive: false },
     { title: "Budget", content: budget, isActive: false}
   ];
+
+  const [ area, setArea ] = React.useState(tabs[0].title);
 
   // Load Reference data
   useEffect(() => {
@@ -80,11 +83,23 @@ function App() {
     dispatch(new LoadReferenceDataInitAction("Categories"));
     dispatch(new LoadReferenceDataInitAction("Merchants"));
   }, [])
+
+  const onTabSelected = (tab: string) => {
+    setArea(tab);
+  }
+
 return (  
  
   <div className='container full-screen' test-roleid="container">
+    <div className="row">
+      <div className="col-12" style={{fontFamily: 'Edwardian Script ITC', fontSize: "2em", display: "flex", alignContent: "center"} }>
+        <h1 style={{display: "inline-block", margin: "auto"}}>Expenses - {area}</h1>
+      {/* <div className="col-12" style={ { "backgroundImage": "url(./banner.jpg)", backgroundSize: "900px 160px", height: 150, width: 900, margin: "auto" } } > */}
+        {/* <img src= height="150" width="700" style={{ "display": "block" }}/> */}
+      </div>
+    </div>
       <div className='row'>
-        <NavigationTabs tabs={tabs} />
+        <NavigationTabs tabs={tabs} onChanged={onTabSelected}/>
       </div>
   </div>
 )}
