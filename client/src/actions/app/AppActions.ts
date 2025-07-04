@@ -1,3 +1,4 @@
+import type { ApiError } from "../../types/apiError";
 import type { ReferenceDataLoadSuccess } from "../../types/app/ReferenceDataLoadSuccess";
 import type { AlertType } from "../../types/TransactionsState";
 import type { ApiSatusType, ReferenceDataType } from "../../types/unionTypes";
@@ -43,6 +44,12 @@ export class LoadReferenceDataFailureAction extends ActionWithPayload {
 export class NullAction extends ActionWithPayload {
   constructor() {
     super(AppActionTypes.NULL);
+  }
+}
+
+export class SetError extends ActionWithPayload {
+  constructor(payload: ApiError) {
+    super(AppActionTypes.SET_ERROR, payload)
   }
 }
 

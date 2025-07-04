@@ -1,5 +1,6 @@
 import type { ActionWithPayload } from "../actions/ActionWithPayload";
 import { AppActionTypes } from "../actions/app/AppActionTypes";
+import type { ApiError } from "../types/apiError";
 import type { ReferenceDataLoadSuccess } from "../types/app/ReferenceDataLoadSuccess";
 import type { AppState } from "../types/AppState";
 import { API_LOAD_REFERENCE_LIST_FAILURE_ALERT } from "../types/constants";
@@ -10,7 +11,7 @@ export const AppReducer = (state: AppState, action: ActionWithPayload): AppState
   switch (action.type) {
     case (AppActionTypes.LOAD_REFERENCE_DATA_INIT): {
       const field = (action.payload as string).toLowerCase() + "Loading";
-      return { ...state, [field]: true }
+      return { ...state, [field]: true, lastApiError: undefined }
     }
     case (AppActionTypes.LOAD_REFERENCE_DATA_SUCCESS): {
       const { type, data} = action.payload as ReferenceDataLoadSuccess;
@@ -19,7 +20,8 @@ export const AppReducer = (state: AppState, action: ActionWithPayload): AppState
       return { 
         ...state, 
         [loadingField]: false, 
-        [dataField]: data
+        [dataField]: data,
+        lastApiError: undefined
       }
     }
     case (AppActionTypes.LOAD_REFERENCE_DATA_FAILURE): {
@@ -27,8 +29,14 @@ export const AppReducer = (state: AppState, action: ActionWithPayload): AppState
       return { 
         ...state, 
         [loadingField]: false,
-        alert: API_LOAD_REFERENCE_LIST_FAILURE_ALERT }
+        alert: API_LOAD_REFERENCE_LIST_FAILURE_ALERT,
+        lastApiError: undefined
+       }
     }
+    case (AppActionTypes.SET_ALERT): {
+      return { ...state, lastApiError: action.payload as ApiError };
+    }
+
     default: {
       return { ...state };
     }

@@ -6,32 +6,38 @@ import { AppReducer } from "./reducers/AppReducer";
 import { InitialAppState } from "./types/AppState";
 import axios from "axios";
 import type { ReferenceData } from "./types/app/ReferenceData";
-import { LoadReferenceDataFailureAction, LoadReferenceDataInitAction, LoadReferenceDataSuccessAction } from "./actions/app/AppActions";
+import { LoadReferenceDataFailureAction, LoadReferenceDataInitAction, LoadReferenceDataSuccessAction, SetError as SetErrorAction } from "./actions/app/AppActions";
 import React from "react";
+import { useCallback } from "react";
 import ErrorBoundry from "./components/shared/ErrorBoundary";
 import { Transactions } from "./components/transactions/Transactions";
 import AppError from "./components/errors/AppError";
 import { NavigationTabs, type TabType } from "./components/shared/NavigationTabs";
+import type { ApiError } from "./types/apiError";
 
 
 function App() {   
 
   const [state, dispatch] = React.useReducer(AppReducer, InitialAppState);
   
+  const handler = useCallback((error: ApiError) => {
+    dispatch(new SetErrorAction(error));
+  }, []);
+
   const transactions = (
-    <ErrorBoundry fallback={<AppError area="Transactions" message="An error occured while processing your request" />}>
-      <Transactions merchants={state.merchants} categories={state.categories}/>
+    <ErrorBoundry fallback={<AppError message="An error occured while processing your request"  />}>
+      <Transactions merchants={state.merchants} categories={state.categories} onError={handler}/>
     </ErrorBoundry>
   );
   
   const merchants = (
-    <ErrorBoundry fallback={<AppError area="Merchants" message="An error occured while processing your request" />}>
+    <ErrorBoundry fallback={<AppError message="An error occured while processing your request" />}>
       <Merchants />
     </ErrorBoundry>
   );
 
   const budget = (
-    <ErrorBoundry fallback={<AppError area="Budget" message="An error occured while processing your request" />}>
+    <ErrorBoundry fallback={<AppError message="An error occured while processing your request" />}>
       <Budget />
     </ErrorBoundry>
   );

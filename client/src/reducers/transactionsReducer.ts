@@ -1,10 +1,10 @@
 import { ActionWithPayload } from "../actions/ActionWithPayload";
 import { TransactionActionTypes } from "../actions/TransactionActionTypes";
 import { midnightToday } from "../helpers/midnightToday";
-import { roundCurrency } from "../helpers/roundCurrency";
 import { sortObjectsArray } from "../helpers/sortObjectsArray";
 import { API_CREATE_TRANSACTION_FAILURE_ALERT, API_CREATE_TRANSACTION_SUCCESS_ALERT, API_DELETE_TRANSACTION_FAILURE_ALERT, API_DELETE_TRANSACTION_SUCESS_ALERT, API_UPDATE_TRANSACTION_FAILURE_ALERT, API_UPDATE_TRANSACTION_SUCCESS_ALERT } from "../types/constants";
 import type { Indexable } from "../types/Indexable";
+import { defaultLastApi, lastFailureApi, lastInitApi, lastSuccessApi } from "../types/LastApiType";
 import { newCreditTransaction, newDebitTransaction, type Transaction } from "../types/Transaction";
 import { emptyFilter, maxFilter, type TransactionSearchFilterType } from "../types/TransactionSeachFilterType";
 import type { TranactionsSummaryType, TransactionsState } from "../types/TransactionsState";
@@ -13,7 +13,7 @@ import type { CreditCardTransactionType, ModalType } from "../types/unionTypes";
 export function filterTransactions({ transactions, pageNumber, pageSize, sort, filter }: TransactionsState): { transactions: Transaction[], transactionPage: Transaction[], summary: TranactionsSummaryType } {
   if (!transactions) return { transactions, transactionPage: [], summary: { numPages: 0, totalDebitAmount: 0, totalCreditAmount: 0, transactionsCount: 0}};
   const updatedTransactions = addRunningBalance([...transactions]);
-  let localTrans = sortObjectsArray([ ...updatedTransactions ], sort, "id") as Array<Transaction>;
+  let localTrans = sortObjectsArray([ ...updatedTransactions ], sort, "id" ) as Array<Transaction>;
   const localFilter = { ...maxFilter, ...filter};
   localTrans = localTrans.filter(t => 
       t.amount >= (localFilter.fromAmount ?? 0) &&
@@ -55,7 +55,7 @@ function getTransactionsSummary(transactions: Transaction[], pageSize: number): 
 }
 
 export const transactionsReducer = (state: TransactionsState, action: ActionWithPayload): TransactionsState => {
-  const newState: TransactionsState = { ...state, lastAction: action };
+  const newState: TransactionsState = { ...state, lastApi: defaultLastApi };
   console.log("Transaction Reducer*********************>" + action.type, action, state);
   switch (action.type) {
     case TransactionActionTypes.SET_PAGE_NUMBER: {
@@ -81,22 +81,39 @@ export const transactionsReducer = (state: TransactionsState, action: ActionWith
       const trans = action.payload as Transaction;
       const transId = trans?.id;
       if (transId) throw new Error("Create cannot be called for an existing transaction");
-      //const transactions = [ ...newState.transactions, trans ];
-      return { ...newState, backupTransaction: undefined, currentTransaction: newDebitTransaction, modal: "None", showAppSpinner: false, showApiSpinner: true }; 
+      return { 
+        ...newState, 
+        backupTransaction: undefined, 
+        currentTransaction: newDebitTransaction, 
+        modal: "None", 
+        lastApi: lastInitApi(action, "Api")
+      }; 
     }
     case TransactionActionTypes.CREATE_TRANSACTION_SUCCESS: {
       let trans = action.payload as Transaction;
       trans = { ...trans, date: new Date(trans.date) };
       if (!trans.id) throw new Error("An id must be assigned to the transaction");
-      //const transactions = state.transactions.map(t => t.id === 0 ? trans : t);
       const transactions = [ ...state.transactions, trans]
       if (!transactions.includes(trans)) throw new Error("Unable to locate transaction that was saved")
-      const localState: TransactionsState = { ...newState, currentTransaction: newDebitTransaction, backupTransaction: undefined, transactions, alert: API_CREATE_TRANSACTION_SUCCESS_ALERT, showAppSpinner: false, showApiSpinner: false };
+      const localState: TransactionsState = { 
+        ...newState, 
+        currentTransaction: newDebitTransaction, 
+        backupTransaction: undefined, 
+        transactions, 
+        alert: API_CREATE_TRANSACTION_SUCCESS_ALERT, 
+        lastApi: lastSuccessApi()
+      };
       return { ...localState, ...filterTransactions(localState)}; 
     }
     case TransactionActionTypes.CREATE_TRANSACTION_FAILURE: {
       const transactions = state.transactions.filter(t => t.id !== 0);
-      const localState: TransactionsState = { ...newState, currentTransaction: newDebitTransaction, backupTransaction: undefined, transactions, alert: API_CREATE_TRANSACTION_FAILURE_ALERT, showAppSpinner: false, showApiSpinner: false }; 
+      const localState: TransactionsState = { 
+        ...newState, 
+        currentTransaction: newDebitTransaction, 
+        backupTransaction: undefined, 
+        transactions, alert: API_CREATE_TRANSACTION_FAILURE_ALERT, 
+        lastApi: lastFailureApi(state.lastApi, action)
+      }; 
       return { ...localState, ...filterTransactions(localState)}
     }
     case TransactionActionTypes.UPDATE_TRANSACTION_INIT: {
@@ -105,28 +122,62 @@ export const transactionsReducer = (state: TransactionsState, action: ActionWith
       if (!transId) throw new Error("Transaction id must be set to update");
       const backupTransaction = newState.transactions.find(t => t.id === transId);
       const transactions = newState.transactions.map(t => t.id === transId ? trans : t);
-      return { ...newState, backupTransaction, currentTransaction: newDebitTransaction, transactions, modal: "None", showAppSpinner: false, showApiSpinner: true }; 
+      return { 
+        ...newState, 
+        backupTransaction, 
+        currentTransaction: newDebitTransaction, 
+        transactions, 
+        modal: "None", 
+        lastApi: lastInitApi(action, "Api")
+      }; 
     }
     case TransactionActionTypes.UPDATE_TRANSACTION_SUCCESS: {
-      const localState: TransactionsState = { ...newState, currentTransaction: newDebitTransaction, backupTransaction: undefined, alert: API_UPDATE_TRANSACTION_SUCCESS_ALERT, showApiSpinner: false }; 
+      const localState: TransactionsState = { 
+        ...newState, 
+        currentTransaction: newDebitTransaction, 
+        backupTransaction: undefined, 
+        alert: API_UPDATE_TRANSACTION_SUCCESS_ALERT, 
+        lastApi: lastSuccessApi()
+      }
       return { ...localState, ...filterTransactions(localState)}
     }
     case TransactionActionTypes.UPDATE_TRANSACTION_FAILURE: {
       const transactions = state.transactions.map(t => t.id === state.backupTransaction?.id ? state.backupTransaction as Transaction : t)
-      const localState: TransactionsState = { ...newState, currentTransaction: newDebitTransaction, backupTransaction: undefined, transactions, alert: API_UPDATE_TRANSACTION_FAILURE_ALERT, showApiSpinner: false }; 
+      const localState: TransactionsState = { 
+        ...newState, 
+        currentTransaction: newDebitTransaction, 
+        backupTransaction: undefined, 
+        transactions, 
+        alert: API_UPDATE_TRANSACTION_FAILURE_ALERT, 
+        lastApi: lastFailureApi(state.lastApi, action)
+      }; 
       return { ...localState, ...filterTransactions(localState)}
     }
     case TransactionActionTypes.DELETE_TRANSACTION_INIT: {
       const id = newState.currentTransaction?.id;
       const transactions = newState.transactions.filter(t => t.id !== id);
       const backupTransaction = newState.transactions.find(t => t.id === id);
-      const localState: TransactionsState = {...newState, transactions, backupTransaction, summary: getTransactionsSummary(transactions, state.pageSize), showApiSpinner: true };
+      const localState: TransactionsState = {
+        ...newState, 
+        transactions, 
+        backupTransaction, 
+        summary: getTransactionsSummary(transactions, state.pageSize), 
+        lastApi: lastInitApi(action, "Api")
+      };
       return { ...localState, ...filterTransactions(localState) };
     }
     case TransactionActionTypes.DELETE_TRANSACTION_SUCCESS: {
-      const localState: TransactionsState = { ...newState, alert: API_DELETE_TRANSACTION_SUCESS_ALERT }
+      const localState: TransactionsState = { 
+        ...newState, 
+        alert: API_DELETE_TRANSACTION_SUCESS_ALERT,
+        lastApi: lastSuccessApi()
+      }
       console.log("Delete Transaction Success", localState);
-      return { ...localState, backupTransaction: undefined, ...filterTransactions(localState), showApiSpinner: false };
+      return { 
+        ...localState, 
+        backupTransaction: undefined, 
+        ...filterTransactions(localState)
+      };
     }
     case TransactionActionTypes.DELETE_TRANSACTION_FAILURE: {
       const transactions: Array<Transaction> = [ ...state.transactions, state.backupTransaction as Transaction];
@@ -134,9 +185,8 @@ export const transactionsReducer = (state: TransactionsState, action: ActionWith
         ...newState, 
         transactions,
         backupTransaction: undefined, 
-        lastAction: action,
-        alert: API_DELETE_TRANSACTION_FAILURE_ALERT,
-        showApiSpinner: false
+        lastApi: lastFailureApi(state.lastApi, action),
+        alert: API_DELETE_TRANSACTION_FAILURE_ALERT
       };
       return { ...localState, ...filterTransactions(localState)}
     }
@@ -166,7 +216,10 @@ export const transactionsReducer = (state: TransactionsState, action: ActionWith
       return { ...localState, ...filterTransactions(localState)};
     }
     case TransactionActionTypes.LOAD_TRANSACTIONS_INIT: {
-     return {...newState, showAppSpinner: true }; 
+     return { 
+        ...newState, 
+        lastApi: lastInitApi(action, "App")
+      }; 
     }
     case TransactionActionTypes.LOAD_TRANSACTIONS_SUCCESS: {
       const transactions = (action.payload as Array<Transaction>).map(t => ({ 
@@ -175,11 +228,18 @@ export const transactionsReducer = (state: TransactionsState, action: ActionWith
         merchantName: t.merchant ? t.merchant.name : "",
         categoryName: t.category ? t.category.name : ""
       }));
-      const localState = { ...newState, transactions: transactions, showAppSpinner: false };
+      const localState = { 
+        ...newState, 
+        transactions: transactions, 
+        lastApi: lastSuccessApi()
+      };
       return { ...localState, ...filterTransactions(localState) };
     }
     case TransactionActionTypes.LOAD_TRANSACTIONS_FAILURE: {
-      return { ...newState, showAppSpinner: false, showFailureMessage: true };
+      return { 
+        ...newState, 
+        lastApi: lastFailureApi(state.lastApi, action)
+      };
     }
     case TransactionActionTypes.HIDE_ALERT: {
       return { ...newState, alert: undefined };

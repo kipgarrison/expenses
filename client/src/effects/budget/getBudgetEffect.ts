@@ -3,10 +3,10 @@ import type { ActionWithPayload } from "../../actions/ActionWithPayload";
 import { BudgetActionTypes } from "../../actions/budget/BudgetActionTypes";
 import { LoadBudgetFailureAction, LoadBudgetSuccessAction } from "../../actions/budget/BudgetActions";
 
-export function getBudgetEffect(actions: ActionWithPayload[], dispatch: (action: ActionWithPayload)=>void) {
-  const budgetInit = actions.find(a => a.type === BudgetActionTypes.LOAD_BUDGET_INIT);
+export function getBudgetEffect(action: ActionWithPayload, dispatch: (action: ActionWithPayload)=>void) {
+  const budgetInit = action.type === BudgetActionTypes.LOAD_BUDGET_INIT;
   if (budgetInit) {
-    executeLoad(budgetInit.payload as { month: number, year: number });
+    executeLoad(action.payload as { month: number, year: number });
   }
     
   async function executeLoad(monthYear?: { month: number, year: number}) {
@@ -19,8 +19,9 @@ export function getBudgetEffect(actions: ActionWithPayload[], dispatch: (action:
       const result = await axios.get(url);
       dispatch(new LoadBudgetSuccessAction(result.data));
     }
-    catch {
-      dispatch(new LoadBudgetFailureAction());
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    catch(ex: any) {
+      dispatch(new LoadBudgetFailureAction(ex.response.data.error));
     }
   }
 }

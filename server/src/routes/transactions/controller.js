@@ -24,8 +24,8 @@ const updateTransaction = async (req, res) => {
 const createTransaction = async (req, res) => {
   let trans = req.body;
   if (req.body.id !== 0) return res.status(400).send("bad request id is set");
-  data.addTransaction(transaction);
-  res.status(201).json(getTransactions().find(t => t.id === trans.id));
+  const created = data.addTransaction(trans);
+  res.status(201).json(created);
 };
 
 module.exports = { listTransactions, deleteTransaction, updateTransaction, createTransaction }

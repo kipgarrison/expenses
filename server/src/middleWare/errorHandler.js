@@ -16,18 +16,20 @@ module.exports = (error, req, res, next) => {
     return "An error occurred";
   }
 
-  logger.error(getErrorMessage(error));
+  //logger.error(getErrorMessage(error), { requestId: req.requestId });
+  logger.error(error, { requestId: req.requestId });
 
-  if (res.headersSent || config.env === "development") {
-    next(error);
-    return;
-  }
+  // if (res.headersSent || config.env === "development") {
+  //   next(error);
+  //   return;
+  // }
 
   if (error instanceof CustomError) {
     res.status(error.statusCode).json({
       error: {
         message: error.message,
         code: error.code,
+        requestId: error.requestId
       },
     });
     return;
@@ -35,9 +37,9 @@ module.exports = (error, req, res, next) => {
 
   res.status(500).json({
     error: {
-      message:
-        getErrorMessage(error) ||
-        "An error occurred. Please view logs for more details",
+      message: getErrorMessage(error) || "An error occurred. Please view logs for more details",
+      stack: error.stack,
+      requestId: req.requestId
     },
   });
 }

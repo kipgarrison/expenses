@@ -1,4 +1,5 @@
 import { getCurrentMonthYear } from "../../helpers/formatDate";
+import type { ApiError } from "../../types/apiError";
 import type { Budget } from "../../types/budget/Budget";
 import type { BudgetSummary } from "../../types/budget/BudgetDailySummary";
 import { ActionWithPayload } from "../ActionWithPayload";
@@ -18,8 +19,8 @@ export class LoadBudgetSuccessAction extends ActionWithPayload {
 }
 
 export class LoadBudgetFailureAction extends ActionWithPayload {
-  constructor() {
-    super(BudgetActionTypes.LOAD_BUDGET_FAILURE);
+  constructor(payload: ApiError) {
+    super(BudgetActionTypes.LOAD_BUDGET_FAILURE, payload);
   }
 }
 
@@ -36,8 +37,8 @@ export class LoadMonthYearsSuccessAction extends ActionWithPayload {
 }
 
 export class LoadMonthYearsFailureAction extends ActionWithPayload {
-  constructor() {
-    super(BudgetActionTypes.LOAD_MONTH_YEARS_FAILURE);
+  constructor(payload: ApiError) {
+    super(BudgetActionTypes.LOAD_MONTH_YEARS_FAILURE, payload);
   }
 }
 
@@ -55,8 +56,8 @@ export class LoadSummarySuccessAction extends ActionWithPayload {
 }
 
 export class LoadSummaryFailureAction extends ActionWithPayload {
-  constructor() {
-    super(BudgetActionTypes.LOAD_SUMMARY_FAILURE);
+  constructor(payload: ApiError) {
+    super(BudgetActionTypes.LOAD_SUMMARY_FAILURE, payload);
   }
 }
 

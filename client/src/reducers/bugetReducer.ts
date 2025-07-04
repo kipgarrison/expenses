@@ -4,55 +4,44 @@ import { BudgetActionTypes } from "../actions/budget/BudgetActionTypes";
 import { EmptyBudget, type Budget } from "../types/budget/Budget";
 import type { BudgetSummary } from "../types/budget/BudgetDailySummary";
 import type { BudgetState } from "../types/budget/BudgetState";
-
-const loadLastActions = (action: ActionWithPayload, actions: ActionWithPayload[]): Array<ActionWithPayload> => {
-  const types = [BudgetActionTypes.LOAD_BUDGET_INIT, BudgetActionTypes.LOAD_MONTH_YEARS_INIT, BudgetActionTypes.LOAD_SUMMARY_INIT];
-  const lastActions = actions.filter(a => types.includes(a.type));
-  return [ ...lastActions, action ];
-} 
+import { lastFailureApi, lastInitApi, lastSuccessApi } from "../types/LastApiType";
 
 export const budgetReducer = (state: BudgetState, action: ActionWithPayload): BudgetState => {
-const newState = { ...state, lastActions: loadLastActions(action, state.lastActions) };
+  const newState: BudgetState = { ...state }; //BudgetState = { ...state, lastBudgetApi: defaultLastApi, lastDailyTotalsApi: defaultLastApi, lastMonthYearApi: defaultLastApi };
   switch (action.type) {
     case BudgetActionTypes.LOAD_BUDGET_INIT: {
       const monthYear = action.payload as { month: number, year: number };
-      return { ...newState,  apiStatus: "RUNNING", selectedMonthYear: { ...monthYear, month: monthYear.month - 1 }, budget: EmptyBudget }
+      return { ...newState,  lastBudgetApi: lastInitApi(action, "App"), selectedMonthYear: { ...monthYear, month: monthYear.month - 1 }, budget: EmptyBudget }
     }
     case BudgetActionTypes.LOAD_BUDGET_SUCCESS: {
       const budget = action.payload as Budget;
-      const actions = newState.lastActions.filter(a => a.type !== BudgetActionTypes.LOAD_BUDGET_INIT);
-      const st: BudgetState = { ...newState, budget, apiStatus: "NOT_RUNNING", lastActions: actions };
+      const st: BudgetState = { ...newState, budget, lastBudgetApi: lastSuccessApi()  };
       return st;
     }
     case BudgetActionTypes.LOAD_BUDGET_FAILURE: {
-      const actions = newState.lastActions.filter(a => a.type !== BudgetActionTypes.LOAD_BUDGET_INIT);
-      return { ...newState, apiStatus: "NOT_RUNNING", showFailureMessage: true, lastActions: actions};
+      return { ...newState, lastBudgetApi: lastFailureApi(state.lastBudgetApi, action) };
     }
     case BudgetActionTypes.LOAD_MONTH_YEARS_INIT: {
-      return { ...newState,  apiStatus: "INITIAL_MONTH_YEARS" };
+      return { ...newState,  lastMonthYearApi: lastInitApi(action, "App") };
     }
     case BudgetActionTypes.LOAD_MONTH_YEARS_SUCCESS: {
       const monthYears = action.payload as { month: number, year: number }[];
-      const actions = state.lastActions.filter(a => a.type !== BudgetActionTypes.LOAD_MONTH_YEARS_INIT)
-      const st: BudgetState = { ...newState, monthYears, apiStatus: "NOT_RUNNING", lastActions: actions };
+      const st: BudgetState = { ...newState, monthYears, lastMonthYearApi: lastSuccessApi() };
       return st;
     }
     case BudgetActionTypes.LOAD_MONTH_YEARS_FAILURE: {
-      const actions = state.lastActions.filter(a => a.type !== BudgetActionTypes.LOAD_MONTH_YEARS_INIT)
-      return { ...newState, apiStatus: "NOT_RUNNING", showFailureMessage: true, lastActions: actions };
+      return { ...newState, lastMonthYearApi: lastFailureApi(state.lastMonthYearApi, action) };
     }
     case BudgetActionTypes.LOAD_SUMMARY_INIT: {
-      return { ...newState,  apiStatus: "INITIAL_SUMMARY" };
+      return { ...newState,  lastDailyTotalsApi: lastInitApi(action, "App") };
     }
     case BudgetActionTypes.LOAD_SUMMARY_SUCCESS: {
       const summary = action.payload as BudgetSummary;
-      const actions = state.lastActions.filter(a => a.type !== BudgetActionTypes.LOAD_SUMMARY_INIT)
-      const st: BudgetState = { ...newState, summary, apiStatus: "NOT_RUNNING", lastActions: actions };
+      const st: BudgetState = { ...newState, summary, lastDailyTotalsApi: lastSuccessApi()};
       return st;
     }
     case BudgetActionTypes.LOAD_SUMMARY_FAILURE: {
-      const actions = state.lastActions.filter(a => a.type !== BudgetActionTypes.LOAD_SUMMARY_INIT)
-      return { ...newState, apiStatus: "NOT_RUNNING", showFailureMessage: true, lastActions: actions };
+      return { ...newState,lastDailyTotalsApi: lastFailureApi(state.lastDailyTotalsApi, action) };
     }
     default: {
       return newState;

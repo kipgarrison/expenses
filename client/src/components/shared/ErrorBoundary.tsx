@@ -7,17 +7,20 @@ type ErrorBoundryProps = {
 
 type ErrorBoundryState = {
   hasError: boolean;
+	error?: Error
 }
 
 export default class ErrorBoundry extends Component<ErrorBoundryProps, ErrorBoundryState> {
   state = { hasError: false };
+	
 
-	static getDerivedStateFromError(_: Error): ErrorBoundryState {
-		return { hasError: true };
+	static getDerivedStateFromError(error: Error): ErrorBoundryState {
+		return { hasError: true,  error};
 	}
 
   componentDidCatch(error: Error, errorInfo: ErrorInfo) {
     console.error("Uncaught error:", error, errorInfo);
+		// TODO::  Adder service endpoint to log error 
   }
 
 	render() {

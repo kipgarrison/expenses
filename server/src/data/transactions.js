@@ -45,13 +45,31 @@ function addPayments(items) {
 }
 
 function addTransaction(transaction) {
-  const trans = { ...transaction, id: transactions.length };
-  transactions = [...transactions, transaction];
+  const date = new Date(transaction.date);
+  const trans = {
+    ...transaction,
+    id: transactions.length,
+    date,
+    month: date.getMonth(),
+    day: date.getDate(),
+    year: date.getFullYear()
+  };
+
+  transactions = [...transactions, trans];
   addRunningTotal();
+  return trans;
 }
 
 function updateTransaction(transaction) {
-  transactions = transactions.map(t => t.id === transaction.id ? transaction : t);
+  const date = new Date(transaction.date);
+  const trans = {
+    ...transaction,
+    date,
+    month: date.getMonth(),
+    day: date.getDate(),
+    year: date.getFullYear()
+  };
+  transactions = transactions.map(t => t.id === trans.id ? trans : t);
   addRunningTotal();
 }
 

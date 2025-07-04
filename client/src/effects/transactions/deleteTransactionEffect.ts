@@ -7,7 +7,7 @@ import { DELETE_URL } from "../../types/constants";
 import type { Transaction } from "../../types/Transaction";
 
 
-export function deleteTransaction(action: ActionWithPayload, dispatch: (action: ActionWithPayload)=>void) {
+export function deleteTransactionEffect(action: ActionWithPayload, dispatch: (action: ActionWithPayload)=>void) {
   if (action?.type === TransactionActionTypes.DELETE_TRANSACTION_INIT) {
     const trans = (action as DeleteTransactionInitAction).payload as Transaction;
     executeDelete(trans, dispatch);
@@ -20,7 +20,8 @@ async function executeDelete(transaction: Transaction, dispatch: (action: Action
       await axios.delete(url);
       dispatch(new DeleteTransactionSuccessAction());
     }
-    catch {
-      dispatch(new DeleteTransactionFailureAction());
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    catch(ex: any) {
+      dispatch(new DeleteTransactionFailureAction(ex.response.data.error));
     }
   }

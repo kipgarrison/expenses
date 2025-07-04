@@ -1,4 +1,3 @@
-import Styles from "./TransactionTable.module.css";
 import { Pagination, Table } from "react-bootstrap";
 import type { ReactNode } from "react";
 import { formatCurrency } from "../../helpers/currencyFormatter";
@@ -92,12 +91,12 @@ function TransactionTableHeader({ onSort, sort }: TransactionTableHeaderProps) {
 function TransactionTableRow({ transaction, onDelete, onEdit, onView}: TransactionTableRowProps) {
   const elidedComments = elipsis(transaction.comments, 50);
   const comments = elidedComments === transaction.comments ? transaction.comments : <span title={transaction.comments}>{elidedComments}</span>;
-  const rowClasses = transaction.type === "Credit" ? `${Styles.transactionRow} ${Styles.credit}` : "${Styles.transactionRow";
+  // const rowClasses = transaction.type === "Credit" ? `${Styles.transactionRow} ${Styles.credit}` : "${Styles.transactionRow";
   const amount = transaction.type === "Credit" ? `(${formatCurrency(transaction.amount)})` : formatCurrency(transaction.amount);
   const style=  transaction.type === "Credit" ? { backgroundColor: 'rgba(39, 134, 139, .8)' } : {};
   
   return (
-      <tr data-testid={rowClasses}>
+      <tr data-testid="transaction-row">
         <td style={style}>
           <DeleteIcon onAction={onDelete} item={transaction}/>
           <EditIcon onAction={onEdit} item={transaction} />

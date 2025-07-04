@@ -6,6 +6,7 @@ import userEvent from "@testing-library/user-event";
 import { LoadTransactionsInitAction, UpdatePageNumberAction, SetModalAction, SetCurrentTransactionAction, DeleteTransactionInitAction, ClearCurrentTransactionAction, EditTransactionAction } from "../../actions/TransactionActions";
 import { newDebitTransaction, type Transaction } from "../../types/Transaction";
 import { type TransactionsState, transactionStateInitialValue } from "../../types/TransactionsState";
+import { ActionWithPayload } from "../../actions/ActionWithPayload";
 
 describe.only("Transactions", () => {
   const transactions: Transaction[] = [ 
@@ -27,7 +28,7 @@ describe.only("Transactions", () => {
   const merchants = [ {id: 1, name: "Wal-Mart"}, { id: 2, name: "Target"}, { id: 3, name: "Schnucks"}, {id: 4, name: "Wal-Greens"}, {id: 5, name: "Amazon" }];
   const categories = [ {id: 1, name: "Category1"}, { id: 2, name: "Category2"}, { id: 3, name: "Category3"}, {id: 4, name: "Category4"}, {id: 5, name: "Category5" }];
   const mockDispatch = vi.fn().mockImplementation((action) => console.log(action)); // Mock the dispatch function to assert its calls
-
+  const dummyAction = new ActionWithPayload("");
   beforeEach(() => {
     const mockUseReducer = vi.fn().mockImplementation(() => [mockState, mockDispatch]);
     vi.spyOn(React, 'useReducer').mockImplementation(mockUseReducer);
@@ -45,8 +46,8 @@ describe.only("Transactions", () => {
     expect(mockDispatch).toHaveBeenCalledWith(new LoadTransactionsInitAction());
   });
 
-  it("should show app spinner if the apiStatus showAppSpinner is true", async () => {
-    const newState = { ...mockState, showAppSpinner: true };
+  it("should show app spinner if the spinner type === 'App'", async () => {
+    const newState: TransactionsState = { ...mockState, lastApi: { init: dummyAction, failure: dummyAction, spinnerType: "App" } };
     const mockReducer = vi.fn().mockImplementation(() => [newState, mockDispatch]);
     vi.spyOn(React, 'useReducer').mockImplementation(mockReducer);
     render(<Transactions merchants={merchants} categories={categories} />);

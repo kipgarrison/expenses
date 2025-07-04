@@ -7,10 +7,10 @@ import TransactionSearchSummary from './TransactionSummarySummary';
 import { useEffect} from 'react';
 import React from 'react';
 import type { ActionWithPayload } from '../../actions/ActionWithPayload';
-import { createTransaction } from '../../effects/transactions/createTransactionEffect';
-import { deleteTransaction } from '../../effects/transactions/deleteTransactionEffect';
-import { loadTransactions } from '../../effects/transactions/loadTransactionsEffect';
-import { updateTransaction } from '../../effects/transactions/updateTransactionEffect';
+import { createTransactionEffect } from '../../effects/transactions/createTransactionEffect';
+import { deleteTransactionEffect } from '../../effects/transactions/deleteTransactionEffect';
+import { loadTransactionsEffect } from '../../effects/transactions/loadTransactionsEffect';
+import { updateTransactionEffect } from '../../effects/transactions/updateTransactionEffect';
 import { transactionsReducer } from '../../reducers/transactionsReducer';
 import type { ColumnType } from '../../types/ColumnType';
 import type { Transaction } from '../../types/Transaction';
@@ -21,13 +21,12 @@ import { transactionStateInitialValue } from '../../types/TransactionsState';
 import type { CreditCardTransactionType, ModalType } from '../../types/unionTypes';
 import { AppCrash } from '../errors/AppCrash';
 import { ApiSpinner } from '../shared/ApiSpinner';
-import { AppSpinner } from '../shared/AppSpinner';
 import { AppToast } from '../shared/AppToast';
 import { AddTransactionAction, ClearCurrentTransactionAction, CreateTransactionInitAction, DeleteTransactionInitAction, EditTransactionAction, HideAlertAction, LoadTransactionsInitAction, RemoveColumnFilterAction, SetCurrentTransactionAction, SetModalAction, SetSearchFilterAction, SetSortAction, UpdatePageNumberAction, UpdateTransactionAction, UpdateTransactionInitAction } from '../../actions/TransactionActions';
+import { AppWrapper } from '../shared/AppWrapper';
 
 export function Transactions( { merchants, categories }: TransactionsProps) {
   const [ state, dispatch ] = React.useReducer(transactionsReducer, transactionStateInitialValue );
-  // const [showSpinner, setShowSpinner] = useState(true);
   
   const handlers = {
     startDelete: (transaction: Transaction) => {
@@ -76,22 +75,25 @@ export function Transactions( { merchants, categories }: TransactionsProps) {
 
   useEffect(() => dispatch(new LoadTransactionsInitAction()), []);
   //load transactions
-  useEffect(() => loadTransactions(state.lastAction as ActionWithPayload, dispatch), [state.lastAction]);
+  useEffect(() => loadTransactionsEffect(state.lastApi.init as ActionWithPayload, dispatch), [state.lastApi.init]);
   //delete tranaction
-  useEffect(() => deleteTransaction(state.lastAction as ActionWithPayload, dispatch), [state.lastAction]);
+  useEffect(() => deleteTransactionEffect(state.lastApi.init as ActionWithPayload, dispatch), [state.lastApi.init]);
   // create transaction
-  useEffect(() => createTransaction(state.lastAction as ActionWithPayload, dispatch), [state.lastAction]);
+  useEffect(() => createTransactionEffect(state.lastApi.init as ActionWithPayload, dispatch), [state.lastApi.init]);
   // create transaction
-  useEffect(() => updateTransaction(state.lastAction as ActionWithPayload, dispatch), [state.lastAction]);
+  useEffect(() => updateTransactionEffect(state.lastApi.init as ActionWithPayload, dispatch), [state.lastApi.init]);
   
   function closeAlert() {
     dispatch(new HideAlertAction());
   }
 
-  const show = state.showAppSpinner;
-
+  const appWrapperParams = {
+    error: state.lastApi.error,
+    showSpinner: state.lastApi.spinnerType === "App", 
+    onRetry: () => { if (state.lastApi.init) dispatch(state.lastApi.init) }
+  }
   return (
-    <AppSpinner show={show}>
+    <AppWrapper {...appWrapperParams}>
       <>
         <TransactionForm 
           transaction={state.currentTransaction as Transaction}
@@ -102,7 +104,7 @@ export function Transactions( { merchants, categories }: TransactionsProps) {
           onHide={() => handlers.setModal("None")}
           show={state.modal === "Edit"}/>
   
-        <ApiSpinner show={state.showApiSpinner} />
+        <ApiSpinner show={state.lastApi.spinnerType === "Api"} />
         <AppToast alert={state?.alert} onClose={closeAlert} />
         <AppCrash show={state.showFailureMessage} />
         <TransactionTable 
@@ -149,6 +151,6 @@ export function Transactions( { merchants, categories }: TransactionsProps) {
           onClose={() => handlers.setModal("None")} 
           onSearch={(f) => {handlers.search(f)}} />
       </>
-    </AppSpinner>
+    </AppWrapper>
     )
 }
