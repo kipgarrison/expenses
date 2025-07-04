@@ -10,3 +10,4 @@ export type Merchant = {
   totAmountPct: number,
   totCountPct: number
 };
+

@@ -14,8 +14,9 @@ export function loadMerchantsEffect(action: ActionWithPayload, dispatch: (action
       const result = await axios.get(url);
       dispatch(new LoadMerchantsSuccessAction(result.data));
     }
-    catch {
-      dispatch(new LoadMerchantsFailureAction());
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    catch(ex: any) {
+      dispatch(new LoadMerchantsFailureAction(ex.response.data.error));
     }
   }
 }

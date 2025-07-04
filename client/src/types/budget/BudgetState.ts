@@ -1,5 +1,5 @@
-import type { ActionWithPayload } from "../../actions/ActionWithPayload";
 import { getCurrentMonthYear } from "../../helpers/formatDate";
+import { defaultLastApi, type LastApiType } from "../LastApiType";
 import type { AlertType, SortType } from "../TransactionsState";
 import type { ModalType } from "../unionTypes";
 import { EmptyBudget, type Budget } from "./Budget";
@@ -11,17 +11,16 @@ export type BudgetState = {
   monthYears: Array<{ month: number, year: number }>,
   currentLineItem?: BudgetLineItem,
   backupLineItem?: BudgetLineItem,
-  lastActions: ActionWithPayload[],
   summary: BudgetSummary,
-  apiStatus?: "NOT_RUNNING" | "RUNNING" | "INITIAL_MONTH_YEARS" | "INITIAL_BUDGET" | 'INITIAL_SUMMARY',
   alert?: AlertType,
   sort: SortType,
   modal: ModalType,
   selectedMonthYear: { month: number, year: number },
-  showFailureMessage? : boolean
+  showFailureMessage? : boolean,
+  lastBudgetApi: LastApiType,
+  lastMonthYearApi: LastApiType,
+  lastDailyTotalsApi: LastApiType
 }
-
-
 
 export const InitialBudgetState: BudgetState = {
   budget: EmptyBudget,
@@ -30,5 +29,7 @@ export const InitialBudgetState: BudgetState = {
   sort: { column: "category", direction: "asc" },
   modal: "None",
   selectedMonthYear: getCurrentMonthYear(),
-  lastActions: []
+  lastBudgetApi: defaultLastApi,
+  lastMonthYearApi: defaultLastApi,
+  lastDailyTotalsApi: defaultLastApi
 };

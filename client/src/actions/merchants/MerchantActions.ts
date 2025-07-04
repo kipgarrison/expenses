@@ -1,3 +1,4 @@
+import type { ApiError } from "../../types/apiError";
 import type { Merchant } from "../../types/merchants/Merchant";
 import { ActionWithPayload } from "../ActionWithPayload";
 import { MerchantActionTypes } from "./MerchantActionTypes";
@@ -15,8 +16,8 @@ export class LoadMerchantsSuccessAction extends ActionWithPayload {
 }
 
 export class LoadMerchantsFailureAction extends ActionWithPayload {
-  constructor() {
-    super(MerchantActionTypes.LOAD_MERCHANTS_FAILURE);
+  constructor(payload: ApiError) {
+    super(MerchantActionTypes.LOAD_MERCHANTS_FAILURE, payload);
   }
 }
 

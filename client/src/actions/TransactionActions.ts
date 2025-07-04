@@ -3,6 +3,7 @@ import type { TransactionSearchFilterType } from "../types/TransactionSeachFilte
 import type { CreditCardTransactionType, ModalType } from "../types/unionTypes";
 import { TransactionActionTypes } from "./TransactionActionTypes";
 import { ActionWithPayload } from "./ActionWithPayload";
+import type { ApiError } from "../types/apiError";
 export class UpdatePageNumberAction extends ActionWithPayload {
   constructor(payload: number) {
     super(TransactionActionTypes.SET_PAGE_NUMBER, payload);
@@ -34,8 +35,8 @@ export class CreateTransactionSuccessAction extends ActionWithPayload {
 }
 
 export class CreateTransactionFailureAction extends ActionWithPayload {
-  constructor() {
-    super(TransactionActionTypes.CREATE_TRANSACTION_FAILURE);
+  constructor(payload: ApiError) {
+    super(TransactionActionTypes.CREATE_TRANSACTION_FAILURE, payload);
   }
 }
 
@@ -52,8 +53,8 @@ export class UpdateTransactionSuccessAction extends ActionWithPayload {
 }
 
 export class UpdateTransactionFailureAction extends ActionWithPayload {
-  constructor() {
-    super(TransactionActionTypes.UPDATE_TRANSACTION_FAILURE);
+  constructor(payload: ApiError) {
+    super(TransactionActionTypes.UPDATE_TRANSACTION_FAILURE, payload);
   }
 }
 
@@ -70,8 +71,8 @@ export class DeleteTransactionSuccessAction extends ActionWithPayload {
 }
 
 export class DeleteTransactionFailureAction extends ActionWithPayload {
-  constructor() {
-    super(TransactionActionTypes.DELETE_TRANSACTION_FAILURE);
+  constructor(payload: ApiError) {
+    super(TransactionActionTypes.DELETE_TRANSACTION_FAILURE, payload);
   }
 }
 
@@ -86,13 +87,6 @@ export class ClearCurrentTransactionAction extends ActionWithPayload {
     super(TransactionActionTypes.CLEAR_CURRENT_TRANSACTION);
   }
 }
-
-// export class RollbackAction extends ActionWithPayload {
-//   constructor() {
-//     super(TransactionActionTypes.ROLLBACK);
-//   }
-// }
-
 export class EditTransactionAction extends ActionWithPayload {
   constructor(payload: Transaction) {
     super(TransactionActionTypes.EDIT_TRANSACTION, payload);
@@ -130,8 +124,8 @@ export class LoadTransactionsSuccessAction extends ActionWithPayload {
 }
 
 export class LoadTransactionsFailureAction extends ActionWithPayload {
-  constructor() {
-    super(TransactionActionTypes.LOAD_TRANSACTIONS_FAILURE);
+  constructor(payload: ApiError) {
+    super(TransactionActionTypes.LOAD_TRANSACTIONS_FAILURE, payload);
   }
 }
 

@@ -1,5 +1,5 @@
-import type { ActionWithPayload } from "../actions/ActionWithPayload";
-import { NullAction } from "../actions/app/AppActions";
+//  import { NullAction } from "../actions/app/AppActions";
+import { defaultLastApi, type LastApiType } from "./LastApiType";
 import type { Transaction } from "./Transaction";
 import type { TransactionSearchFilterType } from "./TransactionSeachFilterType";
 import type { ModalType } from "./unionTypes";
@@ -11,15 +11,18 @@ export type TransactionsState = {
   currentTransaction?: Transaction,
   backupTransaction?: Transaction,
   transactionPage: Transaction[],
-  lastAction: ActionWithPayload,
+  // lastAction: ActionWithPayload,
   sort: SortType,
   filter: TransactionSearchFilterType,
   modal: ModalType,
   summary: TranactionsSummaryType,
   alert?: AlertType, 
-  showAppSpinner: boolean;
-  showApiSpinner: boolean;
-  showFailureMessage?: boolean
+  // showAppSpinner: boolean;
+  //  showApiSpinner: boolean;
+  showFailureMessage?: boolean,
+  // lastApiError?: ApiError,
+  lastApi: LastApiType 
+
 }
 
 export type TranactionsSummaryType = {
@@ -38,9 +41,7 @@ export const transactionStateInitialValue: TransactionsState = {
   filter: { merchants: [], categories: [] },
   modal: "None",
   summary: { numPages: 0, transactionsCount: 0, totalCreditAmount: 0, totalDebitAmount: 0},
-  showAppSpinner: false,
-  showApiSpinner: false,
-  lastAction: new NullAction()
+  lastApi: defaultLastApi
 }
 
 export type AlertType = { type: "success" | "failure" , message: string } 

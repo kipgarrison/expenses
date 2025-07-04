@@ -1,40 +1,42 @@
 import { vi } from "vitest";
 import axios from "axios";
 import { newDebitTransaction } from "../../types/Transaction";
-import { LoadTransactionsFailureAction, LoadTransactionsInitAction, LoadTransactionsSuccessAction, UpdateTransactionAction } from "../../actions/TransactionActions";
-import { loadTransactionsEffect } from "./loadTransactionsEffect";
+import { UpdateTransactionAction } from "../../actions/TransactionActions";
 import { ApiError } from "../../types/apiError";
+import { EmptyBudget } from "../../types/budget/Budget";
+import { LoadBudgetFailureAction, LoadBudgetInitAction, LoadBudgetSuccessAction } from "../../actions/budget/BudgetActions";
+import { getBudgetEffect } from "./getBudgetEffect";
 
-describe("loadTransactionsEffect", () => {
+describe("loadBudgetEffect", () => {
   const dispatch= vi.fn();
-  const transactions = [ { ...newDebitTransaction, id: 1 }, {...newDebitTransaction, id: 2 }, {...newDebitTransaction, id: 3 } ];
+  const budget = EmptyBudget;
 
   beforeEach(() => {
     vi.mock('axios');
-    vi.mocked(axios.get).mockResolvedValue({ data: transactions})
+    vi.mocked(axios.get).mockResolvedValue({ data: budget})
     dispatch.mockClear();
   })
 
   it("should call dispatch with success action when call succeeds", async () => {
-    const loadAction = new LoadTransactionsInitAction();
-    await loadTransactionsEffect(loadAction, dispatch);
-    const expectedAction = new LoadTransactionsSuccessAction(transactions);
+    const loadAction = new LoadBudgetInitAction();
+    await getBudgetEffect(loadAction, dispatch);
+    const expectedAction = new LoadBudgetSuccessAction(budget);
     expect(dispatch).toHaveBeenCalledWith(expectedAction);
   });
 
   it("should not do anything if the action is not a load transactions init", async () => {
     const wrongAction = new UpdateTransactionAction(newDebitTransaction);
-    await loadTransactionsEffect(wrongAction, dispatch);
+    await getBudgetEffect(wrongAction, dispatch);
     expect(dispatch).not.toHaveBeenCalled();
   })
 
   it("should call dispatch with failure action when call fails", async () => {
     const error = new ApiError("error", "stack trace", "request id") 
     const mockAxiosResponse = { response: { data: { error } } };
-    const loadAction = new LoadTransactionsInitAction();
-    const expectedAction = new LoadTransactionsFailureAction(error);
+    const loadAction = new LoadBudgetInitAction();
+    const expectedAction = new LoadBudgetFailureAction(error);
     vi.mocked(axios.get).mockRejectedValue(mockAxiosResponse)
-    await loadTransactionsEffect(loadAction, dispatch);
+    await getBudgetEffect(loadAction, dispatch);
     expect(dispatch).toHaveBeenCalledWith(expectedAction);
   });
 })

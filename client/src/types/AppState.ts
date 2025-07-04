@@ -1,3 +1,4 @@
+import type { ApiError } from "./apiError"
 import type { ReferenceData } from "./app/ReferenceData"
 import type { AlertType } from "./TransactionsState"
 
@@ -6,7 +7,8 @@ export type AppState = {
   categories: ReferenceData[],
   merchantsLoading: boolean,
   categoriesLoading: boolean,
-  alert?: AlertType
+  alert?: AlertType,
+  lastApiError?: ApiError
 }
 
 export const InitialAppState: AppState = {

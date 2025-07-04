@@ -4,31 +4,21 @@ import type { Merchant } from "../types/merchants/Merchant";
 import type { MerchantsState } from "../types/merchants/MerchantState";
 import { sortObjectsArray } from "../helpers/sortObjectsArray";
 
-// const sortMerchants = (merchants: Merchant[], sort: SortType): Merchant[] => {
-//   if (!merchants || !merchants.length) return [];
-//   const sortCol = sort.column || "date";
-//   const direction = sort.direction || "asc";
-//   const ascSorter = (a: Indexable, b: Indexable) => a[sortCol] > b[sortCol] ? 1 : -1;
-//   const descSorter = (a: Indexable, b: Indexable) => a[sortCol] > b[sortCol] ? -1 : 1;
-//   const sorter = direction === "asc" ? ascSorter : descSorter;
-//   // don't want to mutate the original array so...
-//   const localMerchants = [...merchants ].sort(sorter);
-//   return localMerchants;
-// }
+import { defaultLastApi, lastFailureApi, lastInitApi, lastSuccessApi } from "../types/LastApiType";
 
 export const merchantsReducer = (state: MerchantsState, action: ActionWithPayload): MerchantsState => {
-  const newState: MerchantsState = { ...state, lastAction: action };
+  const newState: MerchantsState = { ...state, lastApi: defaultLastApi };
   console.log("Merchant Reducer*********************>" + action.type, action);
   switch (action.type) {
     case MerchantActionTypes.LOAD_MERCHANTS_INIT: {
-      return { ...newState, apiStatus: "RUNNING", filterRange: action.payload as number, merchants: [] };
+      return { ...newState, lastApi: lastInitApi(action, "App"), filterRange: action.payload as number, merchants: [] };
     }
     case MerchantActionTypes.LOAD_MERCHANTS_SUCCESS: {
       const merchants = (action.payload as Merchant[]).map(m => ({ ...m, firstDate: new Date(m.firstDate), lastDate: new Date(m.lastDate)}));
-      return { ...newState, apiStatus: "NOT_RUNNING", merchants: sortObjectsArray(merchants, state.sort) as Merchant[] };      
+      return { ...newState, lastApi: lastSuccessApi(), merchants: sortObjectsArray(merchants, state.sort) as Merchant[] };      
     }
     case MerchantActionTypes.LOAD_MERCHANTS_FAILURE: {
-      return { ...newState, apiStatus: "NOT_RUNNING", showFailureMessage: true}
+      return { ...newState, lastApi: lastFailureApi(state.lastApi, action)}
     }
     case MerchantActionTypes.SORT_MERCHANTS: {
       const column = action.payload as string;

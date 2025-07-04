@@ -3,10 +3,10 @@ import type { ActionWithPayload } from "../../actions/ActionWithPayload";
 import { BudgetActionTypes } from "../../actions/budget/BudgetActionTypes";
 import { LoadSummarySuccessAction, LoadSummaryFailureAction } from "../../actions/budget/BudgetActions";
 
-export function getBudgetSummaryEffect(actions: ActionWithPayload[], dispatch: (action: ActionWithPayload)=>void) {
-  const summaryAction = actions.find(a => a.type === BudgetActionTypes.LOAD_SUMMARY_INIT);
+export function getBudgetSummaryEffect(action: ActionWithPayload, dispatch: (action: ActionWithPayload)=>void) {
+  const summaryAction = action.type === BudgetActionTypes.LOAD_SUMMARY_INIT;
   if (summaryAction) {
-    executeLoad(summaryAction.payload as { month: number, year: number });
+    executeLoad(action.payload as { month: number, year: number });
   }
   
   async function executeLoad(monthYear?: { month: number, year: number}) {
@@ -19,8 +19,10 @@ export function getBudgetSummaryEffect(actions: ActionWithPayload[], dispatch: (
       const result = await axios.get(url);
       dispatch(new LoadSummarySuccessAction(result.data));
     }
-    catch {
-      dispatch(new LoadSummaryFailureAction());
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    catch(ex: any) {
+      dispatch(new LoadSummaryFailureAction(ex.response.data.error));
     }
+ 
   }
 }
